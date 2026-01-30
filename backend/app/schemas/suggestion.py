@@ -18,6 +18,8 @@ class SuggestionsListResponse(BaseModel):
     field_id: int
     suggestions: List[SuggestionResponse]
     total_count: int
+    entry_count: int = 0  # Số entries đã lưu
+    is_first_entry: bool = True  # True nếu chưa đủ 2 entries
     message: str = "Suggestions retrieved successfully"
 
 

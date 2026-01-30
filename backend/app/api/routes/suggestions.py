@@ -28,13 +28,19 @@ async def get_suggestions(
     """
     API GET /api/suggestions
     
+    Logic:
+    - Lần đầu (< 2 entries): Trả empty list, không gợi ý
+    - Lần 2+ (>= 2 entries): Gợi ý từ database
+    
     Input:
     - user_id: ID của user
     - field_id: ID của field
     - top_k: Số lượng gợi ý top
     
     Output:
-    - Danh sách gợi ý với value, frequency, ranking
+    - Danh sách gợi ý (rỗng nếu chưa đủ entries)
+    - entry_count: Số entries đã lưu
+    - is_first_entry: true nếu đây là lần nhập đầu tiên
     """
     try:
         logger.info(f"Request suggestions: user_id={user_id}, field_id={field_id}, top_k={top_k}")
@@ -52,6 +58,28 @@ async def get_suggestions(
                 detail="top_k phải từ 1 đến 5"
             )
         
+        # Kiểm tra số entries hiện tại
+        entry_count = db.query(Entry).filter(
+            Entry.user_id == user_id,
+            Entry.field_id == field_id
+        ).count()
+        
+        logger.info(f"Field {field_id} has {entry_count} entries")
+        
+        # Logic: Lần đầu không gợi ý
+        if entry_count < 2:
+            logger.info(f"Not enough entries ({entry_count} < 2), no suggestions")
+            return {
+                "user_id": user_id,
+                "field_id": field_id,
+                "suggestions": [],
+                "total_count": 0,
+                "entry_count": entry_count,
+                "is_first_entry": True,
+                "message": f"Chưa đủ dữ liệu (nhập {2 - entry_count} lần nữa để bật gợi ý)"
+            }
+        
+        # Lần 2+: Gợi ý từ database
         # Get entries với raw query
         entries = db.query(Entry).filter(
             Entry.user_id == user_id,
@@ -83,7 +111,9 @@ async def get_suggestions(
             "field_id": field_id,
             "suggestions": suggestions,
             "total_count": len(suggestions),
-            "message": "Suggestions retrieved successfully"
+            "entry_count": entry_count,
+            "is_first_entry": False,
+            "message": "Suggestions retrieved from history"
         }
     
     except HTTPException:
@@ -95,6 +125,8 @@ async def get_suggestions(
             "field_id": field_id,
             "suggestions": [],
             "total_count": 0,
+            "entry_count": 0,
+            "is_first_entry": True,
             "message": f"Error: {str(e)}"
         }
 
@@ -156,6 +188,10 @@ async def get_suggestions_by_name(
     Lấy gợi ý dựa trên tên field thay vì field_id
     Tự động tìm field_id từ field_name và form_id
     
+    Logic:
+    - Lần đầu (< 2 entries): Trả empty list, không gợi ý
+    - Lần 2+ (>= 2 entries): Gợi ý từ database
+    
     Input:
     - user_id: ID của user
     - field_name: Tên field (e.g. họ_và_tên)
@@ -163,7 +199,9 @@ async def get_suggestions_by_name(
     - top_k: Số lượng gợi ý top
     
     Output:
-    - Danh sách gợi ý
+    - Danh sách gợi ý (rỗng nếu chưa đủ entries)
+    - entry_count: Số entries đã lưu
+    - is_first_entry: true nếu đây là lần nhập đầu tiên
     """
     try:
         logger.info(f"Request suggestions by name: user_id={user_id}, field_name={field_name}, top_k={top_k}")
@@ -191,10 +229,34 @@ async def get_suggestions_by_name(
                 user_id=user_id,
                 field_id=0,
                 suggestions=[],
-                total_count=0
+                total_count=0,
+                entry_count=0,
+                is_first_entry=True,
+                message="Field not found"
             )
         
-        # Gọi service để lấy gợi ý
+        # Kiểm tra số entries hiện tại
+        entry_count = db.query(Entry).filter(
+            Entry.user_id == user_id,
+            Entry.field_id == field.id
+        ).count()
+        
+        logger.info(f"Field {field_name} has {entry_count} entries")
+        
+        # Logic: Lần đầu không gợi ý
+        if entry_count < 2:
+            logger.info(f"Not enough entries ({entry_count} < 2), no suggestions")
+            return SuggestionsListResponse(
+                user_id=user_id,
+                field_id=field.id,
+                suggestions=[],
+                total_count=0,
+                entry_count=entry_count,
+                is_first_entry=True,
+                message=f"Chưa đủ dữ liệu (nhập {2 - entry_count} lần nữa để bật gợi ý)"
+            )
+        
+        # Lần 2+: Gợi ý từ database
         suggestions = SuggestionService.get_suggestions(
             db=db,
             user_id=user_id,
@@ -208,7 +270,10 @@ async def get_suggestions_by_name(
             user_id=user_id,
             field_id=field.id,
             suggestions=suggestions,
-            total_count=len(suggestions)
+            total_count=len(suggestions),
+            entry_count=entry_count,
+            is_first_entry=False,
+            message="Suggestions retrieved from history"
         )
         
     except HTTPException:
@@ -397,5 +462,5 @@ async def save_entry(
         logger.error(f"Error in save_entry: {str(e)}", exc_info=True)
         raise HTTPException(
             status_code=500,
-            detail="Lỗi khi lưu entry"
+            detail=f"Lỗi khi lưu entry: {str(e)}"
         )

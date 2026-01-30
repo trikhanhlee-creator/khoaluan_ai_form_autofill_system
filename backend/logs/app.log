@@ -728,3 +728,1175 @@ NameError: name 'Entry' is not defined
 2026-01-28 09:34:13,972 - autofill_ai - INFO - Request suggestions: user_id=1, field_id=11, top_k=5
 2026-01-28 09:34:13,976 - autofill_ai - INFO - Found 1 entries for field 11
 2026-01-28 09:34:13,976 - autofill_ai - INFO - Generated 0 suggestions
+2026-01-30 14:59:03,935 - autofill_ai - INFO - Request suggestions: user_id=1, field_id=1, top_k=5
+2026-01-30 14:59:03,964 - autofill_ai - INFO - Field 1 has 0 entries
+2026-01-30 14:59:03,965 - autofill_ai - INFO - Not enough entries (0 < 2), no suggestions
+2026-01-30 14:59:08,171 - autofill_ai - INFO - Request suggestions: user_id=1, field_id=1, top_k=5
+2026-01-30 14:59:08,176 - autofill_ai - INFO - Field 1 has 0 entries
+2026-01-30 14:59:08,176 - autofill_ai - INFO - Not enough entries (0 < 2), no suggestions
+2026-01-30 14:59:10,219 - autofill_ai - INFO - Request suggestions: user_id=1, field_id=1, top_k=5
+2026-01-30 14:59:10,223 - autofill_ai - INFO - Field 1 has 0 entries
+2026-01-30 14:59:10,223 - autofill_ai - INFO - Not enough entries (0 < 2), no suggestions
+2026-01-30 14:59:14,365 - autofill_ai - INFO - Request suggestions: user_id=1, field_id=1, top_k=5
+2026-01-30 14:59:14,369 - autofill_ai - INFO - Field 1 has 0 entries
+2026-01-30 14:59:14,370 - autofill_ai - INFO - Not enough entries (0 < 2), no suggestions
+2026-01-30 14:59:16,412 - autofill_ai - INFO - Request suggestions: user_id=1, field_id=1, top_k=5
+2026-01-30 14:59:16,415 - autofill_ai - INFO - Field 1 has 0 entries
+2026-01-30 14:59:16,416 - autofill_ai - INFO - Not enough entries (0 < 2), no suggestions
+2026-01-30 14:59:20,542 - autofill_ai - INFO - Request suggestions: user_id=1, field_id=1, top_k=5
+2026-01-30 14:59:20,546 - autofill_ai - INFO - Field 1 has 0 entries
+2026-01-30 14:59:20,546 - autofill_ai - INFO - Not enough entries (0 < 2), no suggestions
+2026-01-30 14:59:42,539 - autofill_ai - INFO - Saving entry: user_id=3, field_id=1, value=Test Value
+2026-01-30 14:59:42,540 - autofill_ai - INFO - Saving entry: user_id=3, field_id=1, value=Test Value
+2026-01-30 14:59:42,555 - autofill_ai - ERROR - Error saving entry: (pymysql.err.IntegrityError) (1452, 'Cannot add or update a child row: a foreign key constraint fails (`autofill_db`.`entries`, CONSTRAINT `entries_ibfk_2` FOREIGN KEY (`field_id`) REFERENCES `fields` (`id`) ON DELETE CASCADE)')
+[SQL: INSERT INTO entries (user_id, field_id, form_id, value, created_at) VALUES (%(user_id)s, %(field_id)s, %(form_id)s, %(value)s, %(created_at)s)]
+[parameters: {'user_id': 3, 'field_id': 1, 'form_id': 1, 'value': 'Test Value', 'created_at': datetime.datetime(2026, 1, 30, 7, 59, 42, 540663)}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+Traceback (most recent call last):
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\cursors.py", line 153, in execute
+    result = self._query(query)
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\cursors.py", line 322, in _query
+    conn.query(q)
+    ~~~~~~~~~~^^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\connections.py", line 575, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\connections.py", line 826, in _read_query_result
+    result.read()
+    ~~~~~~~~~~~^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\connections.py", line 1203, in read
+    first_packet = self.connection._read_packet()
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\connections.py", line 782, in _read_packet
+    packet.raise_for_error()
+    ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.IntegrityError: (1452, 'Cannot add or update a child row: a foreign key constraint fails (`autofill_db`.`entries`, CONSTRAINT `entries_ibfk_2` FOREIGN KEY (`field_id`) REFERENCES `fields` (`id`) ON DELETE CASCADE)')
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\KHANH\autofill-ai-system\backend\app\services\suggestion_service.py", line 114, in save_entry
+    db.commit()
+    ~~~~~~~~~^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\orm\session.py", line 2030, in commit
+    trans.commit(_to_root=True)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "<string>", line 2, in commit
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\orm\state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\orm\session.py", line 1311, in commit
+    self._prepare_impl()
+    ~~~~~~~~~~~~~~~~~~^^
+  File "<string>", line 2, in _prepare_impl
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\orm\state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\orm\session.py", line 1286, in _prepare_impl
+    self.session.flush()
+    ~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\orm\session.py", line 4331, in flush
+    self._flush(objects)
+    ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\orm\session.py", line 4466, in _flush
+    with util.safe_reraise():
+         ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\util\langhelpers.py", line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\orm\session.py", line 4427, in _flush
+    flush_context.execute()
+    ~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\orm\unitofwork.py", line 466, in execute
+    rec.execute(self)
+    ~~~~~~~~~~~^^^^^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\orm\unitofwork.py", line 642, in execute
+    util.preloaded.orm_persistence.save_obj(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self.mapper,
+        ^^^^^^^^^^^^
+        uow.states_for_mapper_hierarchy(self.mapper, False, False),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        uow,
+        ^^^^
+    )
+    ^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\orm\persistence.py", line 93, in save_obj
+    _emit_insert_statements(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        base_mapper,
+        ^^^^^^^^^^^^
+    ...<3 lines>...
+        insert,
+        ^^^^^^^
+    )
+    ^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\orm\persistence.py", line 1233, in _emit_insert_statements
+    result = connection.execute(
+        statement,
+        params,
+        execution_options=execution_options,
+    )
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\engine\base.py", line 1419, in execute
+    return meth(
+        self,
+        distilled_parameters,
+        execution_options or NO_OPTIONS,
+    )
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\sql\elements.py", line 527, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self, distilled_params, execution_options
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\engine\base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+        dialect,
+    ...<8 lines>...
+        cache_hit=cache_hit,
+    )
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\engine\base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^
+        dialect, context, statement, parameters
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\engine\base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        e, str_statement, effective_parameters, cursor, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\engine\base.py", line 2363, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\cursors.py", line 153, in execute
+    result = self._query(query)
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\cursors.py", line 322, in _query
+    conn.query(q)
+    ~~~~~~~~~~^^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\connections.py", line 575, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\connections.py", line 826, in _read_query_result
+    result.read()
+    ~~~~~~~~~~~^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\connections.py", line 1203, in read
+    first_packet = self.connection._read_packet()
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\connections.py", line 782, in _read_packet
+    packet.raise_for_error()
+    ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+sqlalchemy.exc.IntegrityError: (pymysql.err.IntegrityError) (1452, 'Cannot add or update a child row: a foreign key constraint fails (`autofill_db`.`entries`, CONSTRAINT `entries_ibfk_2` FOREIGN KEY (`field_id`) REFERENCES `fields` (`id`) ON DELETE CASCADE)')
+[SQL: INSERT INTO entries (user_id, field_id, form_id, value, created_at) VALUES (%(user_id)s, %(field_id)s, %(form_id)s, %(value)s, %(created_at)s)]
+[parameters: {'user_id': 3, 'field_id': 1, 'form_id': 1, 'value': 'Test Value', 'created_at': datetime.datetime(2026, 1, 30, 7, 59, 42, 540663)}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-30 14:59:42,565 - autofill_ai - ERROR - Error in save_entry: (pymysql.err.IntegrityError) (1452, 'Cannot add or update a child row: a foreign key constraint fails (`autofill_db`.`entries`, CONSTRAINT `entries_ibfk_2` FOREIGN KEY (`field_id`) REFERENCES `fields` (`id`) ON DELETE CASCADE)')
+[SQL: INSERT INTO entries (user_id, field_id, form_id, value, created_at) VALUES (%(user_id)s, %(field_id)s, %(form_id)s, %(value)s, %(created_at)s)]
+[parameters: {'user_id': 3, 'field_id': 1, 'form_id': 1, 'value': 'Test Value', 'created_at': datetime.datetime(2026, 1, 30, 7, 59, 42, 540663)}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+Traceback (most recent call last):
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\cursors.py", line 153, in execute
+    result = self._query(query)
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\cursors.py", line 322, in _query
+    conn.query(q)
+    ~~~~~~~~~~^^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\connections.py", line 575, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\connections.py", line 826, in _read_query_result
+    result.read()
+    ~~~~~~~~~~~^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\connections.py", line 1203, in read
+    first_packet = self.connection._read_packet()
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\connections.py", line 782, in _read_packet
+    packet.raise_for_error()
+    ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.IntegrityError: (1452, 'Cannot add or update a child row: a foreign key constraint fails (`autofill_db`.`entries`, CONSTRAINT `entries_ibfk_2` FOREIGN KEY (`field_id`) REFERENCES `fields` (`id`) ON DELETE CASCADE)')
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\KHANH\autofill-ai-system\backend\app\api\routes\suggestions.py", line 447, in save_entry
+    result = SuggestionService.save_entry(
+        db=db,
+    ...<3 lines>...
+        value=value.strip()
+    )
+  File "C:\Users\KHANH\autofill-ai-system\backend\app\services\suggestion_service.py", line 114, in save_entry
+    db.commit()
+    ~~~~~~~~~^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\orm\session.py", line 2030, in commit
+    trans.commit(_to_root=True)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "<string>", line 2, in commit
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\orm\state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\orm\session.py", line 1311, in commit
+    self._prepare_impl()
+    ~~~~~~~~~~~~~~~~~~^^
+  File "<string>", line 2, in _prepare_impl
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\orm\state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\orm\session.py", line 1286, in _prepare_impl
+    self.session.flush()
+    ~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\orm\session.py", line 4331, in flush
+    self._flush(objects)
+    ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\orm\session.py", line 4466, in _flush
+    with util.safe_reraise():
+         ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\util\langhelpers.py", line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\orm\session.py", line 4427, in _flush
+    flush_context.execute()
+    ~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\orm\unitofwork.py", line 466, in execute
+    rec.execute(self)
+    ~~~~~~~~~~~^^^^^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\orm\unitofwork.py", line 642, in execute
+    util.preloaded.orm_persistence.save_obj(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self.mapper,
+        ^^^^^^^^^^^^
+        uow.states_for_mapper_hierarchy(self.mapper, False, False),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        uow,
+        ^^^^
+    )
+    ^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\orm\persistence.py", line 93, in save_obj
+    _emit_insert_statements(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        base_mapper,
+        ^^^^^^^^^^^^
+    ...<3 lines>...
+        insert,
+        ^^^^^^^
+    )
+    ^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\orm\persistence.py", line 1233, in _emit_insert_statements
+    result = connection.execute(
+        statement,
+        params,
+        execution_options=execution_options,
+    )
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\engine\base.py", line 1419, in execute
+    return meth(
+        self,
+        distilled_parameters,
+        execution_options or NO_OPTIONS,
+    )
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\sql\elements.py", line 527, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self, distilled_params, execution_options
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\engine\base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+        dialect,
+    ...<8 lines>...
+        cache_hit=cache_hit,
+    )
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\engine\base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^
+        dialect, context, statement, parameters
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\engine\base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        e, str_statement, effective_parameters, cursor, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\engine\base.py", line 2363, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\cursors.py", line 153, in execute
+    result = self._query(query)
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\cursors.py", line 322, in _query
+    conn.query(q)
+    ~~~~~~~~~~^^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\connections.py", line 575, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\connections.py", line 826, in _read_query_result
+    result.read()
+    ~~~~~~~~~~~^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\connections.py", line 1203, in read
+    first_packet = self.connection._read_packet()
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\connections.py", line 782, in _read_packet
+    packet.raise_for_error()
+    ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+sqlalchemy.exc.IntegrityError: (pymysql.err.IntegrityError) (1452, 'Cannot add or update a child row: a foreign key constraint fails (`autofill_db`.`entries`, CONSTRAINT `entries_ibfk_2` FOREIGN KEY (`field_id`) REFERENCES `fields` (`id`) ON DELETE CASCADE)')
+[SQL: INSERT INTO entries (user_id, field_id, form_id, value, created_at) VALUES (%(user_id)s, %(field_id)s, %(form_id)s, %(value)s, %(created_at)s)]
+[parameters: {'user_id': 3, 'field_id': 1, 'form_id': 1, 'value': 'Test Value', 'created_at': datetime.datetime(2026, 1, 30, 7, 59, 42, 540663)}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-30 15:00:27,275 - autofill_ai - INFO - Saving entry: user_id=3, field_id=1, value=Test Value
+2026-01-30 15:00:27,275 - autofill_ai - INFO - Saving entry: user_id=3, field_id=1, value=Test Value
+2026-01-30 15:00:27,312 - autofill_ai - ERROR - Error saving entry: (pymysql.err.IntegrityError) (1452, 'Cannot add or update a child row: a foreign key constraint fails (`autofill_db`.`entries`, CONSTRAINT `entries_ibfk_2` FOREIGN KEY (`field_id`) REFERENCES `fields` (`id`) ON DELETE CASCADE)')
+[SQL: INSERT INTO entries (user_id, field_id, form_id, value, created_at) VALUES (%(user_id)s, %(field_id)s, %(form_id)s, %(value)s, %(created_at)s)]
+[parameters: {'user_id': 3, 'field_id': 1, 'form_id': 1, 'value': 'Test Value', 'created_at': datetime.datetime(2026, 1, 30, 8, 0, 27, 276038)}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+Traceback (most recent call last):
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\cursors.py", line 153, in execute
+    result = self._query(query)
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\cursors.py", line 322, in _query
+    conn.query(q)
+    ~~~~~~~~~~^^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\connections.py", line 575, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\connections.py", line 826, in _read_query_result
+    result.read()
+    ~~~~~~~~~~~^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\connections.py", line 1203, in read
+    first_packet = self.connection._read_packet()
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\connections.py", line 782, in _read_packet
+    packet.raise_for_error()
+    ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.IntegrityError: (1452, 'Cannot add or update a child row: a foreign key constraint fails (`autofill_db`.`entries`, CONSTRAINT `entries_ibfk_2` FOREIGN KEY (`field_id`) REFERENCES `fields` (`id`) ON DELETE CASCADE)')
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\KHANH\autofill-ai-system\backend\app\services\suggestion_service.py", line 114, in save_entry
+    db.commit()
+    ~~~~~~~~~^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\orm\session.py", line 2030, in commit
+    trans.commit(_to_root=True)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "<string>", line 2, in commit
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\orm\state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\orm\session.py", line 1311, in commit
+    self._prepare_impl()
+    ~~~~~~~~~~~~~~~~~~^^
+  File "<string>", line 2, in _prepare_impl
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\orm\state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\orm\session.py", line 1286, in _prepare_impl
+    self.session.flush()
+    ~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\orm\session.py", line 4331, in flush
+    self._flush(objects)
+    ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\orm\session.py", line 4466, in _flush
+    with util.safe_reraise():
+         ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\util\langhelpers.py", line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\orm\session.py", line 4427, in _flush
+    flush_context.execute()
+    ~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\orm\unitofwork.py", line 466, in execute
+    rec.execute(self)
+    ~~~~~~~~~~~^^^^^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\orm\unitofwork.py", line 642, in execute
+    util.preloaded.orm_persistence.save_obj(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self.mapper,
+        ^^^^^^^^^^^^
+        uow.states_for_mapper_hierarchy(self.mapper, False, False),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        uow,
+        ^^^^
+    )
+    ^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\orm\persistence.py", line 93, in save_obj
+    _emit_insert_statements(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        base_mapper,
+        ^^^^^^^^^^^^
+    ...<3 lines>...
+        insert,
+        ^^^^^^^
+    )
+    ^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\orm\persistence.py", line 1233, in _emit_insert_statements
+    result = connection.execute(
+        statement,
+        params,
+        execution_options=execution_options,
+    )
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\engine\base.py", line 1419, in execute
+    return meth(
+        self,
+        distilled_parameters,
+        execution_options or NO_OPTIONS,
+    )
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\sql\elements.py", line 527, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self, distilled_params, execution_options
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\engine\base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+        dialect,
+    ...<8 lines>...
+        cache_hit=cache_hit,
+    )
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\engine\base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^
+        dialect, context, statement, parameters
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\engine\base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        e, str_statement, effective_parameters, cursor, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\engine\base.py", line 2363, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\cursors.py", line 153, in execute
+    result = self._query(query)
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\cursors.py", line 322, in _query
+    conn.query(q)
+    ~~~~~~~~~~^^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\connections.py", line 575, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\connections.py", line 826, in _read_query_result
+    result.read()
+    ~~~~~~~~~~~^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\connections.py", line 1203, in read
+    first_packet = self.connection._read_packet()
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\connections.py", line 782, in _read_packet
+    packet.raise_for_error()
+    ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+sqlalchemy.exc.IntegrityError: (pymysql.err.IntegrityError) (1452, 'Cannot add or update a child row: a foreign key constraint fails (`autofill_db`.`entries`, CONSTRAINT `entries_ibfk_2` FOREIGN KEY (`field_id`) REFERENCES `fields` (`id`) ON DELETE CASCADE)')
+[SQL: INSERT INTO entries (user_id, field_id, form_id, value, created_at) VALUES (%(user_id)s, %(field_id)s, %(form_id)s, %(value)s, %(created_at)s)]
+[parameters: {'user_id': 3, 'field_id': 1, 'form_id': 1, 'value': 'Test Value', 'created_at': datetime.datetime(2026, 1, 30, 8, 0, 27, 276038)}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-30 15:00:27,333 - autofill_ai - ERROR - Error in save_entry: (pymysql.err.IntegrityError) (1452, 'Cannot add or update a child row: a foreign key constraint fails (`autofill_db`.`entries`, CONSTRAINT `entries_ibfk_2` FOREIGN KEY (`field_id`) REFERENCES `fields` (`id`) ON DELETE CASCADE)')
+[SQL: INSERT INTO entries (user_id, field_id, form_id, value, created_at) VALUES (%(user_id)s, %(field_id)s, %(form_id)s, %(value)s, %(created_at)s)]
+[parameters: {'user_id': 3, 'field_id': 1, 'form_id': 1, 'value': 'Test Value', 'created_at': datetime.datetime(2026, 1, 30, 8, 0, 27, 276038)}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+Traceback (most recent call last):
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\cursors.py", line 153, in execute
+    result = self._query(query)
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\cursors.py", line 322, in _query
+    conn.query(q)
+    ~~~~~~~~~~^^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\connections.py", line 575, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\connections.py", line 826, in _read_query_result
+    result.read()
+    ~~~~~~~~~~~^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\connections.py", line 1203, in read
+    first_packet = self.connection._read_packet()
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\connections.py", line 782, in _read_packet
+    packet.raise_for_error()
+    ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.IntegrityError: (1452, 'Cannot add or update a child row: a foreign key constraint fails (`autofill_db`.`entries`, CONSTRAINT `entries_ibfk_2` FOREIGN KEY (`field_id`) REFERENCES `fields` (`id`) ON DELETE CASCADE)')
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\KHANH\autofill-ai-system\backend\app\api\routes\suggestions.py", line 447, in save_entry
+    result = SuggestionService.save_entry(
+        db=db,
+    ...<3 lines>...
+        value=value.strip()
+    )
+  File "C:\Users\KHANH\autofill-ai-system\backend\app\services\suggestion_service.py", line 114, in save_entry
+    db.commit()
+    ~~~~~~~~~^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\orm\session.py", line 2030, in commit
+    trans.commit(_to_root=True)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "<string>", line 2, in commit
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\orm\state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\orm\session.py", line 1311, in commit
+    self._prepare_impl()
+    ~~~~~~~~~~~~~~~~~~^^
+  File "<string>", line 2, in _prepare_impl
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\orm\state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\orm\session.py", line 1286, in _prepare_impl
+    self.session.flush()
+    ~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\orm\session.py", line 4331, in flush
+    self._flush(objects)
+    ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\orm\session.py", line 4466, in _flush
+    with util.safe_reraise():
+         ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\util\langhelpers.py", line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\orm\session.py", line 4427, in _flush
+    flush_context.execute()
+    ~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\orm\unitofwork.py", line 466, in execute
+    rec.execute(self)
+    ~~~~~~~~~~~^^^^^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\orm\unitofwork.py", line 642, in execute
+    util.preloaded.orm_persistence.save_obj(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self.mapper,
+        ^^^^^^^^^^^^
+        uow.states_for_mapper_hierarchy(self.mapper, False, False),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        uow,
+        ^^^^
+    )
+    ^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\orm\persistence.py", line 93, in save_obj
+    _emit_insert_statements(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        base_mapper,
+        ^^^^^^^^^^^^
+    ...<3 lines>...
+        insert,
+        ^^^^^^^
+    )
+    ^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\orm\persistence.py", line 1233, in _emit_insert_statements
+    result = connection.execute(
+        statement,
+        params,
+        execution_options=execution_options,
+    )
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\engine\base.py", line 1419, in execute
+    return meth(
+        self,
+        distilled_parameters,
+        execution_options or NO_OPTIONS,
+    )
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\sql\elements.py", line 527, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self, distilled_params, execution_options
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\engine\base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+        dialect,
+    ...<8 lines>...
+        cache_hit=cache_hit,
+    )
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\engine\base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^
+        dialect, context, statement, parameters
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\engine\base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        e, str_statement, effective_parameters, cursor, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\engine\base.py", line 2363, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\cursors.py", line 153, in execute
+    result = self._query(query)
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\cursors.py", line 322, in _query
+    conn.query(q)
+    ~~~~~~~~~~^^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\connections.py", line 575, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\connections.py", line 826, in _read_query_result
+    result.read()
+    ~~~~~~~~~~~^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\connections.py", line 1203, in read
+    first_packet = self.connection._read_packet()
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\connections.py", line 782, in _read_packet
+    packet.raise_for_error()
+    ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+sqlalchemy.exc.IntegrityError: (pymysql.err.IntegrityError) (1452, 'Cannot add or update a child row: a foreign key constraint fails (`autofill_db`.`entries`, CONSTRAINT `entries_ibfk_2` FOREIGN KEY (`field_id`) REFERENCES `fields` (`id`) ON DELETE CASCADE)')
+[SQL: INSERT INTO entries (user_id, field_id, form_id, value, created_at) VALUES (%(user_id)s, %(field_id)s, %(form_id)s, %(value)s, %(created_at)s)]
+[parameters: {'user_id': 3, 'field_id': 1, 'form_id': 1, 'value': 'Test Value', 'created_at': datetime.datetime(2026, 1, 30, 8, 0, 27, 276038)}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-30 15:00:42,537 - autofill_ai - INFO - Saving entry: user_id=1, field_id=1, value=Test Value
+2026-01-30 15:00:42,538 - autofill_ai - INFO - Saving entry: user_id=1, field_id=1, value=Test Value
+2026-01-30 15:00:42,553 - autofill_ai - ERROR - Error saving entry: (pymysql.err.IntegrityError) (1452, 'Cannot add or update a child row: a foreign key constraint fails (`autofill_db`.`entries`, CONSTRAINT `entries_ibfk_2` FOREIGN KEY (`field_id`) REFERENCES `fields` (`id`) ON DELETE CASCADE)')
+[SQL: INSERT INTO entries (user_id, field_id, form_id, value, created_at) VALUES (%(user_id)s, %(field_id)s, %(form_id)s, %(value)s, %(created_at)s)]
+[parameters: {'user_id': 1, 'field_id': 1, 'form_id': 1, 'value': 'Test Value', 'created_at': datetime.datetime(2026, 1, 30, 8, 0, 42, 538225)}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+Traceback (most recent call last):
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\cursors.py", line 153, in execute
+    result = self._query(query)
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\cursors.py", line 322, in _query
+    conn.query(q)
+    ~~~~~~~~~~^^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\connections.py", line 575, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\connections.py", line 826, in _read_query_result
+    result.read()
+    ~~~~~~~~~~~^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\connections.py", line 1203, in read
+    first_packet = self.connection._read_packet()
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\connections.py", line 782, in _read_packet
+    packet.raise_for_error()
+    ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.IntegrityError: (1452, 'Cannot add or update a child row: a foreign key constraint fails (`autofill_db`.`entries`, CONSTRAINT `entries_ibfk_2` FOREIGN KEY (`field_id`) REFERENCES `fields` (`id`) ON DELETE CASCADE)')
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\KHANH\autofill-ai-system\backend\app\services\suggestion_service.py", line 114, in save_entry
+    db.commit()
+    ~~~~~~~~~^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\orm\session.py", line 2030, in commit
+    trans.commit(_to_root=True)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "<string>", line 2, in commit
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\orm\state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\orm\session.py", line 1311, in commit
+    self._prepare_impl()
+    ~~~~~~~~~~~~~~~~~~^^
+  File "<string>", line 2, in _prepare_impl
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\orm\state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\orm\session.py", line 1286, in _prepare_impl
+    self.session.flush()
+    ~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\orm\session.py", line 4331, in flush
+    self._flush(objects)
+    ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\orm\session.py", line 4466, in _flush
+    with util.safe_reraise():
+         ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\util\langhelpers.py", line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\orm\session.py", line 4427, in _flush
+    flush_context.execute()
+    ~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\orm\unitofwork.py", line 466, in execute
+    rec.execute(self)
+    ~~~~~~~~~~~^^^^^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\orm\unitofwork.py", line 642, in execute
+    util.preloaded.orm_persistence.save_obj(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self.mapper,
+        ^^^^^^^^^^^^
+        uow.states_for_mapper_hierarchy(self.mapper, False, False),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        uow,
+        ^^^^
+    )
+    ^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\orm\persistence.py", line 93, in save_obj
+    _emit_insert_statements(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        base_mapper,
+        ^^^^^^^^^^^^
+    ...<3 lines>...
+        insert,
+        ^^^^^^^
+    )
+    ^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\orm\persistence.py", line 1233, in _emit_insert_statements
+    result = connection.execute(
+        statement,
+        params,
+        execution_options=execution_options,
+    )
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\engine\base.py", line 1419, in execute
+    return meth(
+        self,
+        distilled_parameters,
+        execution_options or NO_OPTIONS,
+    )
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\sql\elements.py", line 527, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self, distilled_params, execution_options
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\engine\base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+        dialect,
+    ...<8 lines>...
+        cache_hit=cache_hit,
+    )
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\engine\base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^
+        dialect, context, statement, parameters
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\engine\base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        e, str_statement, effective_parameters, cursor, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\engine\base.py", line 2363, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\cursors.py", line 153, in execute
+    result = self._query(query)
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\cursors.py", line 322, in _query
+    conn.query(q)
+    ~~~~~~~~~~^^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\connections.py", line 575, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\connections.py", line 826, in _read_query_result
+    result.read()
+    ~~~~~~~~~~~^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\connections.py", line 1203, in read
+    first_packet = self.connection._read_packet()
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\connections.py", line 782, in _read_packet
+    packet.raise_for_error()
+    ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+sqlalchemy.exc.IntegrityError: (pymysql.err.IntegrityError) (1452, 'Cannot add or update a child row: a foreign key constraint fails (`autofill_db`.`entries`, CONSTRAINT `entries_ibfk_2` FOREIGN KEY (`field_id`) REFERENCES `fields` (`id`) ON DELETE CASCADE)')
+[SQL: INSERT INTO entries (user_id, field_id, form_id, value, created_at) VALUES (%(user_id)s, %(field_id)s, %(form_id)s, %(value)s, %(created_at)s)]
+[parameters: {'user_id': 1, 'field_id': 1, 'form_id': 1, 'value': 'Test Value', 'created_at': datetime.datetime(2026, 1, 30, 8, 0, 42, 538225)}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-30 15:00:42,563 - autofill_ai - ERROR - Error in save_entry: (pymysql.err.IntegrityError) (1452, 'Cannot add or update a child row: a foreign key constraint fails (`autofill_db`.`entries`, CONSTRAINT `entries_ibfk_2` FOREIGN KEY (`field_id`) REFERENCES `fields` (`id`) ON DELETE CASCADE)')
+[SQL: INSERT INTO entries (user_id, field_id, form_id, value, created_at) VALUES (%(user_id)s, %(field_id)s, %(form_id)s, %(value)s, %(created_at)s)]
+[parameters: {'user_id': 1, 'field_id': 1, 'form_id': 1, 'value': 'Test Value', 'created_at': datetime.datetime(2026, 1, 30, 8, 0, 42, 538225)}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+Traceback (most recent call last):
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\cursors.py", line 153, in execute
+    result = self._query(query)
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\cursors.py", line 322, in _query
+    conn.query(q)
+    ~~~~~~~~~~^^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\connections.py", line 575, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\connections.py", line 826, in _read_query_result
+    result.read()
+    ~~~~~~~~~~~^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\connections.py", line 1203, in read
+    first_packet = self.connection._read_packet()
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\connections.py", line 782, in _read_packet
+    packet.raise_for_error()
+    ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.IntegrityError: (1452, 'Cannot add or update a child row: a foreign key constraint fails (`autofill_db`.`entries`, CONSTRAINT `entries_ibfk_2` FOREIGN KEY (`field_id`) REFERENCES `fields` (`id`) ON DELETE CASCADE)')
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\KHANH\autofill-ai-system\backend\app\api\routes\suggestions.py", line 447, in save_entry
+    result = SuggestionService.save_entry(
+        db=db,
+    ...<3 lines>...
+        value=value.strip()
+    )
+  File "C:\Users\KHANH\autofill-ai-system\backend\app\services\suggestion_service.py", line 114, in save_entry
+    db.commit()
+    ~~~~~~~~~^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\orm\session.py", line 2030, in commit
+    trans.commit(_to_root=True)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "<string>", line 2, in commit
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\orm\state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\orm\session.py", line 1311, in commit
+    self._prepare_impl()
+    ~~~~~~~~~~~~~~~~~~^^
+  File "<string>", line 2, in _prepare_impl
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\orm\state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\orm\session.py", line 1286, in _prepare_impl
+    self.session.flush()
+    ~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\orm\session.py", line 4331, in flush
+    self._flush(objects)
+    ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\orm\session.py", line 4466, in _flush
+    with util.safe_reraise():
+         ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\util\langhelpers.py", line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\orm\session.py", line 4427, in _flush
+    flush_context.execute()
+    ~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\orm\unitofwork.py", line 466, in execute
+    rec.execute(self)
+    ~~~~~~~~~~~^^^^^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\orm\unitofwork.py", line 642, in execute
+    util.preloaded.orm_persistence.save_obj(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self.mapper,
+        ^^^^^^^^^^^^
+        uow.states_for_mapper_hierarchy(self.mapper, False, False),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        uow,
+        ^^^^
+    )
+    ^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\orm\persistence.py", line 93, in save_obj
+    _emit_insert_statements(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        base_mapper,
+        ^^^^^^^^^^^^
+    ...<3 lines>...
+        insert,
+        ^^^^^^^
+    )
+    ^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\orm\persistence.py", line 1233, in _emit_insert_statements
+    result = connection.execute(
+        statement,
+        params,
+        execution_options=execution_options,
+    )
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\engine\base.py", line 1419, in execute
+    return meth(
+        self,
+        distilled_parameters,
+        execution_options or NO_OPTIONS,
+    )
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\sql\elements.py", line 527, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self, distilled_params, execution_options
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\engine\base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+        dialect,
+    ...<8 lines>...
+        cache_hit=cache_hit,
+    )
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\engine\base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^
+        dialect, context, statement, parameters
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\engine\base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        e, str_statement, effective_parameters, cursor, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\engine\base.py", line 2363, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\cursors.py", line 153, in execute
+    result = self._query(query)
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\cursors.py", line 322, in _query
+    conn.query(q)
+    ~~~~~~~~~~^^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\connections.py", line 575, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\connections.py", line 826, in _read_query_result
+    result.read()
+    ~~~~~~~~~~~^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\connections.py", line 1203, in read
+    first_packet = self.connection._read_packet()
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\connections.py", line 782, in _read_packet
+    packet.raise_for_error()
+    ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+sqlalchemy.exc.IntegrityError: (pymysql.err.IntegrityError) (1452, 'Cannot add or update a child row: a foreign key constraint fails (`autofill_db`.`entries`, CONSTRAINT `entries_ibfk_2` FOREIGN KEY (`field_id`) REFERENCES `fields` (`id`) ON DELETE CASCADE)')
+[SQL: INSERT INTO entries (user_id, field_id, form_id, value, created_at) VALUES (%(user_id)s, %(field_id)s, %(form_id)s, %(value)s, %(created_at)s)]
+[parameters: {'user_id': 1, 'field_id': 1, 'form_id': 1, 'value': 'Test Value', 'created_at': datetime.datetime(2026, 1, 30, 8, 0, 42, 538225)}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-30 15:02:32,633 - autofill_ai - INFO - Request suggestions: user_id=1, field_id=1, top_k=5
+2026-01-30 15:02:32,662 - autofill_ai - INFO - Field 1 has 10 entries
+2026-01-30 15:02:32,666 - autofill_ai - INFO - Found 10 entries for field 1
+2026-01-30 15:02:32,666 - autofill_ai - INFO - Generated 3 suggestions
+2026-01-30 15:02:34,748 - autofill_ai - INFO - Entry saved with ID: 38
+2026-01-30 15:02:34,748 - autofill_ai - INFO - Entry saved successfully: {'status': 'success', 'entry_id': 38, 'message': 'Entry saved successfully'}
+2026-01-30 15:02:36,770 - autofill_ai - INFO - Request suggestions: user_id=1, field_id=1, top_k=5
+2026-01-30 15:02:36,775 - autofill_ai - INFO - Field 1 has 11 entries
+2026-01-30 15:02:36,777 - autofill_ai - INFO - Found 11 entries for field 1
+2026-01-30 15:02:36,778 - autofill_ai - INFO - Generated 3 suggestions
+2026-01-30 15:02:38,819 - autofill_ai - INFO - Request suggestions: user_id=1, field_id=1, top_k=5
+2026-01-30 15:02:38,823 - autofill_ai - INFO - Field 1 has 11 entries
+2026-01-30 15:02:38,825 - autofill_ai - INFO - Found 11 entries for field 1
+2026-01-30 15:02:38,826 - autofill_ai - INFO - Generated 3 suggestions
+2026-01-30 15:02:40,878 - autofill_ai - INFO - Entry saved with ID: 39
+2026-01-30 15:02:40,878 - autofill_ai - INFO - Entry saved successfully: {'status': 'success', 'entry_id': 39, 'message': 'Entry saved successfully'}
+2026-01-30 15:02:42,899 - autofill_ai - INFO - Request suggestions: user_id=1, field_id=1, top_k=5
+2026-01-30 15:02:42,902 - autofill_ai - INFO - Field 1 has 12 entries
+2026-01-30 15:02:42,904 - autofill_ai - INFO - Found 12 entries for field 1
+2026-01-30 15:02:42,905 - autofill_ai - INFO - Generated 3 suggestions
+2026-01-30 15:02:44,931 - autofill_ai - INFO - Request suggestions: user_id=1, field_id=1, top_k=5
+2026-01-30 15:02:44,934 - autofill_ai - INFO - Field 1 has 12 entries
+2026-01-30 15:02:44,937 - autofill_ai - INFO - Found 12 entries for field 1
+2026-01-30 15:02:44,937 - autofill_ai - INFO - Generated 3 suggestions
+2026-01-30 15:02:47,009 - autofill_ai - INFO - Entry saved with ID: 40
+2026-01-30 15:02:47,009 - autofill_ai - INFO - Entry saved successfully: {'status': 'success', 'entry_id': 40, 'message': 'Entry saved successfully'}
+2026-01-30 15:02:49,043 - autofill_ai - INFO - Request suggestions: user_id=1, field_id=1, top_k=5
+2026-01-30 15:02:49,047 - autofill_ai - INFO - Field 1 has 13 entries
+2026-01-30 15:02:49,049 - autofill_ai - INFO - Found 13 entries for field 1
+2026-01-30 15:02:49,049 - autofill_ai - INFO - Generated 3 suggestions
+2026-01-30 15:03:27,285 - autofill_ai - INFO - Request suggestions: user_id=1000, field_id=100, top_k=5
+2026-01-30 15:03:27,313 - autofill_ai - INFO - Field 100 has 0 entries
+2026-01-30 15:03:27,314 - autofill_ai - INFO - Not enough entries (0 < 2), no suggestions
+2026-01-30 15:03:31,485 - autofill_ai - INFO - Request suggestions: user_id=1000, field_id=100, top_k=5
+2026-01-30 15:03:31,490 - autofill_ai - INFO - Field 100 has 0 entries
+2026-01-30 15:03:31,491 - autofill_ai - INFO - Not enough entries (0 < 2), no suggestions
+2026-01-30 15:03:33,522 - autofill_ai - INFO - Request suggestions: user_id=1000, field_id=100, top_k=5
+2026-01-30 15:03:33,525 - autofill_ai - INFO - Field 100 has 0 entries
+2026-01-30 15:03:33,526 - autofill_ai - INFO - Not enough entries (0 < 2), no suggestions
+2026-01-30 15:03:37,669 - autofill_ai - INFO - Request suggestions: user_id=1000, field_id=100, top_k=5
+2026-01-30 15:03:37,672 - autofill_ai - INFO - Field 100 has 0 entries
+2026-01-30 15:03:37,673 - autofill_ai - INFO - Not enough entries (0 < 2), no suggestions
+2026-01-30 15:03:39,701 - autofill_ai - INFO - Request suggestions: user_id=1000, field_id=100, top_k=5
+2026-01-30 15:03:39,704 - autofill_ai - INFO - Field 100 has 0 entries
+2026-01-30 15:03:39,705 - autofill_ai - INFO - Not enough entries (0 < 2), no suggestions
+2026-01-30 15:03:43,845 - autofill_ai - INFO - Request suggestions: user_id=1000, field_id=100, top_k=5
+2026-01-30 15:03:43,849 - autofill_ai - INFO - Field 100 has 0 entries
+2026-01-30 15:03:43,849 - autofill_ai - INFO - Not enough entries (0 < 2), no suggestions
+2026-01-30 15:04:45,957 - autofill_ai - INFO - Request suggestions: user_id=1, field_id=1, top_k=5
+2026-01-30 15:04:45,966 - autofill_ai - INFO - Field 1 has 13 entries
+2026-01-30 15:04:45,969 - autofill_ai - INFO - Found 13 entries for field 1
+2026-01-30 15:04:45,969 - autofill_ai - INFO - Generated 3 suggestions
+2026-01-30 15:14:35,656 - autofill_ai - INFO - Request suggestions: user_id=1, field_id=1, top_k=3
+2026-01-30 15:14:35,684 - autofill_ai - INFO - Field 1 has 0 entries
+2026-01-30 15:14:35,684 - autofill_ai - INFO - Not enough entries (0 < 2), no suggestions
+2026-01-30 15:14:37,765 - autofill_ai - INFO - Entry saved with ID: 44
+2026-01-30 15:14:37,766 - autofill_ai - INFO - Entry saved successfully: {'status': 'success', 'entry_id': 44, 'message': 'Entry saved successfully'}
+2026-01-30 15:14:39,821 - autofill_ai - INFO - Request suggestions: user_id=1, field_id=1, top_k=3
+2026-01-30 15:14:39,825 - autofill_ai - INFO - Field 1 has 1 entries
+2026-01-30 15:14:39,825 - autofill_ai - INFO - Not enough entries (1 < 2), no suggestions
+2026-01-30 15:14:41,853 - autofill_ai - INFO - Request suggestions: user_id=1, field_id=1, top_k=3
+2026-01-30 15:14:41,858 - autofill_ai - INFO - Field 1 has 1 entries
+2026-01-30 15:14:41,859 - autofill_ai - INFO - Not enough entries (1 < 2), no suggestions
+2026-01-30 15:14:43,917 - autofill_ai - INFO - Entry saved with ID: 45
+2026-01-30 15:14:43,918 - autofill_ai - INFO - Entry saved successfully: {'status': 'success', 'entry_id': 45, 'message': 'Entry saved successfully'}
+2026-01-30 15:14:45,946 - autofill_ai - INFO - Request suggestions: user_id=1, field_id=1, top_k=3
+2026-01-30 15:14:45,950 - autofill_ai - INFO - Field 1 has 2 entries
+2026-01-30 15:14:45,953 - autofill_ai - INFO - Found 2 entries for field 1
+2026-01-30 15:14:45,953 - autofill_ai - INFO - Generated 1 suggestions
+2026-01-30 15:14:47,964 - autofill_ai - INFO - Request suggestions: user_id=1, field_id=1, top_k=3
+2026-01-30 15:14:47,967 - autofill_ai - INFO - Field 1 has 2 entries
+2026-01-30 15:14:47,969 - autofill_ai - INFO - Found 2 entries for field 1
+2026-01-30 15:14:47,970 - autofill_ai - INFO - Generated 1 suggestions
+2026-01-30 15:14:50,032 - autofill_ai - INFO - Entry saved with ID: 46
+2026-01-30 15:14:50,032 - autofill_ai - INFO - Entry saved successfully: {'status': 'success', 'entry_id': 46, 'message': 'Entry saved successfully'}
+2026-01-30 15:14:52,061 - autofill_ai - INFO - Request suggestions: user_id=1, field_id=1, top_k=3
+2026-01-30 15:14:52,064 - autofill_ai - INFO - Field 1 has 3 entries
+2026-01-30 15:14:52,066 - autofill_ai - INFO - Found 3 entries for field 1
+2026-01-30 15:14:52,066 - autofill_ai - INFO - Generated 2 suggestions
+2026-01-30 15:14:54,092 - autofill_ai - INFO - Request suggestions: user_id=1, field_id=2, top_k=3
+2026-01-30 15:14:54,096 - autofill_ai - INFO - Field 2 has 0 entries
+2026-01-30 15:14:54,096 - autofill_ai - INFO - Not enough entries (0 < 2), no suggestions
+2026-01-30 15:14:56,153 - autofill_ai - INFO - Entry saved with ID: 47
+2026-01-30 15:14:56,154 - autofill_ai - INFO - Entry saved successfully: {'status': 'success', 'entry_id': 47, 'message': 'Entry saved successfully'}
+2026-01-30 15:14:58,204 - autofill_ai - INFO - Request suggestions: user_id=1, field_id=2, top_k=3
+2026-01-30 15:14:58,209 - autofill_ai - INFO - Field 2 has 1 entries
+2026-01-30 15:14:58,209 - autofill_ai - INFO - Not enough entries (1 < 2), no suggestions
+2026-01-30 15:15:00,235 - autofill_ai - INFO - Request suggestions: user_id=1, field_id=2, top_k=3
+2026-01-30 15:15:00,239 - autofill_ai - INFO - Field 2 has 1 entries
+2026-01-30 15:15:00,239 - autofill_ai - INFO - Not enough entries (1 < 2), no suggestions
+2026-01-30 15:15:02,298 - autofill_ai - INFO - Entry saved with ID: 48
+2026-01-30 15:15:02,298 - autofill_ai - INFO - Entry saved successfully: {'status': 'success', 'entry_id': 48, 'message': 'Entry saved successfully'}
+2026-01-30 15:15:04,333 - autofill_ai - INFO - Request suggestions: user_id=1, field_id=2, top_k=3
+2026-01-30 15:15:04,336 - autofill_ai - INFO - Field 2 has 2 entries
+2026-01-30 15:15:04,339 - autofill_ai - INFO - Found 2 entries for field 2
+2026-01-30 15:15:04,339 - autofill_ai - INFO - Generated 1 suggestions
+2026-01-30 15:15:06,365 - autofill_ai - INFO - Request suggestions: user_id=1, field_id=2, top_k=3
+2026-01-30 15:15:06,370 - autofill_ai - INFO - Field 2 has 2 entries
+2026-01-30 15:15:06,373 - autofill_ai - INFO - Found 2 entries for field 2
+2026-01-30 15:15:06,373 - autofill_ai - INFO - Generated 1 suggestions
+2026-01-30 15:15:08,429 - autofill_ai - INFO - Entry saved with ID: 49
+2026-01-30 15:15:08,430 - autofill_ai - INFO - Entry saved successfully: {'status': 'success', 'entry_id': 49, 'message': 'Entry saved successfully'}
+2026-01-30 15:15:10,476 - autofill_ai - INFO - Request suggestions: user_id=1, field_id=2, top_k=3
+2026-01-30 15:15:10,479 - autofill_ai - INFO - Field 2 has 3 entries
+2026-01-30 15:15:10,482 - autofill_ai - INFO - Found 3 entries for field 2
+2026-01-30 15:15:10,482 - autofill_ai - INFO - Generated 2 suggestions
+2026-01-30 15:16:45,084 - autofill_ai - INFO - Request suggestions: user_id=1, field_id=1, top_k=5
+2026-01-30 15:16:45,092 - autofill_ai - INFO - Field 1 has 3 entries
+2026-01-30 15:16:45,096 - autofill_ai - INFO - Found 3 entries for field 1
+2026-01-30 15:16:45,096 - autofill_ai - INFO - Generated 2 suggestions

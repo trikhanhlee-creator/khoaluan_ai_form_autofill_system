@@ -7,7 +7,7 @@ class Settings(BaseSettings):
     # Database Configuration
     DATABASE_URL: str = os.getenv(
         "DATABASE_URL",
-        "mysql+pymysql://root:password@localhost:3306/autofill_db"
+        "mysql+pymysql://root:ltK240304@localhost:3306/autofill_db"
     )
     
     # API Configuration
