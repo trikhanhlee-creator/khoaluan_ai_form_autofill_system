@@ -1,0 +1,730 @@
+2026-01-27 15:55:31,411 - autofill_ai - INFO - Root endpoint called
+2026-01-27 15:56:35,021 - autofill_ai - INFO - Request suggestions: user_id=1, field_id=1, top_k=3
+2026-01-27 15:56:35,022 - autofill_ai - INFO - Getting suggestions for user_id=1, field_id=1
+2026-01-27 15:56:35,063 - autofill_ai - WARNING - No entries found for user_id=1, field_id=1
+2026-01-27 15:56:35,064 - autofill_ai - INFO - Successfully retrieved 0 suggestions
+2026-01-27 16:16:16,423 - autofill_ai - INFO - Root endpoint called
+2026-01-27 16:16:37,217 - autofill_ai - INFO - Request suggestions: user_id=1, field_id=1, top_k=3
+2026-01-27 16:16:37,217 - autofill_ai - INFO - Getting suggestions for user_id=1, field_id=1
+2026-01-27 16:16:37,241 - autofill_ai - INFO - Found 5 entries for field_id=1
+2026-01-27 16:16:37,242 - autofill_ai - INFO - Generated 1 suggestions
+2026-01-27 16:16:37,242 - autofill_ai - INFO - Successfully retrieved 1 suggestions
+2026-01-27 16:16:42,998 - autofill_ai - INFO - Request suggestions: user_id=1, field_id=1, top_k=3
+2026-01-27 16:16:42,998 - autofill_ai - INFO - Getting suggestions for user_id=1, field_id=1
+2026-01-27 16:16:43,002 - autofill_ai - INFO - Found 5 entries for field_id=1
+2026-01-27 16:16:43,002 - autofill_ai - INFO - Generated 1 suggestions
+2026-01-27 16:16:43,002 - autofill_ai - INFO - Successfully retrieved 1 suggestions
+2026-01-27 16:16:47,044 - autofill_ai - INFO - Request suggestions: user_id=1, field_id=1, top_k=3
+2026-01-27 16:16:47,044 - autofill_ai - INFO - Getting suggestions for user_id=1, field_id=1
+2026-01-27 16:16:47,049 - autofill_ai - INFO - Found 5 entries for field_id=1
+2026-01-27 16:16:47,050 - autofill_ai - INFO - Generated 1 suggestions
+2026-01-27 16:16:47,050 - autofill_ai - INFO - Successfully retrieved 1 suggestions
+2026-01-27 16:50:44,158 - autofill_ai - INFO - Request suggestions: user_id=1, field_id=1, top_k=3
+2026-01-27 16:50:44,159 - autofill_ai - INFO - Getting suggestions for user_id=1, field_id=1
+2026-01-27 16:50:44,185 - autofill_ai - INFO - Found 5 entries for field_id=1
+2026-01-27 16:50:44,186 - autofill_ai - INFO - Generated 1 suggestions
+2026-01-27 16:50:44,186 - autofill_ai - INFO - Successfully retrieved 1 suggestions
+2026-01-27 17:05:46,921 - autofill_ai - INFO - Request suggestions: user_id=1, field_id=1, top_k=1
+2026-01-27 17:05:46,921 - autofill_ai - INFO - Getting suggestions for user_id=1, field_id=1
+2026-01-27 17:05:46,957 - autofill_ai - INFO - Found 10 entries for field_id=1
+2026-01-27 17:05:46,961 - autofill_ai - INFO - Generated 1 suggestions
+2026-01-27 17:05:46,962 - autofill_ai - INFO - Successfully retrieved 1 suggestions
+2026-01-27 17:05:46,965 - autofill_ai - ERROR - Error in get_suggestions: 1 validation error for SuggestionsListResponse
+suggestions.0.value
+  Field required [type=missing, input_value={'suggested_value': 'Hà ...: '2026-01-27T09:07:41'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+Traceback (most recent call last):
+  File "C:\Users\KHANH\autofill-ai-system\backend\app\api\routes\suggestions.py", line 74, in get_suggestions
+    return SuggestionsListResponse(
+        user_id=user_id,
+    ...<2 lines>...
+        total_count=len(suggestions)
+    )
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pydantic\main.py", line 253, in __init__
+    validated_self = self.__pydantic_validator__.validate_python(data, self_instance=self)
+pydantic_core._pydantic_core.ValidationError: 1 validation error for SuggestionsListResponse
+suggestions.0.value
+  Field required [type=missing, input_value={'suggested_value': 'Hà ...: '2026-01-27T09:07:41'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+2026-01-27 17:12:55,446 - autofill_ai - INFO - Request suggestions: user_id=1, field_id=1, top_k=1
+2026-01-27 17:12:55,447 - autofill_ai - INFO - Getting suggestions for user_id=1, field_id=1
+2026-01-27 17:12:55,472 - autofill_ai - INFO - No entries found for user_id=1, field_id=1
+2026-01-27 17:12:55,473 - autofill_ai - INFO - Successfully retrieved 0 suggestions
+2026-01-27 23:05:57,968 - autofill_ai - INFO - Request suggestions: user_id=1, field_id=1, top_k=1
+2026-01-27 23:05:57,969 - autofill_ai - INFO - Getting suggestions for user_id=1, field_id=1
+2026-01-27 23:05:57,998 - autofill_ai - INFO - Found 5 entries for field_id=1
+2026-01-27 23:05:57,999 - autofill_ai - INFO - Generated 1 suggestions
+2026-01-27 23:05:57,999 - autofill_ai - INFO - Successfully retrieved 1 suggestions
+2026-01-27 23:05:58,003 - autofill_ai - ERROR - Error in get_suggestions: 1 validation error for SuggestionsListResponse
+suggestions.0.value
+  Field required [type=missing, input_value={'suggested_value': 'Hoan...: '2026-01-26T16:05:51'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+Traceback (most recent call last):
+  File "C:\Users\KHANH\autofill-ai-system\backend\app\api\routes\suggestions.py", line 74, in get_suggestions
+    return SuggestionsListResponse(
+        user_id=user_id,
+    ...<2 lines>...
+        total_count=len(suggestions)
+    )
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pydantic\main.py", line 253, in __init__
+    validated_self = self.__pydantic_validator__.validate_python(data, self_instance=self)
+pydantic_core._pydantic_core.ValidationError: 1 validation error for SuggestionsListResponse
+suggestions.0.value
+  Field required [type=missing, input_value={'suggested_value': 'Hoan...: '2026-01-26T16:05:51'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+2026-01-27 23:07:44,602 - autofill_ai - INFO - Request suggestions: user_id=1, field_id=1, top_k=5
+2026-01-27 23:07:44,602 - autofill_ai - INFO - Getting suggestions for user_id=1, field_id=1
+2026-01-27 23:07:44,605 - autofill_ai - INFO - Found 5 entries for field_id=1
+2026-01-27 23:07:44,605 - autofill_ai - INFO - Generated 5 suggestions
+2026-01-27 23:07:44,605 - autofill_ai - INFO - Successfully retrieved 5 suggestions
+2026-01-27 23:07:44,605 - autofill_ai - ERROR - Error in get_suggestions: 5 validation errors for SuggestionsListResponse
+suggestions.0.value
+  Field required [type=missing, input_value={'suggested_value': 'Hoan...: '2026-01-26T16:05:51'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+suggestions.1.value
+  Field required [type=missing, input_value={'suggested_value': 'Pham...: '2026-01-25T16:05:51'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+suggestions.2.value
+  Field required [type=missing, input_value={'suggested_value': 'Le M...: '2026-01-24T16:05:51'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+suggestions.3.value
+  Field required [type=missing, input_value={'suggested_value': 'Tran...: '2026-01-23T16:05:51'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+suggestions.4.value
+  Field required [type=missing, input_value={'suggested_value': 'Nguy...: '2026-01-22T16:05:51'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+Traceback (most recent call last):
+  File "C:\Users\KHANH\autofill-ai-system\backend\app\api\routes\suggestions.py", line 74, in get_suggestions
+    return SuggestionsListResponse(
+        user_id=user_id,
+    ...<2 lines>...
+        total_count=len(suggestions)
+    )
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pydantic\main.py", line 253, in __init__
+    validated_self = self.__pydantic_validator__.validate_python(data, self_instance=self)
+pydantic_core._pydantic_core.ValidationError: 5 validation errors for SuggestionsListResponse
+suggestions.0.value
+  Field required [type=missing, input_value={'suggested_value': 'Hoan...: '2026-01-26T16:05:51'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+suggestions.1.value
+  Field required [type=missing, input_value={'suggested_value': 'Pham...: '2026-01-25T16:05:51'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+suggestions.2.value
+  Field required [type=missing, input_value={'suggested_value': 'Le M...: '2026-01-24T16:05:51'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+suggestions.3.value
+  Field required [type=missing, input_value={'suggested_value': 'Tran...: '2026-01-23T16:05:51'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+suggestions.4.value
+  Field required [type=missing, input_value={'suggested_value': 'Nguy...: '2026-01-22T16:05:51'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+2026-01-27 23:07:44,762 - autofill_ai - INFO - Request suggestions: user_id=1, field_id=1, top_k=5
+2026-01-27 23:07:44,763 - autofill_ai - INFO - Getting suggestions for user_id=1, field_id=1
+2026-01-27 23:07:44,766 - autofill_ai - INFO - Found 5 entries for field_id=1
+2026-01-27 23:07:44,766 - autofill_ai - INFO - Generated 5 suggestions
+2026-01-27 23:07:44,766 - autofill_ai - INFO - Successfully retrieved 5 suggestions
+2026-01-27 23:07:44,767 - autofill_ai - ERROR - Error in get_suggestions: 5 validation errors for SuggestionsListResponse
+suggestions.0.value
+  Field required [type=missing, input_value={'suggested_value': 'Hoan...: '2026-01-26T16:05:51'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+suggestions.1.value
+  Field required [type=missing, input_value={'suggested_value': 'Pham...: '2026-01-25T16:05:51'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+suggestions.2.value
+  Field required [type=missing, input_value={'suggested_value': 'Le M...: '2026-01-24T16:05:51'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+suggestions.3.value
+  Field required [type=missing, input_value={'suggested_value': 'Tran...: '2026-01-23T16:05:51'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+suggestions.4.value
+  Field required [type=missing, input_value={'suggested_value': 'Nguy...: '2026-01-22T16:05:51'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+Traceback (most recent call last):
+  File "C:\Users\KHANH\autofill-ai-system\backend\app\api\routes\suggestions.py", line 74, in get_suggestions
+    return SuggestionsListResponse(
+        user_id=user_id,
+    ...<2 lines>...
+        total_count=len(suggestions)
+    )
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pydantic\main.py", line 253, in __init__
+    validated_self = self.__pydantic_validator__.validate_python(data, self_instance=self)
+pydantic_core._pydantic_core.ValidationError: 5 validation errors for SuggestionsListResponse
+suggestions.0.value
+  Field required [type=missing, input_value={'suggested_value': 'Hoan...: '2026-01-26T16:05:51'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+suggestions.1.value
+  Field required [type=missing, input_value={'suggested_value': 'Pham...: '2026-01-25T16:05:51'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+suggestions.2.value
+  Field required [type=missing, input_value={'suggested_value': 'Le M...: '2026-01-24T16:05:51'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+suggestions.3.value
+  Field required [type=missing, input_value={'suggested_value': 'Tran...: '2026-01-23T16:05:51'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+suggestions.4.value
+  Field required [type=missing, input_value={'suggested_value': 'Nguy...: '2026-01-22T16:05:51'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+2026-01-27 23:07:45,229 - autofill_ai - INFO - Request suggestions: user_id=1, field_id=1, top_k=5
+2026-01-27 23:07:45,229 - autofill_ai - INFO - Getting suggestions for user_id=1, field_id=1
+2026-01-27 23:07:45,232 - autofill_ai - INFO - Found 5 entries for field_id=1
+2026-01-27 23:07:45,233 - autofill_ai - INFO - Generated 5 suggestions
+2026-01-27 23:07:45,233 - autofill_ai - INFO - Successfully retrieved 5 suggestions
+2026-01-27 23:07:45,233 - autofill_ai - ERROR - Error in get_suggestions: 5 validation errors for SuggestionsListResponse
+suggestions.0.value
+  Field required [type=missing, input_value={'suggested_value': 'Hoan...: '2026-01-26T16:05:51'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+suggestions.1.value
+  Field required [type=missing, input_value={'suggested_value': 'Pham...: '2026-01-25T16:05:51'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+suggestions.2.value
+  Field required [type=missing, input_value={'suggested_value': 'Le M...: '2026-01-24T16:05:51'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+suggestions.3.value
+  Field required [type=missing, input_value={'suggested_value': 'Tran...: '2026-01-23T16:05:51'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+suggestions.4.value
+  Field required [type=missing, input_value={'suggested_value': 'Nguy...: '2026-01-22T16:05:51'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+Traceback (most recent call last):
+  File "C:\Users\KHANH\autofill-ai-system\backend\app\api\routes\suggestions.py", line 74, in get_suggestions
+    return SuggestionsListResponse(
+        user_id=user_id,
+    ...<2 lines>...
+        total_count=len(suggestions)
+    )
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pydantic\main.py", line 253, in __init__
+    validated_self = self.__pydantic_validator__.validate_python(data, self_instance=self)
+pydantic_core._pydantic_core.ValidationError: 5 validation errors for SuggestionsListResponse
+suggestions.0.value
+  Field required [type=missing, input_value={'suggested_value': 'Hoan...: '2026-01-26T16:05:51'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+suggestions.1.value
+  Field required [type=missing, input_value={'suggested_value': 'Pham...: '2026-01-25T16:05:51'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+suggestions.2.value
+  Field required [type=missing, input_value={'suggested_value': 'Le M...: '2026-01-24T16:05:51'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+suggestions.3.value
+  Field required [type=missing, input_value={'suggested_value': 'Tran...: '2026-01-23T16:05:51'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+suggestions.4.value
+  Field required [type=missing, input_value={'suggested_value': 'Nguy...: '2026-01-22T16:05:51'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+2026-01-27 23:07:46,007 - autofill_ai - INFO - Request suggestions: user_id=1, field_id=1, top_k=5
+2026-01-27 23:07:46,007 - autofill_ai - INFO - Getting suggestions for user_id=1, field_id=1
+2026-01-27 23:07:46,011 - autofill_ai - INFO - Found 5 entries for field_id=1
+2026-01-27 23:07:46,011 - autofill_ai - INFO - Generated 5 suggestions
+2026-01-27 23:07:46,011 - autofill_ai - INFO - Successfully retrieved 5 suggestions
+2026-01-27 23:07:46,012 - autofill_ai - ERROR - Error in get_suggestions: 5 validation errors for SuggestionsListResponse
+suggestions.0.value
+  Field required [type=missing, input_value={'suggested_value': 'Hoan...: '2026-01-26T16:05:51'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+suggestions.1.value
+  Field required [type=missing, input_value={'suggested_value': 'Pham...: '2026-01-25T16:05:51'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+suggestions.2.value
+  Field required [type=missing, input_value={'suggested_value': 'Le M...: '2026-01-24T16:05:51'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+suggestions.3.value
+  Field required [type=missing, input_value={'suggested_value': 'Tran...: '2026-01-23T16:05:51'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+suggestions.4.value
+  Field required [type=missing, input_value={'suggested_value': 'Nguy...: '2026-01-22T16:05:51'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+Traceback (most recent call last):
+  File "C:\Users\KHANH\autofill-ai-system\backend\app\api\routes\suggestions.py", line 74, in get_suggestions
+    return SuggestionsListResponse(
+        user_id=user_id,
+    ...<2 lines>...
+        total_count=len(suggestions)
+    )
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pydantic\main.py", line 253, in __init__
+    validated_self = self.__pydantic_validator__.validate_python(data, self_instance=self)
+pydantic_core._pydantic_core.ValidationError: 5 validation errors for SuggestionsListResponse
+suggestions.0.value
+  Field required [type=missing, input_value={'suggested_value': 'Hoan...: '2026-01-26T16:05:51'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+suggestions.1.value
+  Field required [type=missing, input_value={'suggested_value': 'Pham...: '2026-01-25T16:05:51'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+suggestions.2.value
+  Field required [type=missing, input_value={'suggested_value': 'Le M...: '2026-01-24T16:05:51'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+suggestions.3.value
+  Field required [type=missing, input_value={'suggested_value': 'Tran...: '2026-01-23T16:05:51'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+suggestions.4.value
+  Field required [type=missing, input_value={'suggested_value': 'Nguy...: '2026-01-22T16:05:51'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+2026-01-27 23:07:46,230 - autofill_ai - INFO - Request suggestions: user_id=1, field_id=1, top_k=5
+2026-01-27 23:07:46,230 - autofill_ai - INFO - Getting suggestions for user_id=1, field_id=1
+2026-01-27 23:07:46,234 - autofill_ai - INFO - Found 5 entries for field_id=1
+2026-01-27 23:07:46,234 - autofill_ai - INFO - Generated 5 suggestions
+2026-01-27 23:07:46,234 - autofill_ai - INFO - Successfully retrieved 5 suggestions
+2026-01-27 23:07:46,235 - autofill_ai - ERROR - Error in get_suggestions: 5 validation errors for SuggestionsListResponse
+suggestions.0.value
+  Field required [type=missing, input_value={'suggested_value': 'Hoan...: '2026-01-26T16:05:51'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+suggestions.1.value
+  Field required [type=missing, input_value={'suggested_value': 'Pham...: '2026-01-25T16:05:51'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+suggestions.2.value
+  Field required [type=missing, input_value={'suggested_value': 'Le M...: '2026-01-24T16:05:51'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+suggestions.3.value
+  Field required [type=missing, input_value={'suggested_value': 'Tran...: '2026-01-23T16:05:51'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+suggestions.4.value
+  Field required [type=missing, input_value={'suggested_value': 'Nguy...: '2026-01-22T16:05:51'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+Traceback (most recent call last):
+  File "C:\Users\KHANH\autofill-ai-system\backend\app\api\routes\suggestions.py", line 74, in get_suggestions
+    return SuggestionsListResponse(
+        user_id=user_id,
+    ...<2 lines>...
+        total_count=len(suggestions)
+    )
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pydantic\main.py", line 253, in __init__
+    validated_self = self.__pydantic_validator__.validate_python(data, self_instance=self)
+pydantic_core._pydantic_core.ValidationError: 5 validation errors for SuggestionsListResponse
+suggestions.0.value
+  Field required [type=missing, input_value={'suggested_value': 'Hoan...: '2026-01-26T16:05:51'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+suggestions.1.value
+  Field required [type=missing, input_value={'suggested_value': 'Pham...: '2026-01-25T16:05:51'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+suggestions.2.value
+  Field required [type=missing, input_value={'suggested_value': 'Le M...: '2026-01-24T16:05:51'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+suggestions.3.value
+  Field required [type=missing, input_value={'suggested_value': 'Tran...: '2026-01-23T16:05:51'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+suggestions.4.value
+  Field required [type=missing, input_value={'suggested_value': 'Nguy...: '2026-01-22T16:05:51'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+2026-01-27 23:07:47,735 - autofill_ai - INFO - Request suggestions: user_id=1, field_id=1, top_k=5
+2026-01-27 23:07:47,736 - autofill_ai - INFO - Getting suggestions for user_id=1, field_id=1
+2026-01-27 23:07:47,739 - autofill_ai - INFO - Found 5 entries for field_id=1
+2026-01-27 23:07:47,740 - autofill_ai - INFO - Generated 5 suggestions
+2026-01-27 23:07:47,740 - autofill_ai - INFO - Successfully retrieved 5 suggestions
+2026-01-27 23:07:47,740 - autofill_ai - ERROR - Error in get_suggestions: 5 validation errors for SuggestionsListResponse
+suggestions.0.value
+  Field required [type=missing, input_value={'suggested_value': 'Hoan...: '2026-01-26T16:05:51'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+suggestions.1.value
+  Field required [type=missing, input_value={'suggested_value': 'Pham...: '2026-01-25T16:05:51'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+suggestions.2.value
+  Field required [type=missing, input_value={'suggested_value': 'Le M...: '2026-01-24T16:05:51'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+suggestions.3.value
+  Field required [type=missing, input_value={'suggested_value': 'Tran...: '2026-01-23T16:05:51'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+suggestions.4.value
+  Field required [type=missing, input_value={'suggested_value': 'Nguy...: '2026-01-22T16:05:51'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+Traceback (most recent call last):
+  File "C:\Users\KHANH\autofill-ai-system\backend\app\api\routes\suggestions.py", line 74, in get_suggestions
+    return SuggestionsListResponse(
+        user_id=user_id,
+    ...<2 lines>...
+        total_count=len(suggestions)
+    )
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pydantic\main.py", line 253, in __init__
+    validated_self = self.__pydantic_validator__.validate_python(data, self_instance=self)
+pydantic_core._pydantic_core.ValidationError: 5 validation errors for SuggestionsListResponse
+suggestions.0.value
+  Field required [type=missing, input_value={'suggested_value': 'Hoan...: '2026-01-26T16:05:51'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+suggestions.1.value
+  Field required [type=missing, input_value={'suggested_value': 'Pham...: '2026-01-25T16:05:51'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+suggestions.2.value
+  Field required [type=missing, input_value={'suggested_value': 'Le M...: '2026-01-24T16:05:51'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+suggestions.3.value
+  Field required [type=missing, input_value={'suggested_value': 'Tran...: '2026-01-23T16:05:51'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+suggestions.4.value
+  Field required [type=missing, input_value={'suggested_value': 'Nguy...: '2026-01-22T16:05:51'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+2026-01-27 23:09:43,652 - autofill_ai - INFO - Saving entry: user_id=1, field_id=1, value=Test User 2026
+2026-01-27 23:09:43,652 - autofill_ai - INFO - Saving entry: user_id=1, field_id=1, value=Test User 2026
+2026-01-27 23:09:43,661 - autofill_ai - INFO - Entry saved with ID: 64
+2026-01-27 23:09:43,662 - autofill_ai - INFO - Entry saved successfully: {'status': 'success', 'entry_id': 64, 'message': 'Entry saved successfully'}
+2026-01-27 23:10:34,210 - autofill_ai - INFO - Request suggestions: user_id=1, field_id=1, top_k=1
+2026-01-27 23:10:34,210 - autofill_ai - INFO - Getting suggestions for user_id=1, field_id=1
+2026-01-27 23:10:34,214 - autofill_ai - INFO - Found 6 entries for field_id=1
+2026-01-27 23:10:34,214 - autofill_ai - INFO - Generated 1 suggestions
+2026-01-27 23:10:34,214 - autofill_ai - INFO - Successfully retrieved 1 suggestions
+2026-01-27 23:10:34,214 - autofill_ai - ERROR - Error in get_suggestions: 1 validation error for SuggestionsListResponse
+suggestions.0.value
+  Field required [type=missing, input_value={'suggested_value': 'Test...: '2026-01-27T23:09:43'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+Traceback (most recent call last):
+  File "C:\Users\KHANH\autofill-ai-system\backend\app\api\routes\suggestions.py", line 74, in get_suggestions
+    return SuggestionsListResponse(
+        user_id=user_id,
+    ...<2 lines>...
+        total_count=len(suggestions)
+    )
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pydantic\main.py", line 253, in __init__
+    validated_self = self.__pydantic_validator__.validate_python(data, self_instance=self)
+pydantic_core._pydantic_core.ValidationError: 1 validation error for SuggestionsListResponse
+suggestions.0.value
+  Field required [type=missing, input_value={'suggested_value': 'Test...: '2026-01-27T23:09:43'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+2026-01-27 23:10:51,336 - autofill_ai - INFO - Request suggestions: user_id=1, field_id=1, top_k=1
+2026-01-27 23:10:51,337 - autofill_ai - INFO - Getting suggestions for user_id=1, field_id=1
+2026-01-27 23:10:51,369 - autofill_ai - INFO - Found 6 entries for field_id=1
+2026-01-27 23:10:51,372 - autofill_ai - INFO - Generated 1 suggestions
+2026-01-27 23:10:51,379 - autofill_ai - INFO - Successfully retrieved 1 suggestions
+2026-01-27 23:10:51,380 - autofill_ai - ERROR - Error in get_suggestions: 1 validation error for SuggestionsListResponse
+suggestions.0.value
+  Field required [type=missing, input_value={'suggested_value': 'Test...: '2026-01-27T23:09:43'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+Traceback (most recent call last):
+  File "C:\Users\KHANH\autofill-ai-system\backend\app\api\routes\suggestions.py", line 74, in get_suggestions
+    return SuggestionsListResponse(
+        user_id=user_id,
+    ...<2 lines>...
+        total_count=len(suggestions)
+    )
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pydantic\main.py", line 253, in __init__
+    validated_self = self.__pydantic_validator__.validate_python(data, self_instance=self)
+pydantic_core._pydantic_core.ValidationError: 1 validation error for SuggestionsListResponse
+suggestions.0.value
+  Field required [type=missing, input_value={'suggested_value': 'Test...: '2026-01-27T23:09:43'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+2026-01-27 23:10:56,803 - autofill_ai - INFO - Request suggestions: user_id=1, field_id=1, top_k=5
+2026-01-27 23:10:56,803 - autofill_ai - INFO - Getting suggestions for user_id=1, field_id=1
+2026-01-27 23:10:56,808 - autofill_ai - INFO - Found 6 entries for field_id=1
+2026-01-27 23:10:56,808 - autofill_ai - INFO - Generated 5 suggestions
+2026-01-27 23:10:56,808 - autofill_ai - INFO - Successfully retrieved 5 suggestions
+2026-01-27 23:10:56,809 - autofill_ai - ERROR - Error in get_suggestions: 5 validation errors for SuggestionsListResponse
+suggestions.0.value
+  Field required [type=missing, input_value={'suggested_value': 'Test...: '2026-01-27T23:09:43'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+suggestions.1.value
+  Field required [type=missing, input_value={'suggested_value': 'Hoan...: '2026-01-26T16:05:51'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+suggestions.2.value
+  Field required [type=missing, input_value={'suggested_value': 'Pham...: '2026-01-25T16:05:51'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+suggestions.3.value
+  Field required [type=missing, input_value={'suggested_value': 'Le M...: '2026-01-24T16:05:51'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+suggestions.4.value
+  Field required [type=missing, input_value={'suggested_value': 'Tran...: '2026-01-23T16:05:51'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+Traceback (most recent call last):
+  File "C:\Users\KHANH\autofill-ai-system\backend\app\api\routes\suggestions.py", line 74, in get_suggestions
+    return SuggestionsListResponse(
+        user_id=user_id,
+    ...<2 lines>...
+        total_count=len(suggestions)
+    )
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pydantic\main.py", line 253, in __init__
+    validated_self = self.__pydantic_validator__.validate_python(data, self_instance=self)
+pydantic_core._pydantic_core.ValidationError: 5 validation errors for SuggestionsListResponse
+suggestions.0.value
+  Field required [type=missing, input_value={'suggested_value': 'Test...: '2026-01-27T23:09:43'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+suggestions.1.value
+  Field required [type=missing, input_value={'suggested_value': 'Hoan...: '2026-01-26T16:05:51'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+suggestions.2.value
+  Field required [type=missing, input_value={'suggested_value': 'Pham...: '2026-01-25T16:05:51'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+suggestions.3.value
+  Field required [type=missing, input_value={'suggested_value': 'Le M...: '2026-01-24T16:05:51'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+suggestions.4.value
+  Field required [type=missing, input_value={'suggested_value': 'Tran...: '2026-01-23T16:05:51'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+2026-01-27 23:25:50,368 - autofill_ai - INFO - Health check called
+2026-01-28 06:51:15,862 - autofill_ai - INFO - Getting suggestions for user_id=1, field_id=1
+2026-01-28 06:51:15,868 - autofill_ai - INFO - Found 3 entries for field_id=1
+2026-01-28 06:51:15,869 - autofill_ai - INFO - Generated 2 suggestions
+2026-01-28 06:57:45,263 - autofill_ai - INFO - Root endpoint called
+2026-01-28 07:10:04,969 - autofill_ai - INFO - Request suggestions: user_id=1, field_id=1, top_k=1
+2026-01-28 07:10:04,969 - autofill_ai - INFO - Getting suggestions for user_id=1, field_id=1
+2026-01-28 07:10:04,999 - autofill_ai - INFO - Found 3 entries for field_id=1
+2026-01-28 07:10:04,999 - autofill_ai - INFO - Generated 1 suggestions
+2026-01-28 07:10:05,000 - autofill_ai - INFO - Successfully retrieved 1 suggestions
+2026-01-28 07:10:05,003 - autofill_ai - ERROR - Error in get_suggestions: 1 validation error for SuggestionsListResponse
+suggestions.0.value
+  Field required [type=missing, input_value={'suggested_value': 'Nguy...: '2026-01-27T23:51:15'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+Traceback (most recent call last):
+  File "c:\Users\KHANH\autofill-ai-system\backend\app\api\routes\suggestions.py", line 75, in get_suggestions
+    return SuggestionsListResponse(
+        user_id=user_id,
+    ...<2 lines>...
+        total_count=len(suggestions)
+    )
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pydantic\main.py", line 253, in __init__
+    validated_self = self.__pydantic_validator__.validate_python(data, self_instance=self)
+pydantic_core._pydantic_core.ValidationError: 1 validation error for SuggestionsListResponse
+suggestions.0.value
+  Field required [type=missing, input_value={'suggested_value': 'Nguy...: '2026-01-27T23:51:15'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+2026-01-28 07:10:19,949 - autofill_ai - INFO - Request suggestions: user_id=1, field_id=1, top_k=1
+2026-01-28 07:10:19,949 - autofill_ai - INFO - Getting suggestions for user_id=1, field_id=1
+2026-01-28 07:10:19,954 - autofill_ai - INFO - Found 3 entries for field_id=1
+2026-01-28 07:10:19,956 - autofill_ai - INFO - Generated 1 suggestions
+2026-01-28 07:10:19,957 - autofill_ai - INFO - Successfully retrieved 1 suggestions
+2026-01-28 07:10:19,958 - autofill_ai - ERROR - Error in get_suggestions: 1 validation error for SuggestionsListResponse
+suggestions.0.value
+  Field required [type=missing, input_value={'suggested_value': 'Nguy...: '2026-01-27T23:51:15'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+Traceback (most recent call last):
+  File "c:\Users\KHANH\autofill-ai-system\backend\app\api\routes\suggestions.py", line 75, in get_suggestions
+    return SuggestionsListResponse(
+        user_id=user_id,
+    ...<2 lines>...
+        total_count=len(suggestions)
+    )
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pydantic\main.py", line 253, in __init__
+    validated_self = self.__pydantic_validator__.validate_python(data, self_instance=self)
+pydantic_core._pydantic_core.ValidationError: 1 validation error for SuggestionsListResponse
+suggestions.0.value
+  Field required [type=missing, input_value={'suggested_value': 'Nguy...: '2026-01-27T23:51:15'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+2026-01-28 07:11:20,198 - autofill_ai - INFO - Request suggestions: user_id=1, field_id=1, top_k=1
+2026-01-28 07:11:20,199 - autofill_ai - INFO - Getting suggestions for user_id=1, field_id=1
+2026-01-28 07:11:20,207 - autofill_ai - INFO - Found 3 entries for field_id=1
+2026-01-28 07:11:20,208 - autofill_ai - INFO - Generated 1 suggestions
+2026-01-28 07:11:20,211 - autofill_ai - INFO - Successfully retrieved 1 suggestions
+2026-01-28 07:11:20,213 - autofill_ai - ERROR - Error in get_suggestions: 1 validation error for SuggestionsListResponse
+suggestions.0.value
+  Field required [type=missing, input_value={'suggested_value': 'Nguy...: '2026-01-27T23:51:15'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+Traceback (most recent call last):
+  File "c:\Users\KHANH\autofill-ai-system\backend\app\api\routes\suggestions.py", line 75, in get_suggestions
+    return SuggestionsListResponse(
+        user_id=user_id,
+    ...<2 lines>...
+        total_count=len(suggestions)
+    )
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pydantic\main.py", line 253, in __init__
+    validated_self = self.__pydantic_validator__.validate_python(data, self_instance=self)
+pydantic_core._pydantic_core.ValidationError: 1 validation error for SuggestionsListResponse
+suggestions.0.value
+  Field required [type=missing, input_value={'suggested_value': 'Nguy...: '2026-01-27T23:51:15'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+2026-01-28 07:14:03,422 - autofill_ai - INFO - submit_form called: template_id=7, user_id=1, form_id=1
+2026-01-28 07:14:03,475 - autofill_ai - INFO - Submission saved: 4
+2026-01-28 07:14:03,479 - autofill_ai - INFO - Template has 3 fields
+2026-01-28 07:14:03,499 - autofill_ai - INFO -   Field found with id: 8
+2026-01-28 07:14:03,508 - autofill_ai - INFO -   Entry saved: id=74, value='Lê Trí Khanh'
+2026-01-28 07:14:03,517 - autofill_ai - INFO -   Entry count for value 'Lê Trí Khanh': 1
+2026-01-28 07:14:03,535 - autofill_ai - INFO -   Field found with id: 9
+2026-01-28 07:14:03,541 - autofill_ai - INFO -   Entry saved: id=75, value='2004'
+2026-01-28 07:14:03,548 - autofill_ai - INFO -   Entry count for value '2004': 1
+2026-01-28 07:14:03,567 - autofill_ai - INFO -   Field found with id: 10
+2026-01-28 07:14:03,597 - autofill_ai - INFO - Submit completed for submission 4
+2026-01-28 07:28:50,368 - autofill_ai - INFO - Request suggestions by name: user_id=1, field_name=name, top_k=5
+2026-01-28 07:28:50,374 - autofill_ai - INFO - Getting suggestions for user_id=1, field_id=1
+2026-01-28 07:28:50,378 - autofill_ai - INFO - Found 3 entries for field_id=1
+2026-01-28 07:28:50,378 - autofill_ai - INFO - Generated 2 suggestions
+2026-01-28 07:28:50,379 - autofill_ai - INFO - Successfully retrieved 2 suggestions for field name
+2026-01-28 07:28:50,379 - autofill_ai - ERROR - Error in get_suggestions_by_name: 2 validation errors for SuggestionsListResponse
+suggestions.0.value
+  Field required [type=missing, input_value={'suggested_value': 'Nguy...: '2026-01-27T23:51:15'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+suggestions.1.value
+  Field required [type=missing, input_value={'suggested_value': 'Nguy...: '2026-01-27T23:51:15'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+Traceback (most recent call last):
+  File "c:\Users\KHANH\autofill-ai-system\backend\app\api\routes\suggestions.py", line 156, in get_suggestions_by_name
+    return SuggestionsListResponse(
+        user_id=user_id,
+    ...<2 lines>...
+        total_count=len(suggestions)
+    )
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pydantic\main.py", line 253, in __init__
+    validated_self = self.__pydantic_validator__.validate_python(data, self_instance=self)
+pydantic_core._pydantic_core.ValidationError: 2 validation errors for SuggestionsListResponse
+suggestions.0.value
+  Field required [type=missing, input_value={'suggested_value': 'Nguy...: '2026-01-27T23:51:15'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+suggestions.1.value
+  Field required [type=missing, input_value={'suggested_value': 'Nguy...: '2026-01-27T23:51:15'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+2026-01-28 07:29:32,211 - autofill_ai - INFO - Request suggestions: user_id=1, field_id=8, top_k=5
+2026-01-28 07:29:32,211 - autofill_ai - INFO - Getting suggestions for user_id=1, field_id=8
+2026-01-28 07:29:32,215 - autofill_ai - INFO - Found 1 entries for field_id=8
+2026-01-28 07:29:32,215 - autofill_ai - INFO - Not enough entries (1 < 2) for suggestions
+2026-01-28 07:29:32,216 - autofill_ai - INFO - Successfully retrieved 0 suggestions
+2026-01-28 07:32:52,558 - autofill_ai - INFO - submit_form called: template_id=1, user_id=1, form_id=1
+2026-01-28 07:32:52,562 - autofill_ai - ERROR - Template 1 not found
+2026-01-28 07:33:57,852 - autofill_ai - INFO - submit_form called: template_id=7, user_id=1, form_id=1
+2026-01-28 07:33:57,894 - autofill_ai - INFO - Submission saved: 5
+2026-01-28 07:33:57,898 - autofill_ai - INFO - Template has 3 fields
+2026-01-28 07:33:57,916 - autofill_ai - INFO -   Field found with id: 8
+2026-01-28 07:33:57,927 - autofill_ai - INFO -   Entry saved: id=77, value='Lê Trí Khanh'
+2026-01-28 07:33:57,937 - autofill_ai - INFO -   Entry count for value 'Lê Trí Khanh': 2
+2026-01-28 07:33:57,941 - autofill_ai - INFO -   Created new suggestion: frequency=2
+2026-01-28 07:33:57,963 - autofill_ai - INFO -   Field found with id: 9
+2026-01-28 07:33:57,978 - autofill_ai - INFO -   Entry saved: id=78, value='2004'
+2026-01-28 07:33:57,985 - autofill_ai - INFO -   Entry count for value '2004': 2
+2026-01-28 07:33:57,989 - autofill_ai - INFO -   Created new suggestion: frequency=2
+2026-01-28 07:33:58,019 - autofill_ai - INFO -   Field found with id: 10
+2026-01-28 07:33:58,047 - autofill_ai - INFO -   Created new suggestion: frequency=2
+2026-01-28 07:33:58,056 - autofill_ai - INFO - Submit completed for submission 5
+2026-01-28 07:40:46,584 - autofill_ai - INFO - Request suggestions: user_id=1, field_id=8, top_k=5
+2026-01-28 07:40:46,585 - autofill_ai - INFO - Getting suggestions for user_id=1, field_id=8
+2026-01-28 07:40:46,590 - autofill_ai - INFO - Found 2 entries for field_id=8
+2026-01-28 07:40:46,590 - autofill_ai - INFO - Generated 1 suggestions
+2026-01-28 07:40:46,591 - autofill_ai - INFO - Successfully retrieved 1 suggestions
+2026-01-28 07:40:46,593 - autofill_ai - ERROR - Error in get_suggestions: 1 validation error for SuggestionsListResponse
+suggestions.0.value
+  Field required [type=missing, input_value={'suggested_value': 'Lê ...: '2026-01-28T00:33:57'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+Traceback (most recent call last):
+  File "c:\Users\KHANH\autofill-ai-system\backend\app\api\routes\suggestions.py", line 75, in get_suggestions
+    return SuggestionsListResponse(
+        user_id=user_id,
+    ...<2 lines>...
+        total_count=len(suggestions)
+    )
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pydantic\main.py", line 253, in __init__
+    validated_self = self.__pydantic_validator__.validate_python(data, self_instance=self)
+pydantic_core._pydantic_core.ValidationError: 1 validation error for SuggestionsListResponse
+suggestions.0.value
+  Field required [type=missing, input_value={'suggested_value': 'Lê ...: '2026-01-28T00:33:57'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+2026-01-28 07:41:48,262 - autofill_ai - INFO - Request suggestions by index: user_id=1, field_index=0, form_id=1
+2026-01-28 07:41:48,281 - autofill_ai - ERROR - Error in get_suggestions_by_index: type object 'Field' has no attribute 'order'
+Traceback (most recent call last):
+  File "c:\Users\KHANH\autofill-ai-system\backend\app\api\routes\suggestions.py", line 133, in get_suggestions_by_index
+    ).order_by(Field.order).all()
+               ^^^^^^^^^^^
+AttributeError: type object 'Field' has no attribute 'order'
+2026-01-28 07:43:49,756 - autofill_ai - INFO - Request suggestions by index: user_id=1, field_index=0, form_id=1
+2026-01-28 07:43:49,783 - autofill_ai - INFO - Getting suggestions for user_id=1, field_id=1
+2026-01-28 07:43:49,787 - autofill_ai - INFO - Found 3 entries for field_id=1
+2026-01-28 07:43:49,788 - autofill_ai - INFO - Generated 2 suggestions
+2026-01-28 07:43:49,788 - autofill_ai - INFO - Successfully retrieved 2 suggestions for field name (index=0)
+2026-01-28 07:43:49,788 - autofill_ai - ERROR - Error in get_suggestions_by_index: 2 validation errors for SuggestionsListResponse
+suggestions.0.value
+  Field required [type=missing, input_value={'suggested_value': 'Nguy...: '2026-01-27T23:51:15'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+suggestions.1.value
+  Field required [type=missing, input_value={'suggested_value': 'Nguy...: '2026-01-27T23:51:15'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+Traceback (most recent call last):
+  File "c:\Users\KHANH\autofill-ai-system\backend\app\api\routes\suggestions.py", line 156, in get_suggestions_by_index
+    return SuggestionsListResponse(
+        user_id=user_id,
+    ...<2 lines>...
+        total_count=len(suggestions)
+    )
+  File "C:\Users\KHANH\miniconda3\Lib\site-packages\pydantic\main.py", line 253, in __init__
+    validated_self = self.__pydantic_validator__.validate_python(data, self_instance=self)
+pydantic_core._pydantic_core.ValidationError: 2 validation errors for SuggestionsListResponse
+suggestions.0.value
+  Field required [type=missing, input_value={'suggested_value': 'Nguy...: '2026-01-27T23:51:15'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+suggestions.1.value
+  Field required [type=missing, input_value={'suggested_value': 'Nguy...: '2026-01-27T23:51:15'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+2026-01-28 07:44:15,425 - autofill_ai - INFO - Request suggestions by index: user_id=1, field_index=0, form_id=1
+2026-01-28 07:44:15,426 - autofill_ai - ERROR - Error in get_suggestions_by_index: name 'Entry' is not defined
+Traceback (most recent call last):
+  File "c:\Users\KHANH\autofill-ai-system\backend\app\api\routes\suggestions.py", line 131, in get_suggestions_by_index
+    entries = db.query(Entry).filter(Entry.user_id == user_id).all()
+                       ^^^^^
+NameError: name 'Entry' is not defined
+2026-01-28 08:05:57,680 - autofill_ai - INFO - Request suggestions: user_id=1, field_id=8, top_k=5
+2026-01-28 08:05:57,685 - autofill_ai - INFO - Found 2 entries for field 8
+2026-01-28 08:05:57,686 - autofill_ai - INFO - Generated 1 suggestions
+2026-01-28 08:09:16,952 - autofill_ai - INFO - Request suggestions: user_id=1, field_id=8, top_k=5
+2026-01-28 08:09:16,956 - autofill_ai - INFO - Found 2 entries for field 8
+2026-01-28 08:09:16,957 - autofill_ai - INFO - Generated 1 suggestions
+2026-01-28 08:09:17,002 - autofill_ai - INFO - Request suggestions: user_id=1, field_id=9, top_k=5
+2026-01-28 08:09:17,006 - autofill_ai - INFO - Found 2 entries for field 9
+2026-01-28 08:09:17,006 - autofill_ai - INFO - Generated 1 suggestions
+2026-01-28 08:09:17,020 - autofill_ai - INFO - Request suggestions: user_id=1, field_id=10, top_k=5
+2026-01-28 08:09:17,025 - autofill_ai - INFO - Found 2 entries for field 10
+2026-01-28 08:09:17,025 - autofill_ai - INFO - Generated 1 suggestions
+2026-01-28 08:09:44,157 - autofill_ai - INFO - Request suggestions: user_id=1, field_id=8, top_k=5
+2026-01-28 08:09:44,160 - autofill_ai - INFO - Found 2 entries for field 8
+2026-01-28 08:09:44,161 - autofill_ai - INFO - Generated 1 suggestions
+2026-01-28 08:09:50,377 - autofill_ai - INFO - Request suggestions: user_id=1, field_id=9, top_k=5
+2026-01-28 08:09:50,380 - autofill_ai - INFO - Found 2 entries for field 9
+2026-01-28 08:09:50,380 - autofill_ai - INFO - Generated 1 suggestions
+2026-01-28 08:09:54,935 - autofill_ai - INFO - Request suggestions: user_id=1, field_id=10, top_k=5
+2026-01-28 08:09:54,937 - autofill_ai - INFO - Found 2 entries for field 10
+2026-01-28 08:09:54,938 - autofill_ai - INFO - Generated 1 suggestions
+2026-01-28 08:11:28,138 - autofill_ai - INFO - Request suggestions: user_id=1, field_id=8, top_k=5
+2026-01-28 08:11:28,141 - autofill_ai - INFO - Found 2 entries for field 8
+2026-01-28 08:11:28,141 - autofill_ai - INFO - Generated 1 suggestions
+2026-01-28 08:14:06,005 - autofill_ai - INFO - Request suggestions: user_id=1, field_id=8, top_k=5
+2026-01-28 08:14:06,010 - autofill_ai - INFO - Found 2 entries for field 8
+2026-01-28 08:14:06,010 - autofill_ai - INFO - Generated 1 suggestions
+2026-01-28 08:14:06,022 - autofill_ai - INFO - Request suggestions: user_id=1, field_id=9, top_k=5
+2026-01-28 08:14:06,026 - autofill_ai - INFO - Found 2 entries for field 9
+2026-01-28 08:14:06,027 - autofill_ai - INFO - Generated 1 suggestions
+2026-01-28 08:14:06,038 - autofill_ai - INFO - Request suggestions: user_id=1, field_id=10, top_k=5
+2026-01-28 08:14:06,042 - autofill_ai - INFO - Found 2 entries for field 10
+2026-01-28 08:14:06,042 - autofill_ai - INFO - Generated 1 suggestions
+2026-01-28 08:17:06,473 - autofill_ai - INFO - submit_form called: template_id=7, user_id=1, form_id=1
+2026-01-28 08:17:06,543 - autofill_ai - INFO - Submission saved: 6
+2026-01-28 08:17:06,546 - autofill_ai - INFO - Template has 3 fields
+2026-01-28 08:17:06,588 - autofill_ai - INFO - Submit completed for submission 6
+2026-01-28 08:17:51,828 - autofill_ai - INFO - submit_form called: template_id=8, user_id=1, form_id=1
+2026-01-28 08:17:51,849 - autofill_ai - INFO - Submission saved: 7
+2026-01-28 08:17:51,851 - autofill_ai - INFO - Template has 4 fields
+2026-01-28 08:17:51,867 - autofill_ai - INFO -   Field found with id: 8
+2026-01-28 08:17:51,900 - autofill_ai - INFO - Processing field: email
+2026-01-28 08:17:51,900 - autofill_ai - INFO -   Field email value: 'chien@gmail.com'
+2026-01-28 08:17:51,903 - autofill_ai - INFO -   Field found with id: 2
+2026-01-28 08:17:51,909 - autofill_ai - INFO -   Entry saved: id=81, value='chien@gmail.com'
+2026-01-28 08:17:51,914 - autofill_ai - INFO -   Entry count for value 'chien@gmail.com': 1
+2026-01-28 08:17:51,931 - autofill_ai - INFO -   Field found with id: 10
+2026-01-28 08:17:51,989 - autofill_ai - INFO -   Field created with id: 11
+2026-01-28 08:17:51,997 - autofill_ai - INFO -   Entry saved: id=83, value='20'
+2026-01-28 08:17:52,001 - autofill_ai - INFO -   Entry count for value '20': 1
+2026-01-28 08:17:52,003 - autofill_ai - INFO - Submit completed for submission 7
+2026-01-28 09:26:30,512 - autofill_ai - INFO - Request suggestions: user_id=1, field_id=8, top_k=5
+2026-01-28 09:26:30,518 - autofill_ai - INFO - Found 3 entries for field 8
+2026-01-28 09:26:30,519 - autofill_ai - INFO - Generated 2 suggestions
+2026-01-28 09:32:28,190 - autofill_ai - INFO - Request suggestions: user_id=1, field_id=8, top_k=5
+2026-01-28 09:32:28,200 - autofill_ai - INFO - Found 3 entries for field 8
+2026-01-28 09:32:28,201 - autofill_ai - INFO - Generated 2 suggestions
+2026-01-28 09:32:31,680 - autofill_ai - INFO - Request suggestions: user_id=1, field_id=1, top_k=5
+2026-01-28 09:32:31,685 - autofill_ai - INFO - Found 0 entries for field 1
+2026-01-28 09:32:31,685 - autofill_ai - INFO - Generated 0 suggestions
+2026-01-28 09:32:37,114 - autofill_ai - INFO - Request suggestions: user_id=1, field_id=2, top_k=5
+2026-01-28 09:32:37,121 - autofill_ai - INFO - Found 1 entries for field 2
+2026-01-28 09:32:37,122 - autofill_ai - INFO - Generated 0 suggestions
+2026-01-28 09:33:10,766 - autofill_ai - INFO - submit_form called: template_id=9, user_id=1, form_id=1
+2026-01-28 09:33:10,820 - autofill_ai - INFO - Submission saved: 8
+2026-01-28 09:33:10,824 - autofill_ai - INFO - Template has 3 fields
+2026-01-28 09:33:10,842 - autofill_ai - INFO -   Field found with id: 8
+2026-01-28 09:33:10,850 - autofill_ai - INFO -   Entry saved: id=84, value='Lê Trí Khanh'
+2026-01-28 09:33:10,860 - autofill_ai - INFO -   Entry count for value 'Lê Trí Khanh': 3
+2026-01-28 09:33:10,876 - autofill_ai - INFO -   Updated suggestion: frequency=3
+2026-01-28 09:33:10,883 - autofill_ai - INFO - Processing field: sdt
+2026-01-28 09:33:10,883 - autofill_ai - INFO -   Field sdt value: '01234656789'
+2026-01-28 09:33:10,886 - autofill_ai - INFO -   Creating new field: sdt
+2026-01-28 09:33:10,896 - autofill_ai - INFO -   Field created with id: 12
+2026-01-28 09:33:10,903 - autofill_ai - INFO -   Entry saved: id=85, value='01234656789'
+2026-01-28 09:33:10,908 - autofill_ai - INFO -   Entry count for value '01234656789': 1
+2026-01-28 09:33:10,908 - autofill_ai - INFO - Processing field: email
+2026-01-28 09:33:10,909 - autofill_ai - INFO -   Field email value: 'lek31453@gmail.com'
+2026-01-28 09:33:10,911 - autofill_ai - INFO -   Field found with id: 2
+2026-01-28 09:33:10,917 - autofill_ai - INFO -   Entry saved: id=86, value='lek31453@gmail.com'
+2026-01-28 09:33:10,922 - autofill_ai - INFO -   Entry count for value 'lek31453@gmail.com': 1
+2026-01-28 09:33:10,927 - autofill_ai - INFO - Submit completed for submission 8
+2026-01-28 09:33:58,740 - autofill_ai - INFO - Request suggestions: user_id=1, field_id=9, top_k=5
+2026-01-28 09:33:58,744 - autofill_ai - INFO - Found 2 entries for field 9
+2026-01-28 09:33:58,745 - autofill_ai - INFO - Generated 1 suggestions
+2026-01-28 09:34:00,256 - autofill_ai - INFO - Request suggestions: user_id=1, field_id=10, top_k=5
+2026-01-28 09:34:00,260 - autofill_ai - INFO - Found 3 entries for field 10
+2026-01-28 09:34:00,260 - autofill_ai - INFO - Generated 2 suggestions
+2026-01-28 09:34:13,972 - autofill_ai - INFO - Request suggestions: user_id=1, field_id=11, top_k=5
+2026-01-28 09:34:13,976 - autofill_ai - INFO - Found 1 entries for field 11
+2026-01-28 09:34:13,976 - autofill_ai - INFO - Generated 0 suggestions
