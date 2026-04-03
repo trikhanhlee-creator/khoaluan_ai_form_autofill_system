@@ -1,0 +1,109 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Lịch Sử Hoạt Động</title>
+    <script src="/static/js/theme-manager.js"></script>
+    <link rel="stylesheet" href="/static/css/admin-styles.css">
+</head>
+<body>
+<div class="admin-layout" id="auditPage">
+    <header class="admin-header">
+        <a class="header-logo" href="/admin-dashboard">⚙️ Admin Panel</a>
+        <div class="header-actions">
+            <button class="btn-icon" id="adminThemeToggle" type="button" title="Đổi giao diện">🌙</button>
+            <a class="btn btn-secondary btn-sm" href="/">🏠 Về Trang Chủ</a>
+            <div class="user-menu" id="adminUserMenuTrigger">
+                <span>👤</span>
+                <span data-admin-username>Admin User</span>
+            </div>
+            <div class="user-menu-content" id="adminUserMenuContent">
+                <a class="user-menu-item" href="/admin-account">⚙️ Tài khoản admin</a>
+                <button class="user-menu-item" type="button" data-admin-logout>🚪 Đăng xuất</button>
+            </div>
+        </div>
+    </header>
+
+    <aside class="admin-sidebar">
+        <div class="sidebar-header">Menu chính</div>
+        <ul class="sidebar-menu">
+            <li class="sidebar-menu-item"><a class="sidebar-menu-link" href="/admin-dashboard"><i>📊</i><span>Bảng Điều Khiển</span></a></li>
+            <li class="sidebar-menu-item"><a class="sidebar-menu-link" href="/admin-users"><i>👥</i><span>Quản Lý Người Dùng</span></a></li>
+            <li class="sidebar-menu-item"><a class="sidebar-menu-link" href="/admin-forms"><i>📋</i><span>Quản Lý Biểu Mẫu</span></a></li>
+            <li class="sidebar-menu-item"><a class="sidebar-menu-link" href="/admin-reports"><i>📈</i><span>Báo Cáo & Thống Kê</span></a></li>
+            <li class="sidebar-menu-item"><a class="sidebar-menu-link" href="/admin-audit-log"><i>🕒</i><span>Lịch Sử Hoạt Động</span></a></li>
+        </ul>
+    </aside>
+
+    <main class="admin-main">
+        <div id="alertHost"></div>
+
+        <div class="page-header">
+            <div>
+                <h1 class="page-title"><span class="page-title-icon">🕒</span> Lịch Sử Hoạt Động</h1>
+                <p class="page-subtitle">Theo dõi thao tác nhạy cảm và biến động hệ thống theo thời gian thực.</p>
+            </div>
+            <div class="page-actions">
+                <a class="btn btn-secondary" href="/admin-dashboard">⬅️ Dashboard</a>
+            </div>
+        </div>
+
+        <section class="card" style="margin-bottom: 18px;">
+            <div class="search-bar">
+                <select class="form-select" id="auditActionFilter" style="max-width: 220px;">
+                    <option value="">Tất cả hành động</option>
+                    <option value="user_created">Tạo user</option>
+                    <option value="user_updated">Cập nhật user</option>
+                    <option value="user_deleted">Xóa user</option>
+                    <option value="form_deleted">Xóa form</option>
+                </select>
+                <select class="form-select" id="auditObjectFilter" style="max-width: 180px;">
+                    <option value="">Tất cả đối tượng</option>
+                    <option value="user">User</option>
+                    <option value="form">Form</option>
+                    <option value="admin">Admin</option>
+                </select>
+                <select class="form-select" id="auditDaysFilter" style="max-width: 140px;">
+                    <option value="7">7 ngày</option>
+                    <option value="30" selected>30 ngày</option>
+                    <option value="90">90 ngày</option>
+                </select>
+                <button class="btn btn-primary" type="button" id="auditSearchBtn">Lọc dữ liệu</button>
+            </div>
+        </section>
+
+        <section class="card">
+            <div class="table-container">
+                <table class="table">
+                    <thead class="table-head">
+                        <tr>
+                            <th class="table-header">Thời gian</th>
+                            <th class="table-header">Admin ID</th>
+                            <th class="table-header">Hành động</th>
+                            <th class="table-header">Đối tượng</th>
+                            <th class="table-header">Mô tả</th>
+                            <th class="table-header">Trạng thái</th>
+                        </tr>
+                    </thead>
+                    <tbody id="auditTableBody">
+                        <tr class="table-row">
+                            <td class="table-cell" colspan="6">Đang tải dữ liệu...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-footer">
+                <span class="table-cell-small" id="auditPaginationInfo">Hiển thị 0 bản ghi</span>
+                <div class="table-actions">
+                    <button class="btn btn-secondary btn-sm" id="auditPrevBtn" type="button">← Trước</button>
+                    <button class="btn btn-secondary btn-sm" id="auditNextBtn" type="button">Tiếp →</button>
+                </div>
+            </div>
+        </section>
+    </main>
+</div>
+
+<script src="/static/js/admin-panel.js?v=20260401-1"></script>
+</body>
+</html>

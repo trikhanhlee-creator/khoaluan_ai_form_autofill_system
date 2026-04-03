@@ -1,0 +1,65 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoFill AI - Form Autocomplete</title>
+    <script src="/static/js/theme-manager.js"></script>
+    <link rel="stylesheet" href="/static/css/site.css">
+</head>
+<body>
+<div class="page-shell">
+    <header class="topbar">
+        <a class="brand" href="/"><span class="brand-dot"></span><span>AutoFill AI System</span></a>
+        <div class="topbar-actions">
+            <button class="btn secondary" data-theme-toggle><span data-theme-icon>🌙</span><span data-theme-label>Tối</span></button>
+            <a class="btn secondary" href="/form">Mở Form chính</a>
+        </div>
+    </header>
+
+    <main class="main-wrap fade-in">
+        <section class="hero">
+            <span class="badge info">Autocomplete playground</span>
+            <h1>Thử nghiệm gợi ý tự động</h1>
+            <p>Trang test nhanh cho logic autocomplete trước khi áp dụng sang form chính.</p>
+        </section>
+
+        <section class="panel">
+            <div class="form-group">
+                <label>Tìm kiếm thành phố</label>
+                <div class="input-wrap">
+                    <input id="cityInput" type="text" placeholder="Gõ để xem gợi ý...">
+                    <div id="citySuggestions" class="suggestions-list"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+</div>
+<div id="globalToast" class="toast"></div>
+<script src="/static/js/site-ui.js"></script>
+<script>
+const cityInput = document.getElementById('cityInput');
+const citySuggestions = document.getElementById('citySuggestions');
+const cityValues = ['Hà Nội', 'Hải Phòng', 'Đà Nẵng', 'Huế', 'TP Hồ Chí Minh', 'Cần Thơ', 'Nha Trang'];
+
+cityInput.addEventListener('input', () => {
+    const q = cityInput.value.toLowerCase().trim();
+    const filtered = cityValues.filter(c => c.toLowerCase().includes(q));
+
+    if (!q || !filtered.length) {
+        citySuggestions.classList.remove('show');
+        return;
+    }
+
+    citySuggestions.innerHTML = filtered.map(c => `<div class="suggestion-item">${c}</div>`).join('');
+    citySuggestions.classList.add('show');
+    citySuggestions.querySelectorAll('.suggestion-item').forEach(el => {
+        el.addEventListener('click', () => {
+            cityInput.value = el.textContent;
+            citySuggestions.classList.remove('show');
+        });
+    });
+});
+</script>
+</body>
+</html>

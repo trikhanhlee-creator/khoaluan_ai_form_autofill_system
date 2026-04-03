@@ -1,0 +1,38 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoFill AI - Button Demo</title>
+    <script src="/static/js/theme-manager.js"></script>
+    <link rel="stylesheet" href="/static/css/site.css">
+</head>
+<body>
+<div class="page-shell">
+    <header class="topbar">
+        <a class="brand" href="/"><span class="brand-dot"></span><span>AutoFill AI System</span></a>
+        <div class="topbar-actions">
+            <button class="btn secondary" data-theme-toggle><span data-theme-icon>🌙</span><span data-theme-label>Tối</span></button>
+        </div>
+    </header>
+
+    <main class="main-wrap fade-in">
+        <section class="hero">
+            <span class="badge info">Design tokens showcase</span>
+            <h1>Button System Demo</h1>
+            <p>Thử nghiệm các trạng thái nút theo design system toàn cục.</p>
+        </section>
+        <section class="panel">
+            <div class="btn-row">
+                <button class="btn primary" data-demo-action="Primary clicked">Primary</button>
+                <button class="btn secondary" data-demo-action="Secondary clicked">Secondary</button>
+                <button class="btn success" data-demo-action="Success clicked">Success</button>
+                <button class="btn danger" data-demo-action="Danger clicked">Danger</button>
+            </div>
+        </section>
+    </main>
+</div>
+<div id="globalToast" class="toast"></div>
+<script src="/static/js/site-ui.js"></script>
+</body>
+</html>

@@ -1,14 +1,18 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
+import re
+import unicodedata
+from collections import defaultdict
 
 from app.db.session import get_db
-from app.db.models import Field, Entry
+from app.db.models import Field, Entry, Suggestion, User
 from app.services.suggestion_service import SuggestionService
 from app.schemas.suggestion import (
     SuggestionsListResponse,
     SuggestionResponse,
     FieldStatisticsResponse
 )
+from app.core.auth import get_current_user
 from app.core.logger import logger
 
 router = APIRouter(
@@ -18,18 +22,373 @@ router = APIRouter(
 )
 
 
+def resolve_effective_user_id(current_user: User, requested_user_id: int | None) -> int:
+    """Resolve target user scope. Non-admin users can only access their own data."""
+    if requested_user_id is None:
+        return current_user.id
+
+    if requested_user_id <= 0:
+        raise HTTPException(status_code=400, detail="user_id phải là số dương")
+
+    if not current_user.is_admin and requested_user_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Bạn không có quyền truy cập dữ liệu của người dùng khác")
+
+    return requested_user_id
+
+
+def _normalize_field_key(value: str) -> str:
+    text = (value or "").strip().lower()
+    text = text.replace("đ", "d")
+    text = unicodedata.normalize("NFD", text)
+    text = "".join(ch for ch in text if unicodedata.category(ch) != "Mn")
+    text = re.sub(r"[^a-z0-9]+", " ", text)
+    return re.sub(r"\s+", " ", text).strip()
+
+
+def _field_similarity_score(target_key: str, candidate_key: str) -> float:
+    if not target_key or not candidate_key:
+        return 0.0
+    if target_key == candidate_key:
+        return 1.0
+    if target_key in candidate_key or candidate_key in target_key:
+        return 0.9
+
+    target_tokens = set(target_key.split())
+    candidate_tokens = set(candidate_key.split())
+    if not target_tokens or not candidate_tokens:
+        return 0.0
+
+    overlap = len(target_tokens.intersection(candidate_tokens))
+    if overlap == 0:
+        return 0.0
+
+    return overlap / max(1, len(target_tokens))
+
+
+def _is_noise_suggestion_value(value: str) -> bool:
+    text = (value or "").strip()
+    if not text:
+        return True
+
+    # Filter technical/session-like strings that should not appear in name/address suggestions.
+    if re.match(r"^[a-z0-9]+_[0-9]{8,}$", text.lower()):
+        return True
+    if re.match(r"^\d{10,}$", text):
+        return True
+    if len(text) > 80:
+        return True
+
+    return False
+
+
+def _is_fullname_key(field_key: str) -> bool:
+    key = f" {field_key} "
+    formal_fullname_markers = (
+        " toi ten la ",
+        " ten toi la ",
+        " ten day du ",
+        " ten nguoi ",
+        " nguoi khai ",
+        " nguoi lam don ",
+        " nguoi viet don ",
+        " nguoi ky ten ",
+    )
+    return (
+        " ho va ten " in key
+        or " ho ten " in key
+        or " fullname " in key
+        or " full name " in key
+        or any(marker in key for marker in formal_fullname_markers)
+    )
+
+
+def _is_given_name_key(field_key: str) -> bool:
+    key = f" {field_key} "
+    explicit_given_name_markers = (
+        " ten goi ",
+        " ten thuong goi ",
+        " biet danh ",
+        " nickname ",
+        " first name ",
+        " given name ",
+        " ten rieng ",
+    )
+    if any(marker in key for marker in explicit_given_name_markers):
+        return True
+
+    # Avoid misclassifying formal labels like "Tôi tên là" as given-name only.
+    if _is_fullname_key(field_key):
+        return False
+
+    return " ten " in key and " ho " not in key
+
+
+def _is_family_name_key(field_key: str) -> bool:
+    key = f" {field_key} "
+    return " ho " in key and " ten " not in key
+
+
+def _is_fullname_value(value: str) -> bool:
+    parts = [p for p in (value or "").strip().split(" ") if p]
+    return len(parts) >= 2
+
+
+def _is_name_like_value(value: str, min_tokens: int, max_tokens: int) -> bool:
+    text = (value or "").strip()
+    if not text:
+        return False
+
+    normalized = _normalize_field_key(text)
+    if not normalized:
+        return False
+
+    if re.search(r"\d", normalized):
+        return False
+
+    tokens = [tok for tok in normalized.split(" ") if tok]
+    if not (min_tokens <= len(tokens) <= max_tokens):
+        return False
+
+    # Reject one-letter noise values such as "A" for person-name related fields.
+    if any(len(tok) < 2 for tok in tokens):
+        return False
+
+    return True
+
+
+def _name_quality_score(value: str) -> float:
+    """Higher score means better person-name quality for ranking suggestions."""
+    normalized = _normalize_field_key(value)
+    if not normalized:
+        return 0.0
+
+    tokens = [tok for tok in normalized.split(" ") if tok]
+    if not tokens:
+        return 0.0
+
+    score = float(len(tokens))
+    score += sum(min(len(tok), 8) for tok in tokens) / 20.0
+    score -= sum(1 for tok in tokens if len(tok) <= 2) * 0.7
+    return score
+
+
+@router.get("/cross-field")
+async def get_cross_field_suggestions(
+    user_id: int | None = Query(None, description="ID của user (optional, admin only)"),
+    field_name: str = Query(..., description="Tên trường hiện tại"),
+    q: str | None = Query(None, description="Tiền tố giá trị đang gõ để lọc gợi ý"),
+    top_k: int = Query(5, description="Số lượng gợi ý tối đa (1-10)"),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Get suggestions from similar fields across all user history (Word + Excel + other forms)."""
+    try:
+        effective_user_id = resolve_effective_user_id(current_user, user_id)
+
+        if not field_name.strip():
+            raise HTTPException(status_code=400, detail="field_name không được để trống")
+        if top_k <= 0 or top_k > 10:
+            raise HTTPException(status_code=400, detail="top_k phải từ 1 đến 10")
+
+        target_key = _normalize_field_key(field_name)
+        value_filter = _normalize_field_key(q or "")
+        target_is_fullname = _is_fullname_key(target_key)
+        target_is_given_name = _is_given_name_key(target_key)
+        target_is_family_name = _is_family_name_key(target_key)
+        target_is_name_related = target_is_fullname or target_is_given_name or target_is_family_name
+
+        rows = db.query(Entry.value, Entry.created_at, Field.field_name, Entry.user_id).join(
+            Field, Entry.field_id == Field.id
+        ).all()
+
+        if not rows:
+            return {
+                "field_name": field_name,
+                "suggestions": [],
+                "total_count": 0,
+                "message": "Chưa có lịch sử nhập liệu"
+            }
+
+        stats: dict[str, dict] = defaultdict(lambda: {
+            "frequency": 0,
+            "latest_time": None,
+            "source_fields": set(),
+            "similarity": 0.0,
+            "own_hits": 0,
+        })
+        family_name_stats: dict[str, dict] = defaultdict(lambda: {"frequency": 0, "latest_time": None})
+        given_name_stats: dict[str, dict] = defaultdict(lambda: {"frequency": 0, "latest_time": None})
+
+        for value, created_at, source_field_name, row_user_id in rows:
+            source_name = source_field_name or ""
+            source_key = _normalize_field_key(source_name)
+            similarity = _field_similarity_score(target_key, source_key)
+            source_is_fullname = _is_fullname_key(source_key)
+            source_is_given = _is_given_name_key(source_key)
+            source_is_family = _is_family_name_key(source_key)
+
+            # Name-specific boosting so Word/Excel can share Họ + Tên with Họ và tên.
+            if target_is_fullname and source_is_fullname:
+                similarity = max(similarity, 0.97)
+            elif target_is_fullname and (source_is_given or source_is_family):
+                similarity = max(similarity, 0.92)
+            elif (target_is_given_name or target_is_family_name) and source_is_fullname:
+                similarity = max(similarity, 0.9)
+
+            min_similarity = 0.45
+            if target_is_name_related:
+                min_similarity = 0.3
+
+            # only keep reasonably similar fields to avoid noisy suggestions
+            if similarity < min_similarity:
+                continue
+
+            suggestion_value = (value or "").strip()
+            if not suggestion_value:
+                continue
+            if _is_noise_suggestion_value(suggestion_value):
+                continue
+
+            # For fullname target, collect Ho/Ten separately to build a combined suggestion later.
+            # Restrict synthesis to current user to avoid mixing identities across users.
+            if row_user_id == effective_user_id and target_is_fullname and (source_is_given or source_is_family):
+                if source_is_family:
+                    fam = family_name_stats[suggestion_value]
+                    fam["frequency"] += 1
+                    if created_at and (fam["latest_time"] is None or created_at > fam["latest_time"]):
+                        fam["latest_time"] = created_at
+                if source_is_given:
+                    giv = given_name_stats[suggestion_value]
+                    giv["frequency"] += 1
+                    if created_at and (giv["latest_time"] is None or created_at > giv["latest_time"]):
+                        giv["latest_time"] = created_at
+                continue
+
+            # If asking for given/family name and historical value is full name, split to best guess.
+            if (target_is_given_name or target_is_family_name) and " " in suggestion_value:
+                parts = [p for p in suggestion_value.split(" ") if p]
+                if len(parts) >= 2:
+                    suggestion_value = parts[-1] if target_is_given_name else " ".join(parts[:-1])
+
+            if target_is_given_name and not _is_name_like_value(suggestion_value, min_tokens=1, max_tokens=2):
+                continue
+
+            if target_is_family_name and not _is_name_like_value(suggestion_value, min_tokens=1, max_tokens=3):
+                continue
+
+            # For fullname target, ignore fragmented one-part values.
+            if target_is_fullname and not _is_fullname_value(suggestion_value):
+                continue
+
+            if target_is_fullname and not _is_name_like_value(suggestion_value, min_tokens=2, max_tokens=6):
+                continue
+
+            if target_is_name_related and _name_quality_score(suggestion_value) <= 0.8:
+                continue
+
+            if value_filter and not _normalize_field_key(suggestion_value).startswith(value_filter):
+                continue
+
+            item = stats[suggestion_value]
+            item["frequency"] += 1
+            item["source_fields"].add(source_name)
+            item["similarity"] = max(item["similarity"], similarity)
+            if row_user_id == effective_user_id:
+                item["own_hits"] += 1
+            if created_at and (item["latest_time"] is None or created_at > item["latest_time"]):
+                item["latest_time"] = created_at
+
+        # Compose fullname suggestions from Ho + Ten history if target requires full name.
+        if target_is_fullname and family_name_stats and given_name_stats:
+            top_family = sorted(
+                family_name_stats.items(),
+                key=lambda x: (x[1]["frequency"], x[1]["latest_time"] or 0),
+                reverse=True
+            )[:5]
+            top_given = sorted(
+                given_name_stats.items(),
+                key=lambda x: (x[1]["frequency"], x[1]["latest_time"] or 0),
+                reverse=True
+            )[:5]
+
+            for family_value, fam_stat in top_family:
+                for given_value, giv_stat in top_given:
+                    full_name = f"{family_value} {given_value}".strip()
+                    if not _is_fullname_value(full_name):
+                        continue
+                    if value_filter and not _normalize_field_key(full_name).startswith(value_filter):
+                        continue
+
+                    item = stats[full_name]
+                    # Synthetic frequency score from paired name parts.
+                    item["frequency"] = max(item["frequency"], fam_stat["frequency"] + giv_stat["frequency"])
+                    item["source_fields"].add("Họ + Tên")
+                    item["similarity"] = max(item["similarity"], 0.95)
+
+                    latest_candidates = [
+                        t for t in [fam_stat.get("latest_time"), giv_stat.get("latest_time"), item.get("latest_time")]
+                        if t is not None
+                    ]
+                    if latest_candidates:
+                        item["latest_time"] = max(latest_candidates)
+
+        if not stats:
+            return {
+                "field_name": field_name,
+                "suggestions": [],
+                "total_count": 0,
+                "message": "Chưa có lịch sử ở các trường tương tự"
+            }
+
+        sorted_items = sorted(
+            stats.items(),
+            key=lambda x: (
+                x[1]["own_hits"],
+                _name_quality_score(x[0]) if target_is_name_related else 0.0,
+                x[1]["similarity"],
+                x[1]["frequency"],
+                x[1]["latest_time"] or 0,
+            ),
+            reverse=True
+        )[:top_k]
+
+        suggestions = [
+            {
+                "value": value,
+                "frequency": detail["frequency"],
+                "latest_time": detail["latest_time"].isoformat() if detail["latest_time"] else None,
+                "source_fields": sorted([f for f in detail["source_fields"] if f]),
+                "similarity": round(float(detail["similarity"]), 3),
+            }
+            for value, detail in sorted_items
+        ]
+
+        return {
+            "field_name": field_name,
+            "suggestions": suggestions,
+            "total_count": len(suggestions),
+            "message": "Suggestions từ lịch sử trường tương tự"
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error in get_cross_field_suggestions: {str(e)}", exc_info=True)
+        raise HTTPException(status_code=500, detail="Lỗi khi lấy gợi ý liên thông")
+
+
 @router.get("")
 async def get_suggestions(
-    user_id: int = Query(..., description="ID của user"),
+    user_id: int | None = Query(None, description="ID của user (optional, admin only)"),
     field_id: int = Query(..., description="ID của field"),
     top_k: int = Query(5, description="Số lượng gợi ý top (mặc định 5, max 5)"),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """
     API GET /api/suggestions
     
     Logic:
-    - Lần đầu (< 2 entries): Trả empty list, không gợi ý
+    - Lần 1 (< 2 entries): Trả empty list, không gợi ý
     - Lần 2+ (>= 2 entries): Gợi ý từ database
     
     Input:
@@ -43,13 +402,14 @@ async def get_suggestions(
     - is_first_entry: true nếu đây là lần nhập đầu tiên
     """
     try:
-        logger.info(f"Request suggestions: user_id={user_id}, field_id={field_id}, top_k={top_k}")
+        effective_user_id = resolve_effective_user_id(current_user, user_id)
+        logger.info(f"Request suggestions: user_id={effective_user_id}, field_id={field_id}, top_k={top_k}")
         
         # Validate input
-        if user_id <= 0 or field_id <= 0:
+        if field_id <= 0:
             raise HTTPException(
                 status_code=400,
-                detail="user_id và field_id phải là số dương"
+                detail="field_id phải là số dương"
             )
         
         if top_k <= 0 or top_k > 5:
@@ -58,56 +418,68 @@ async def get_suggestions(
                 detail="top_k phải từ 1 đến 5"
             )
         
-        # Kiểm tra số entries hiện tại
-        entry_count = db.query(Entry).filter(
-            Entry.user_id == user_id,
+        # Lấy TẤT CẢ entries của field này từ lịch sử
+        entries = db.query(Entry).filter(
+            Entry.user_id == effective_user_id,
             Entry.field_id == field_id
-        ).count()
+        ).all()
         
+        entry_count = len(entries)
         logger.info(f"Field {field_id} has {entry_count} entries")
         
-        # Logic: Lần đầu không gợi ý
-        if entry_count < 2:
-            logger.info(f"Not enough entries ({entry_count} < 2), no suggestions")
+        # Logic: Nếu không có entries, không gợi ý
+        # Show suggestions from >= 1 entry (show history)
+        if entry_count < 1:
+            logger.info(f"No entries found ({entry_count} < 1), no suggestions")
             return {
-                "user_id": user_id,
+                "user_id": effective_user_id,
                 "field_id": field_id,
                 "suggestions": [],
                 "total_count": 0,
                 "entry_count": entry_count,
                 "is_first_entry": True,
-                "message": f"Chưa đủ dữ liệu (nhập {2 - entry_count} lần nữa để bật gợi ý)"
+                "message": "Nhập dữ liệu lần đầu để có gợi ý"
             }
         
-        # Lần 2+: Gợi ý từ database
-        # Get entries với raw query
-        entries = db.query(Entry).filter(
-            Entry.user_id == user_id,
-            Entry.field_id == field_id
-        ).all()
+        # Có entries: Lấy danh sách giá trị duy nhất + lần submit gần nhất
+        from collections import OrderedDict
+        from datetime import datetime
         
-        logger.info(f"Found {len(entries)} entries for field {field_id}")
+        # Tính tần suất và lấy entry gần nhất cho mỗi giá trị
+        value_stats = {}
+        for entry in entries:
+            value = entry.value
+            if value not in value_stats:
+                value_stats[value] = {
+                    'frequency': 0,
+                    'latest_time': entry.created_at or datetime.utcnow()
+                }
+            value_stats[value]['frequency'] += 1
+            # Cập nhật thời gian gần nhất
+            if entry.created_at:
+                if entry.created_at > value_stats[value]['latest_time']:
+                    value_stats[value]['latest_time'] = entry.created_at
         
-        # Build suggestions - group by value and count frequency
-        suggestions = []
-        if len(entries) >= 2:
-            # Group by value và count frequency
-            value_counts = {}
-            for entry in entries:
-                if entry.value not in value_counts:
-                    value_counts[entry.value] = 0
-                value_counts[entry.value] += 1
-            
-            # Chuyển thành list suggestions
-            suggestions = [
-                {"value": val, "frequency": count, "ranking": count}
-                for val, count in sorted(value_counts.items(), key=lambda x: -x[1])[:5]
-            ]
+        # Sắp xếp: 1. Tần suất (giảm dần), 2. Thời gian gần nhất (giảm dần)
+        sorted_suggestions = sorted(
+            value_stats.items(),
+            key=lambda x: (x[1]['frequency'], x[1]['latest_time']),
+            reverse=True
+        )[:top_k]
         
-        logger.info(f"Generated {len(suggestions)} suggestions")
+        suggestions = [
+            {
+                "value": value,
+                "frequency": stats['frequency'],
+                "latest_time": stats['latest_time'].isoformat() if stats['latest_time'] else None
+            }
+            for value, stats in sorted_suggestions
+        ]
+        
+        logger.info(f"Generated {len(suggestions)} suggestions from {entry_count} entries")
         
         return {
-            "user_id": user_id,
+            "user_id": effective_user_id,
             "field_id": field_id,
             "suggestions": suggestions,
             "total_count": len(suggestions),
@@ -121,7 +493,7 @@ async def get_suggestions(
     except Exception as e:
         logger.error(f"Error in get_suggestions: {str(e)}", exc_info=True)
         return {
-            "user_id": user_id,
+            "user_id": current_user.id,
             "field_id": field_id,
             "suggestions": [],
             "total_count": 0,
@@ -176,11 +548,12 @@ async def debug_suggestions(
     description="Lấy gợi ý theo tên field (dùng cho Word forms)"
 )
 async def get_suggestions_by_name(
-    user_id: int = Query(..., description="ID của user"),
+    user_id: int | None = Query(None, description="ID của user (optional, admin only)"),
     field_name: str = Query(..., description="Tên field (e.g. họ_và_tên)"),
     form_id: int = Query(1, description="ID của form (mặc định 1)"),
     top_k: int = Query(5, description="Số lượng gợi ý top (mặc định 5, max 5)"),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """
     API GET /api/suggestions/by-name
@@ -204,12 +577,10 @@ async def get_suggestions_by_name(
     - is_first_entry: true nếu đây là lần nhập đầu tiên
     """
     try:
-        logger.info(f"Request suggestions by name: user_id={user_id}, field_name={field_name}, top_k={top_k}")
+        effective_user_id = resolve_effective_user_id(current_user, user_id)
+        logger.info(f"Request suggestions by name: user_id={effective_user_id}, field_name={field_name}, top_k={top_k}")
         
         # Validate input
-        if user_id <= 0:
-            raise HTTPException(status_code=400, detail="user_id phải là số dương")
-        
         if not field_name:
             raise HTTPException(status_code=400, detail="field_name không được để trống")
         
@@ -226,7 +597,7 @@ async def get_suggestions_by_name(
             logger.warning(f"Field not found: form_id={form_id}, field_name={field_name}")
             # Trả empty list nếu field không tồn tại
             return SuggestionsListResponse(
-                user_id=user_id,
+                user_id=effective_user_id,
                 field_id=0,
                 suggestions=[],
                 total_count=0,
@@ -237,37 +608,75 @@ async def get_suggestions_by_name(
         
         # Kiểm tra số entries hiện tại
         entry_count = db.query(Entry).filter(
-            Entry.user_id == user_id,
+            Entry.user_id == effective_user_id,
             Entry.field_id == field.id
         ).count()
         
         logger.info(f"Field {field_name} has {entry_count} entries")
         
-        # Logic: Lần đầu không gợi ý
-        if entry_count < 2:
-            logger.info(f"Not enough entries ({entry_count} < 2), no suggestions")
+        # Logic: Show suggestions from >= 1 entry
+        # No minimum threshold - show history right away
+        if entry_count < 1:
+            logger.info(f"Not enough entries ({entry_count} < 1), no suggestions")
             return SuggestionsListResponse(
-                user_id=user_id,
+                user_id=effective_user_id,
                 field_id=field.id,
                 suggestions=[],
                 total_count=0,
                 entry_count=entry_count,
                 is_first_entry=True,
-                message=f"Chưa đủ dữ liệu (nhập {2 - entry_count} lần nữa để bật gợi ý)"
+                message="Nhập dữ liệu lần đầu để có gợi ý"
             )
         
-        # Lần 2+: Gợi ý từ database
-        suggestions = SuggestionService.get_suggestions(
-            db=db,
-            user_id=user_id,
-            field_id=field.id,
-            top_k=top_k
+        # Lần 2+: Gợi ý từ cache table
+        normalized_field_key = _normalize_field_key(field.field_name)
+        target_is_fullname = _is_fullname_key(normalized_field_key)
+        target_is_given_name = _is_given_name_key(normalized_field_key)
+        target_is_family_name = _is_family_name_key(normalized_field_key)
+        target_is_name_related = target_is_fullname or target_is_given_name or target_is_family_name
+
+        suggestions_from_cache = db.query(Suggestion).filter(
+            Suggestion.user_id == effective_user_id,
+            Suggestion.field_id == field.id
+        ).order_by(Suggestion.ranking.desc()).limit(100).all()
+
+        filtered_cache = []
+        for sug in suggestions_from_cache:
+            value = (sug.suggested_value or "").strip()
+            if not value:
+                continue
+
+            if target_is_fullname and not _is_name_like_value(value, min_tokens=2, max_tokens=6):
+                continue
+            if target_is_given_name and not _is_name_like_value(value, min_tokens=1, max_tokens=2):
+                continue
+            if target_is_family_name and not _is_name_like_value(value, min_tokens=1, max_tokens=3):
+                continue
+            if target_is_name_related and _name_quality_score(value) <= 0.8:
+                continue
+
+            filtered_cache.append(sug)
+
+        filtered_cache.sort(
+            key=lambda s: (
+                _name_quality_score(s.suggested_value) if target_is_name_related else 0.0,
+                s.ranking,
+                s.frequency,
+            ),
+            reverse=True,
         )
+
+        filtered_cache = filtered_cache[:(top_k or 5)]
+        
+        suggestions = [
+            {"value": sug.suggested_value, "frequency": sug.frequency, "ranking": sug.ranking}
+            for sug in filtered_cache
+        ]
         
         logger.info(f"Successfully retrieved {len(suggestions)} suggestions for field {field_name}")
         
         return SuggestionsListResponse(
-            user_id=user_id,
+            user_id=effective_user_id,
             field_id=field.id,
             suggestions=suggestions,
             total_count=len(suggestions),
@@ -291,11 +700,12 @@ async def get_suggestions_by_name(
     description="Lấy gợi ý dựa vào lịch sử trong khoảng thời gian"
 )
 async def get_suggestions_with_history(
-    user_id: int = Query(..., description="ID của user"),
+    user_id: int | None = Query(None, description="ID của user (optional, admin only)"),
     field_id: int = Query(..., description="ID của field"),
     days: int = Query(30, description="Số ngày quay lại (mặc định 30)"),
     top_k: int = Query(3, description="Số lượng gợi ý top (mặc định 3)"),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """
     API GET /api/suggestions/history
@@ -303,13 +713,14 @@ async def get_suggestions_with_history(
     Lấy gợi ý dựa vào lịch sử trong khoảng thời gian cụ thể
     """
     try:
-        logger.info(f"Request suggestions with history: user_id={user_id}, field_id={field_id}, days={days}, top_k={top_k}")
+        effective_user_id = resolve_effective_user_id(current_user, user_id)
+        logger.info(f"Request suggestions with history: user_id={effective_user_id}, field_id={field_id}, days={days}, top_k={top_k}")
         
         # Validate input
-        if user_id <= 0 or field_id <= 0:
+        if field_id <= 0:
             raise HTTPException(
                 status_code=400,
-                detail="user_id và field_id phải là số dương"
+                detail="field_id phải là số dương"
             )
         
         if days <= 0 or days > 365:
@@ -327,7 +738,7 @@ async def get_suggestions_with_history(
         # Gọi service để lấy gợi ý
         suggestions = SuggestionService.get_suggestions_with_history(
             db=db,
-            user_id=user_id,
+            user_id=effective_user_id,
             field_id=field_id,
             days=days,
             top_k=top_k
@@ -336,7 +747,7 @@ async def get_suggestions_with_history(
         logger.info(f"Successfully retrieved {len(suggestions)} suggestions from history")
         
         return SuggestionsListResponse(
-            user_id=user_id,
+            user_id=effective_user_id,
             field_id=field_id,
             suggestions=suggestions,
             total_count=len(suggestions),
@@ -360,9 +771,10 @@ async def get_suggestions_with_history(
     description="Lấy thống kê về entries của một field"
 )
 async def get_field_stats(
-    user_id: int = Query(..., description="ID của user"),
+    user_id: int | None = Query(None, description="ID của user (optional, admin only)"),
     field_id: int = Query(..., description="ID của field"),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """
     API GET /api/suggestions/stats
@@ -370,19 +782,20 @@ async def get_field_stats(
     Lấy thống kê về entries của một field
     """
     try:
-        logger.info(f"Request stats: user_id={user_id}, field_id={field_id}")
+        effective_user_id = resolve_effective_user_id(current_user, user_id)
+        logger.info(f"Request stats: user_id={effective_user_id}, field_id={field_id}")
         
         # Validate input
-        if user_id <= 0 or field_id <= 0:
+        if field_id <= 0:
             raise HTTPException(
                 status_code=400,
-                detail="user_id và field_id phải là số dương"
+                detail="field_id phải là số dương"
             )
         
         # Gọi service để lấy thống kê
         stats = SuggestionService.get_field_statistics(
             db=db,
-            user_id=user_id,
+            user_id=effective_user_id,
             field_id=field_id
         )
         
@@ -405,11 +818,12 @@ async def get_field_stats(
     description="Lưu entry từ Word plugin vào database"
 )
 async def save_entry(
-    user_id: int = Query(..., description="ID của user"),
+    user_id: int | None = Query(None, description="ID của user (optional, admin only)"),
     field_id: int = Query(..., description="ID của field"),
     form_id: int = Query(..., description="ID của form"),
     value: str = Query(..., description="Giá trị được nhập"),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """
     API POST /api/suggestions/save
@@ -428,13 +842,14 @@ async def save_entry(
     - entry_id: ID của entry vừa được lưu
     """
     try:
-        logger.info(f"Saving entry: user_id={user_id}, field_id={field_id}, value={value}")
+        effective_user_id = resolve_effective_user_id(current_user, user_id)
+        logger.info(f"Saving entry: user_id={effective_user_id}, field_id={field_id}, value={value}")
         
         # Validate input
-        if user_id <= 0 or field_id <= 0 or form_id <= 0:
+        if field_id <= 0 or form_id <= 0:
             raise HTTPException(
                 status_code=400,
-                detail="user_id, field_id, form_id phải là số dương"
+                detail="field_id, form_id phải là số dương"
             )
         
         if not value or len(value.strip()) == 0:
@@ -446,7 +861,7 @@ async def save_entry(
         # Gọi service để lưu entry
         result = SuggestionService.save_entry(
             db=db,
-            user_id=user_id,
+            user_id=effective_user_id,
             field_id=field_id,
             form_id=form_id,
             value=value.strip()

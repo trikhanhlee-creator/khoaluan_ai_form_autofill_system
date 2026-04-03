@@ -1,0 +1,125 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Quản Lý Biểu Mẫu</title>
+    <script src="/static/js/theme-manager.js"></script>
+    <link rel="stylesheet" href="/static/css/admin-styles.css">
+</head>
+<body>
+<div class="admin-layout" id="formsPage">
+    <header class="admin-header">
+        <a class="header-logo" href="/admin-dashboard">⚙️ Admin Panel</a>
+        <div class="header-actions">
+            <button class="btn-icon" id="adminThemeToggle" type="button" title="Đổi giao diện">🌙</button>
+            <a class="btn btn-secondary btn-sm" href="/">🏠 Về Trang Chủ</a>
+            <div class="user-menu" id="adminUserMenuTrigger">
+                <span>👤</span>
+                <span data-admin-username>Admin User</span>
+            </div>
+            <div class="user-menu-content" id="adminUserMenuContent">
+                <a class="user-menu-item" href="/admin-account">⚙️ Tài khoản admin</a>
+                <button class="user-menu-item" type="button" data-admin-logout>🚪 Đăng xuất</button>
+            </div>
+        </div>
+    </header>
+
+    <aside class="admin-sidebar">
+        <div class="sidebar-header">Menu chính</div>
+        <ul class="sidebar-menu">
+            <li class="sidebar-menu-item"><a class="sidebar-menu-link" href="/admin-dashboard"><i>📊</i><span>Bảng Điều Khiển</span></a></li>
+            <li class="sidebar-menu-item"><a class="sidebar-menu-link" href="/admin-users"><i>👥</i><span>Quản Lý Người Dùng</span></a></li>
+            <li class="sidebar-menu-item"><a class="sidebar-menu-link" href="/admin-forms"><i>📋</i><span>Quản Lý Biểu Mẫu</span></a></li>
+            <li class="sidebar-menu-item"><a class="sidebar-menu-link" href="/admin-reports"><i>📈</i><span>Báo Cáo & Thống Kê</span></a></li>
+            <li class="sidebar-menu-item"><a class="sidebar-menu-link" href="/admin-audit-log"><i>🕒</i><span>Lịch Sử Hoạt Động</span></a></li>
+        </ul>
+    </aside>
+
+    <main class="admin-main">
+        <div id="alertHost"></div>
+
+        <div class="page-header">
+            <div>
+                <h1 class="page-title"><span class="page-title-icon">📋</span> Quản Lý Biểu Mẫu</h1>
+                <p class="page-subtitle">Quản lý tất cả biểu mẫu và templates trong hệ thống.</p>
+            </div>
+            <div class="page-actions">
+                <a class="btn btn-secondary" href="/admin-dashboard">⬅️ Dashboard</a>
+            </div>
+        </div>
+
+        <section class="card" style="margin-bottom: 18px;">
+            <div class="search-bar">
+                <div class="search-input-wrapper">
+                    <span class="search-icon">🔎</span>
+                    <input class="form-input" id="formSearchInput" type="text" placeholder="Tìm kiếm biểu mẫu...">
+                </div>
+                <select class="form-select" id="formTypeFilter" style="max-width: 180px;">
+                    <option value="">Tất cả loại</option>
+                    <option value="word">Word</option>
+                    <option value="excel">Excel</option>
+                    <option value="standard">Standard</option>
+                </select>
+                <button class="btn btn-primary" type="button" id="formsSearchBtn">Tìm kiếm</button>
+            </div>
+        </section>
+
+        <section class="card" style="margin-bottom: 20px;">
+            <div class="table-container">
+                <table class="table">
+                    <thead class="table-head">
+                        <tr>
+                            <th class="table-header">ID</th>
+                            <th class="table-header">Tên Biểu Mẫu</th>
+                            <th class="table-header">Loại</th>
+                            <th class="table-header">Người Tạo</th>
+                            <th class="table-header">Kiểu</th>
+                            <th class="table-header">Ngày Tạo</th>
+                            <th class="table-header">Hành Động</th>
+                        </tr>
+                    </thead>
+                    <tbody id="formsTableBody">
+                        <tr class="table-row">
+                            <td class="table-cell" colspan="7">Đang tải dữ liệu...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-footer">
+                <span class="table-cell-small" id="formsPaginationInfo">Hiển thị 0 bản ghi</span>
+                <div class="table-actions">
+                    <button class="btn btn-secondary btn-sm" id="formsPrevBtn" type="button">← Trước</button>
+                    <button class="btn btn-secondary btn-sm" id="formsNextBtn" type="button">Tiếp →</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="stats-grid">
+            <article class="stat-card">
+                <span class="stat-card-icon">📊</span>
+                <div class="stat-card-value" id="formsTotal">0</div>
+                <div class="stat-card-label">Tổng Biểu Mẫu</div>
+            </article>
+            <article class="stat-card">
+                <span class="stat-card-icon">📄</span>
+                <div class="stat-card-value" id="formsWord">0</div>
+                <div class="stat-card-label">Word Templates</div>
+            </article>
+            <article class="stat-card">
+                <span class="stat-card-icon">📋</span>
+                <div class="stat-card-value" id="formsExcel">0</div>
+                <div class="stat-card-label">Excel Forms</div>
+            </article>
+            <article class="stat-card">
+                <span class="stat-card-icon">📥</span>
+                <div class="stat-card-value" id="formsSubmissions">0</div>
+                <div class="stat-card-label">Tổng Bản Ghi</div>
+            </article>
+        </section>
+    </main>
+</div>
+
+<script src="/static/js/admin-panel.js?v=20260401-1"></script>
+</body>
+</html>

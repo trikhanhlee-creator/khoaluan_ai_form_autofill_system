@@ -1,0 +1,320 @@
+
+        <!DOCTYPE html>
+        <html lang="vi">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Form</title>
+            <style>
+                * {
+                    margin: 0;
+                    padding: 0;
+                    box-sizing: border-box;
+                }
+                
+                body {
+                    font-family: 'Times New Roman', serif;
+                    background-color: #f5f5f5;
+                    padding: 20px;
+                }
+                
+                .form-page-wrapper {
+                    max-width: 900px;
+                    margin: 0 auto;
+                    background-color: white;
+                    padding: 40px;
+                    box-shadow: 0 0 20px rgba(0,0,0,0.1);
+                }
+                
+                .form-title {
+                    text-align: center;
+                    font-weight: bold;
+                    font-size: 18px;
+                    margin: 20px 0;
+                    text-transform: uppercase;
+                    letter-spacing: 1px;
+                }
+                
+                .form-subtitle {
+                    text-align: center;
+                    font-size: 12px;
+                    margin: 10px 0;
+                }
+                
+                .form-section {
+                    margin: 20px 0;
+                }
+                
+                .form-field-row {
+                    margin: 15px 0;
+                    display: flex;
+                    align-items: center;
+                    gap: 15px;
+                }
+                
+                .form-field-label {
+                    font-weight: 500;
+                    min-width: 160px;
+                    font-size: 13px;
+                }
+                
+                .form-input {
+                    border: 1.5px solid #000;
+                    padding: 8px 10px;
+                    font-family: 'Times New Roman', serif;
+                    font-size: 12px;
+                    background-color: white;
+                }
+                
+                .form-input[type="text"],
+                .form-input[type="tel"],
+                .form-input[type="email"],
+                .form-input[type="date"],
+                .form-input[type="number"] {
+                    min-width: 250px;
+                }
+                
+                .form-input[type="textarea"],
+                textarea {
+                    width: 100%;
+                    min-height: 80px;
+                    resize: vertical;
+                }
+                
+                .form-text {
+                    margin: 12px 0;
+                    line-height: 1.6;
+                    text-align: justify;
+                    font-size: 13px;
+                }
+                
+                .form-button-group {
+                    margin: 30px 0;
+                    text-align: center;
+                }
+                
+                button {
+                    padding: 10px 30px;
+                    background-color: #0066cc;
+                    color: white;
+                    border: none;
+                    border-radius: 4px;
+                    cursor: pointer;
+                    font-size: 14px;
+                    margin: 0 5px;
+                }
+                
+                button:hover {
+                    background-color: #0052a3;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="form-page-wrapper">
+                
+        <div class="form-document-style" style="
+            font-family: 'Arial', sans-serif;
+            max-width: 1000px;
+            margin: 20px auto;
+            padding: 50px;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        ">
+        
+
+            <div style="
+                text-align: center;
+                margin-bottom: 30px;
+                font-weight: bold;
+                font-size: 22px;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                line-height: 1.4;
+            ">
+                CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM
+            </div>
+            
+
+                <div style="
+                    text-align: center;
+                    margin-bottom: 15px;
+                    font-size: 12px;
+                    font-style: italic;
+                ">
+                    Độc lập - Tự do - Hạnh phúc
+                </div>
+                
+
+            <div style="
+                text-align: center;
+                margin-bottom: 30px;
+                font-weight: bold;
+                font-size: 22px;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                line-height: 1.4;
+            ">
+                ĐƠN XIN VIỆC
+            </div>
+            
+
+        <div style="margin: 12px 0; line-height: 1.8;">
+            <span style="font-weight: 500; margin-right: 8px;">Kính gửi:</span>
+            
+            <input 
+                type="text" 
+                id="kính_gửi" 
+                name="kính_gửi"
+                style="
+            border: 1.5px solid #000;
+            display: inline-block;
+            min-width: 200px;
+            padding: 8px 10px;
+            font-family: 'Arial', sans-serif;
+            font-size: 12px;
+            vertical-align: middle;
+            background-color: #fff;
+        "
+                placeholder=""
+                data-field-label="Kính gửi"
+                data-field-type="text"
+            />
+            
+        </div>
+        
+
+        <div style="margin: 12px 0; line-height: 1.8;">
+            <span style="font-weight: 500; margin-right: 8px;">Tôi tên là:</span>
+            
+            <input 
+                type="text" 
+                id="tôi_tên_là" 
+                name="tôi_tên_là"
+                style="
+            border: 1.5px solid #000;
+            display: inline-block;
+            min-width: 200px;
+            padding: 8px 10px;
+            font-family: 'Arial', sans-serif;
+            font-size: 12px;
+            vertical-align: middle;
+            background-color: #fff;
+        "
+                placeholder=""
+                data-field-label="Tôi tên là"
+                data-field-type="text"
+            />
+            
+        </div>
+        
+
+        <div style="margin: 12px 0; line-height: 1.8;">
+            <span style="font-weight: 500; margin-right: 8px;">Sinh ngày:</span>
+            
+            <input 
+                type="date" 
+                id="sinh_ngày" 
+                name="sinh_ngày"
+                style="
+            border: 1.5px solid #000;
+            display: inline-block;
+            min-width: 200px;
+            padding: 8px 10px;
+            font-family: 'Arial', sans-serif;
+            font-size: 12px;
+            vertical-align: middle;
+            background-color: #fff;
+        "
+                placeholder=""
+                data-field-label="Sinh ngày"
+                data-field-type="date"
+            />
+            
+        </div>
+        
+
+        <div style="margin: 12px 0; line-height: 1.8;">
+            <span style="font-weight: 500; margin-right: 8px;">Chỗ ở hiện nay:</span>
+            
+            <input 
+                type="text" 
+                id="chỗ_ở_hiện_nay" 
+                name="chỗ_ở_hiện_nay"
+                style="
+            border: 1.5px solid #000;
+            display: inline-block;
+            min-width: 200px;
+            padding: 8px 10px;
+            font-family: 'Arial', sans-serif;
+            font-size: 12px;
+            vertical-align: middle;
+            background-color: #fff;
+        "
+                placeholder=""
+                data-field-label="Chỗ ở hiện nay"
+                data-field-type="text"
+            />
+            
+        </div>
+        
+
+        <div style="margin: 12px 0; line-height: 1.8;">
+            <span style="font-weight: 500; margin-right: 8px;">Số điện thoại liên hệ:</span>
+            
+            <input 
+                type="tel" 
+                id="số_điện_thoại_liên_hệ" 
+                name="số_điện_thoại_liên_hệ"
+                style="
+            border: 1.5px solid #000;
+            display: inline-block;
+            min-width: 200px;
+            padding: 8px 10px;
+            font-family: 'Arial', sans-serif;
+            font-size: 12px;
+            vertical-align: middle;
+            background-color: #fff;
+        "
+                placeholder=""
+                data-field-label="Số điện thoại liên hệ"
+                data-field-type="phone"
+            />
+            
+        </div>
+        
+</div>
+                
+                <div class="form-button-group">
+                    <button type="submit" onclick="submitForm()">Gửi</button>
+                    <button type="reset" onclick="resetForm()">Xóa</button>
+                </div>
+            </div>
+            
+            <script>
+                function submitForm() {
+                    const formData = new FormData();
+                    const inputs = document.querySelectorAll('[data-field-label]');
+                    
+                    inputs.forEach(input => {
+                        formData.append(input.name, input.value);
+                    });
+                    
+                    // Send to server
+                    fetch('/api/form-replacement/submit-dotline-form', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(r => r.json())
+                    .then(d => alert('Form submitted: ' + d.message))
+                    .catch(e => alert('Error: ' + e));
+                }
+                
+                function resetForm() {
+                    document.querySelectorAll('[data-field-label]').forEach(input => {
+                        input.value = '';
+                    });
+                }
+            </script>
+        </body>
+        </html>
+        

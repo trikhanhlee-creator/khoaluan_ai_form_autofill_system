@@ -10,7 +10,7 @@ from sqlalchemy.orm import sessionmaker
 MYSQL_HOST = "localhost"
 MYSQL_PORT = 3306
 MYSQL_USER = "root"
-MYSQL_PASSWORD = "ltK240304"
+MYSQL_PASSWORD = ""
 MYSQL_DATABASE = "autofill_db"
 
 DATABASE_URL = f"mysql+pymysql://{MYSQL_USER}:{MYSQL_PASSWORD}@{MYSQL_HOST}:{MYSQL_PORT}/{MYSQL_DATABASE}"

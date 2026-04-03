@@ -1,0 +1,22 @@
+[
+  {
+    "label": "Họ và tên",
+    "name": "họ_và_tên",
+    "has_quotes": false
+  },
+  {
+    "label": "Lớp",
+    "name": "lớp",
+    "has_quotes": false
+  },
+  {
+    "label": "Trường",
+    "name": "trường",
+    "has_quotes": false
+  },
+  {
+    "label": "Địa chỉ””",
+    "name": "địa_chỉ",
+    "has_quotes": false
+  }
+]

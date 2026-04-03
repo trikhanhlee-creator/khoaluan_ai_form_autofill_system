@@ -1,0 +1,20 @@
+ASCII quotes
+  Input:  'Địa chỉ""'
+  Output: 'Địa chỉ'
+
+Unicode smart quotes (8221)
+  Input:  'Địa chỉ""'
+  Output: 'Địa chỉ'
+
+Mixed quotes
+  Input:  'Địa chỉ""'
+  Output: 'Địa chỉ'
+
+Unicode single quotes
+  Input:  "Địa chỉ''"
+  Output: 'Địa chỉ'
+
+Actual Unicode 8221: 'Địa chỉ””'
+  Input:  'Địa chỉ””'
+  Output: 'Địa chỉ'
+

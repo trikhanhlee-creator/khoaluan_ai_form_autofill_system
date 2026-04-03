@@ -1,0 +1,20 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Excel Data Form Redirect</title>
+</head>
+<body>
+<p>Đang chuyển sang trang biểu mẫu Excel mới...</p>
+<script>
+    const parts = window.location.pathname.split('/');
+    const sessionId = parts[parts.length - 1] || '';
+    if (sessionId) {
+        window.location.replace(`/excel-form/${encodeURIComponent(decodeURIComponent(sessionId))}`);
+    } else {
+        window.location.replace('/excel');
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,149 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Bảng Điều Khiển</title>
+    <script src="/static/js/theme-manager.js"></script>
+    <link rel="stylesheet" href="/static/css/admin-styles.css">
+</head>
+<body>
+<div class="admin-layout" id="dashboardPage">
+    <header class="admin-header">
+        <a class="header-logo" href="/admin-dashboard">⚙️ Admin Panel</a>
+        <div class="header-actions">
+            <button class="btn-icon" id="adminThemeToggle" type="button" title="Đổi giao diện">🌙</button>
+            <a class="btn btn-secondary btn-sm" href="/">🏠 Về Trang Chủ</a>
+            <div class="user-menu" id="adminUserMenuTrigger">
+                <span>👤</span>
+                <span data-admin-username>Admin User</span>
+            </div>
+            <div class="user-menu-content" id="adminUserMenuContent">
+                <a class="user-menu-item" href="/admin-account">⚙️ Tài khoản admin</a>
+                <button class="user-menu-item" type="button" data-admin-logout>🚪 Đăng xuất</button>
+            </div>
+        </div>
+    </header>
+
+    <aside class="admin-sidebar">
+        <div class="sidebar-header">Menu chính</div>
+        <ul class="sidebar-menu">
+            <li class="sidebar-menu-item"><a class="sidebar-menu-link" href="/admin-dashboard"><i>📊</i><span>Bảng Điều Khiển</span></a></li>
+            <li class="sidebar-menu-item"><a class="sidebar-menu-link" href="/admin-users"><i>👥</i><span>Quản Lý Người Dùng</span></a></li>
+            <li class="sidebar-menu-item"><a class="sidebar-menu-link" href="/admin-forms"><i>📋</i><span>Quản Lý Biểu Mẫu</span></a></li>
+            <li class="sidebar-menu-item"><a class="sidebar-menu-link" href="/admin-reports"><i>📈</i><span>Báo Cáo & Thống Kê</span></a></li>
+            <li class="sidebar-menu-item"><a class="sidebar-menu-link" href="/admin-audit-log"><i>🕒</i><span>Lịch Sử Hoạt Động</span></a></li>
+        </ul>
+    </aside>
+
+    <main class="admin-main">
+        <div id="alertHost"></div>
+
+        <div class="page-header">
+            <div>
+                <h1 class="page-title"><span class="page-title-icon">📊</span> Bảng Điều Khiển</h1>
+                <p class="page-subtitle">Theo dõi tổng thể hệ thống và xử lý tác vụ quản trị trong thời gian thực.</p>
+            </div>
+            <div class="page-actions">
+                <a class="btn btn-primary" href="/admin-users">👥 Quản lý người dùng</a>
+                <a class="btn btn-secondary" href="/admin-forms">📋 Quản lý biểu mẫu</a>
+            </div>
+        </div>
+
+        <section class="stats-grid">
+            <article class="stat-card">
+                <span class="stat-card-icon">👥</span>
+                <div class="stat-card-value" id="statTotalUsers">0</div>
+                <div class="stat-card-label">Tổng người dùng</div>
+                <div class="stat-card-trend up">↑ Hoạt động gần đây</div>
+            </article>
+            <article class="stat-card">
+                <span class="stat-card-icon">📄</span>
+                <div class="stat-card-value" id="statTotalForms">0</div>
+                <div class="stat-card-label">Biểu mẫu đã lưu</div>
+                <div class="stat-card-trend up">↑ Tăng đều mỗi tuần</div>
+            </article>
+            <article class="stat-card">
+                <span class="stat-card-icon">📥</span>
+                <div class="stat-card-value" id="statSubmissions">0</div>
+                <div class="stat-card-label">Tổng bản ghi</div>
+                <div class="stat-card-trend up">↑ Dữ liệu tăng ổn định</div>
+            </article>
+            <article class="stat-card">
+                <span class="stat-card-icon">🖥️</span>
+                <div class="stat-card-value" id="statUptime">99.9%</div>
+                <div class="stat-card-label">Hiệu năng hệ thống</div>
+                <div class="stat-card-trend up">↑ Ổn định cao</div>
+            </article>
+        </section>
+
+        <section class="card" style="margin-bottom: 24px;">
+            <div class="card-header">
+                <h2 class="card-title">⚡ Truy cập nhanh</h2>
+            </div>
+            <div class="stats-grid" style="margin-bottom: 0;">
+                <a class="stat-card" href="/admin-users">
+                    <span class="stat-card-icon">➕</span>
+                    <div class="stat-card-label">Thêm Người Dùng</div>
+                </a>
+                <a class="stat-card" href="/admin-forms">
+                    <span class="stat-card-icon">📄</span>
+                    <div class="stat-card-label">Quản lý Biểu Mẫu</div>
+                </a>
+                <a class="stat-card" href="/admin-reports">
+                    <span class="stat-card-icon">📊</span>
+                    <div class="stat-card-label">Xem Báo Cáo</div>
+                </a>
+                <a class="stat-card" href="/admin-audit-log">
+                    <span class="stat-card-icon">🕒</span>
+                    <div class="stat-card-label">Lịch Sử Hoạt Động</div>
+                </a>
+            </div>
+        </section>
+
+        <section class="form-row">
+            <article class="card">
+                <div class="card-header">
+                    <h2 class="card-title">📌 Hoạt Động Gần Đây</h2>
+                </div>
+                <div class="table-container">
+                    <table class="table">
+                        <thead class="table-head">
+                            <tr>
+                                <th class="table-header">Thời gian</th>
+                                <th class="table-header">Đối tượng</th>
+                                <th class="table-header">Hành động</th>
+                                <th class="table-header">Trạng thái</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recentActivityBody">
+                            <tr class="table-row">
+                                <td class="table-cell" colspan="4">Đang tải dữ liệu...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </article>
+
+            <article class="card">
+                <div class="card-header">
+                    <h2 class="card-title">ℹ️ Thông Tin Hệ Thống</h2>
+                </div>
+                <div class="card-content">
+                    <p><strong>Phiên bản:</strong> <span id="infoVersion">v1.0.0</span></p>
+                    <p><strong>Cập nhật:</strong> <span id="infoLastUpdate">-</span></p>
+                    <p><strong>Số admin:</strong> <span id="infoAdmins">0</span></p>
+                    <p><strong>Active 7 ngày:</strong> <span id="infoActive7d">0</span></p>
+                </div>
+                <div class="card-footer">
+                    <a class="btn btn-secondary btn-sm" href="/admin-account">⚙️ Cài đặt admin</a>
+                    <a class="btn btn-primary btn-sm" href="/admin-reports">📈 Mở báo cáo</a>
+                </div>
+            </article>
+        </section>
+    </main>
+</div>
+
+<script src="/static/js/admin-panel.js?v=20260401-1"></script>
+</body>
+</html>

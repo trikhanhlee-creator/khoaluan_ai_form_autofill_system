@@ -1,0 +1,20 @@
+Input: Địa chỉ"""
+Output: Địa chỉ
+Has quotes: False
+
+Input: Địa chỉ""
+Output: Địa chỉ
+Has quotes: False
+
+Input: Địa chỉ"
+Output: Địa chỉ
+Has quotes: False
+
+Input: Lớp 
+Output: Lớp
+Has quotes: False
+
+Input: Trường(...)
+Output: Trường
+Has quotes: False
+

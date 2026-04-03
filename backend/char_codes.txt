@@ -1,0 +1,34 @@
+Para 0: 'Họ và tên.....'
+  Char codes: [72, 7885, 32, 118, 224, 32, 116, 234, 110, 46, 46, 46, 46, 46]
+  Last chars analysis:
+    [-5]: '.' (code 46)
+    [-4]: '.' (code 46)
+    [-3]: '.' (code 46)
+    [-2]: '.' (code 46)
+    [-1]: '.' (code 46)
+
+Para 1: 'Lớp'
+  Char codes: [76, 7899, 112]
+  Last chars analysis:
+    [-5]: 'L' (code 76)
+    [-4]: 'ớ' (code 7899)
+    [-3]: 'p' (code 112)
+
+Para 2: 'Trường(...)'
+  Char codes: [84, 114, 432, 7901, 110, 103, 40, 46, 46, 46, 41]
+  Last chars analysis:
+    [-5]: '(' (code 40)
+    [-4]: '.' (code 46)
+    [-3]: '.' (code 46)
+    [-2]: '.' (code 46)
+    [-1]: ')' (code 41)
+
+Para 3: 'Địa chỉ””'
+  Char codes: [272, 7883, 97, 32, 99, 104, 7881, 8221, 8221]
+  Last chars analysis:
+    [-5]: 'c' (code 99)
+    [-4]: 'h' (code 104)
+    [-3]: 'ỉ' (code 7881)
+    [-2]: '”' (code 8221)
+    [-1]: '”' (code 8221)
+

@@ -1,0 +1,66 @@
+{
+  "upload_response_fields": [
+    {
+      "name": "họ_và_tên",
+      "field_type": "text",
+      "label": "Họ và tên",
+      "order": 0
+    },
+    {
+      "name": "lớp",
+      "field_type": "text",
+      "label": "Lớp",
+      "order": 1
+    },
+    {
+      "name": "trường",
+      "field_type": "text",
+      "label": "Trường",
+      "order": 2
+    },
+    {
+      "name": "địa_chỉ",
+      "field_type": "text",
+      "label": "Địa chỉ",
+      "order": 3
+    }
+  ],
+  "template_response_fields": [
+    {
+      "name": "họ_và_tên",
+      "field_type": "text",
+      "label": "Họ và tên",
+      "order": 0,
+      "field_id": 1,
+      "field_index": 0,
+      "field_label": "Họ và tên"
+    },
+    {
+      "name": "lớp",
+      "field_type": "text",
+      "label": "Lớp",
+      "order": 1,
+      "field_id": 3,
+      "field_index": 1,
+      "field_label": "Lớp"
+    },
+    {
+      "name": "trường",
+      "field_type": "text",
+      "label": "Trường",
+      "order": 2,
+      "field_id": 8,
+      "field_index": 2,
+      "field_label": "Trường"
+    },
+    {
+      "name": "địa_chỉ",
+      "field_type": "text",
+      "label": "Địa chỉ",
+      "order": 3,
+      "field_id": 6,
+      "field_index": 3,
+      "field_label": "Địa chỉ"
+    }
+  ]
+}

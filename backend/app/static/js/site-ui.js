@@ -1,0 +1,206 @@
+document.addEventListener('DOMContentLoaded', () => {
+	const toggleButtons = document.querySelectorAll('[data-theme-toggle]');
+
+	if (toggleButtons.length > 0 && window.themeManager && typeof window.themeManager.toggleTheme === 'function') {
+		toggleButtons.forEach((toggleButton) => {
+			toggleButton.addEventListener('click', () => {
+				window.themeManager.toggleTheme();
+			});
+		});
+	}
+
+	const pathname = window.location.pathname;
+	const navLinks = document.querySelectorAll('.main-nav .nav-link');
+	const navDropdowns = document.querySelectorAll('[data-nav-dropdown]');
+	const navDropdownToggles = document.querySelectorAll('[data-nav-dropdown-toggle]');
+
+	navLinks.forEach((link) => {
+		const href = link.getAttribute('href');
+		if (!href) {
+			return;
+		}
+
+		const isActive = (href === '/' && pathname === '/') || (href !== '/' && pathname.startsWith(href));
+		link.classList.toggle('active', isActive);
+	});
+
+	const closeAllNavDropdowns = () => {
+		navDropdowns.forEach((dropdown) => {
+			dropdown.classList.remove('open');
+		});
+		navDropdownToggles.forEach((button) => {
+			button.setAttribute('aria-expanded', 'false');
+		});
+	};
+
+	navDropdownToggles.forEach((button) => {
+		button.addEventListener('click', (event) => {
+			event.preventDefault();
+			event.stopPropagation();
+
+			const dropdown = button.closest('[data-nav-dropdown]');
+			if (!dropdown) {
+				return;
+			}
+
+			const shouldOpen = !dropdown.classList.contains('open');
+			closeAllNavDropdowns();
+			if (shouldOpen) {
+				dropdown.classList.add('open');
+				button.setAttribute('aria-expanded', 'true');
+			}
+		});
+	});
+
+	document.addEventListener('click', (event) => {
+		if (!event.target.closest('[data-nav-dropdown]')) {
+			closeAllNavDropdowns();
+		}
+	});
+
+	if (pathname.startsWith('/admin-')) {
+		navDropdownToggles.forEach((button) => {
+			button.classList.add('active');
+		});
+	}
+
+	const adminLinks = document.querySelectorAll('[data-admin-link]');
+	const anonOnlyItems = document.querySelectorAll('[data-auth-anon]');
+	const authOnlyItems = document.querySelectorAll('[data-auth-user]');
+	const accountNameItems = document.querySelectorAll('[data-account-name]');
+	const accountLinkItems = document.querySelectorAll('[data-account-link]');
+	const adminUserOnlyItems = document.querySelectorAll('[data-admin-user-only]');
+	const accountDropdowns = document.querySelectorAll('[data-account-dropdown]');
+	const accountToggleButtons = document.querySelectorAll('[data-account-toggle]');
+	const accountLogoutButtons = document.querySelectorAll('[data-account-logout]');
+
+	if (adminLinks.length === 0 && anonOnlyItems.length === 0 && authOnlyItems.length === 0) {
+		return;
+	}
+
+	const closeAllAccountMenus = () => {
+		accountDropdowns.forEach((dropdown) => {
+			dropdown.classList.remove('open');
+		});
+		accountToggleButtons.forEach((button) => {
+			button.setAttribute('aria-expanded', 'false');
+		});
+	};
+
+	accountToggleButtons.forEach((button) => {
+		button.addEventListener('click', (event) => {
+			event.preventDefault();
+			event.stopPropagation();
+
+			const container = button.closest('[data-account-dropdown]');
+			if (!container) {
+				return;
+			}
+
+			const shouldOpen = !container.classList.contains('open');
+			closeAllAccountMenus();
+			if (shouldOpen) {
+				container.classList.add('open');
+				button.setAttribute('aria-expanded', 'true');
+			}
+		});
+	});
+
+	document.addEventListener('click', (event) => {
+		if (!event.target.closest('[data-account-dropdown]')) {
+			closeAllAccountMenus();
+		}
+	});
+
+	document.addEventListener('keydown', (event) => {
+		if (event.key === 'Escape') {
+			closeAllAccountMenus();
+			closeAllNavDropdowns();
+		}
+	});
+
+	accountLogoutButtons.forEach((button) => {
+		button.addEventListener('click', async (event) => {
+			event.preventDefault();
+			button.disabled = true;
+			button.textContent = 'Đăng xuất...';
+
+			try {
+				await fetch('/api/auth/logout', {
+					method: 'POST',
+					credentials: 'include',
+				});
+			} finally {
+				window.location.href = '/';
+			}
+		});
+	});
+
+	adminLinks.forEach((link) => {
+		link.style.display = 'none';
+	});
+
+	authOnlyItems.forEach((item) => {
+		item.style.display = 'none';
+	});
+
+	adminUserOnlyItems.forEach((item) => {
+		item.style.display = 'none';
+	});
+
+	fetch('/api/auth/check-auth', {
+		method: 'GET',
+		credentials: 'include',
+	})
+		.then((response) => response.ok ? response.json() : { authenticated: false })
+		.then((data) => {
+			const isAuthenticated = Boolean(data && data.authenticated && data.user);
+
+			if (isAuthenticated) {
+				const accountLabel = data.user.username || data.user.email || 'Tài khoản';
+				anonOnlyItems.forEach((item) => {
+					item.style.display = 'none';
+				});
+				authOnlyItems.forEach((item) => {
+					item.style.display = '';
+				});
+				accountNameItems.forEach((item) => {
+					item.textContent = accountLabel;
+				});
+				accountLinkItems.forEach((item) => {
+					item.setAttribute('href', '/user-account');
+				});
+				adminUserOnlyItems.forEach((item) => {
+					item.style.display = data.user.is_admin ? '' : 'none';
+				});
+			} else {
+				closeAllAccountMenus();
+				anonOnlyItems.forEach((item) => {
+					item.style.display = '';
+				});
+				authOnlyItems.forEach((item) => {
+					item.style.display = 'none';
+				});
+				adminUserOnlyItems.forEach((item) => {
+					item.style.display = 'none';
+				});
+			}
+
+			if (isAuthenticated && data.user.is_admin) {
+				adminLinks.forEach((link) => {
+					link.style.display = '';
+				});
+			}
+		})
+		.catch(() => {
+			anonOnlyItems.forEach((item) => {
+				item.style.display = '';
+			});
+			authOnlyItems.forEach((item) => {
+				item.style.display = 'none';
+			});
+			adminUserOnlyItems.forEach((item) => {
+				item.style.display = 'none';
+			});
+		});
+});

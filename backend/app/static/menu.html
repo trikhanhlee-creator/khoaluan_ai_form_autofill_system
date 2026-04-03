@@ -1,0 +1,178 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoFill AI System - Menu</title>
+    <script src="/static/js/theme-manager.js"></script>
+    <link rel="stylesheet" href="/static/css/site.css">
+</head>
+<body>
+    <div class="page-shell">
+        <header class="topbar">
+            <a class="brand" href="/"><span>AutoFill AI</span></a>
+            <nav class="main-nav" aria-label="Main Navigation">
+                <a class="nav-link active" href="/">Trang Chủ</a>
+                <a class="nav-link" href="/word-upload">Word Upload</a>
+                <a class="nav-link" href="/excel">Excel Upload</a>
+                <a class="nav-link" href="/composer">Soạn Thảo</a>
+                <div class="nav-dropdown" data-nav-dropdown data-admin-user-only style="display:none;">
+                    <button class="nav-link nav-dropdown-toggle" type="button" data-nav-dropdown-toggle aria-haspopup="true" aria-expanded="false">
+                        Quản lý hệ thống
+                    </button>
+                    <div class="nav-dropdown-menu" data-nav-dropdown-menu>
+                        <a class="nav-dropdown-item" href="/admin-dashboard">Bảng điều khiển</a>
+                        <a class="nav-dropdown-item" href="/admin-users">Quản lý người dùng</a>
+                        <a class="nav-dropdown-item" href="/admin-forms">Quản lý biểu mẫu</a>
+                        <a class="nav-dropdown-item" href="/admin-reports">Báo cáo & thống kê</a>
+                        <a class="nav-dropdown-item" href="/admin-audit-log">Lịch sử hoạt động</a>
+                        <a class="nav-dropdown-item" href="/admin-account">Tài khoản admin</a>
+                    </div>
+                </div>
+            </nav>
+            <div class="topbar-actions">
+                <button class="btn secondary" data-theme-toggle>
+                    <span class="theme-dot" aria-hidden="true"></span>
+                    <span data-theme-label>Sáng</span>
+                </button>
+                <a class="btn primary" data-auth-anon href="/login?mode=login">Đăng nhập</a>
+                <a class="btn accent" data-auth-anon href="/login?mode=signup">Đăng ký</a>
+                <div class="account-dropdown" data-auth-user data-account-dropdown style="display:none;">
+                    <button class="btn secondary" type="button" data-account-toggle aria-haspopup="true" aria-expanded="false">
+                        Tài khoản: <strong data-account-name>User</strong>
+                    </button>
+                    <div class="account-menu" data-account-menu>
+                        <a class="account-menu-item" data-account-link href="/user-account">Quản lý tài khoản</a>
+                        <a class="account-menu-item" data-admin-user-only href="/admin-dashboard" style="display:none;">Quản lý hệ thống</a>
+                        <button class="account-menu-item danger" type="button" data-account-logout>Đăng xuất</button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="main-wrap fade-in">
+            <section class="hero">
+                <h1>AI Document Composer</h1>
+                <h2>Vui lòng đăng nhập để bắt đầu</h2>
+                <p>Soạn thảo tài liệu với gợi ý thông minh từ AI</p>
+                <p>Giống Word nhưng mạnh mẽ hơn với sức mạnh của AI</p>
+                <div class="hero-actions">
+                    <a class="btn primary" href="/login">Bắt đầu ngay</a>
+                    <a class="btn secondary" href="/composer">Mở Composer</a>
+                </div>
+            </section>
+
+            <section class="feature feature-wide" aria-label="Main Feature">
+                <a class="card card-center" href="/composer">
+                    <span class="card-emoji" aria-hidden="true">✍️</span>
+                    <h3>AI Document Composer</h3>
+                    <p class="muted">Soạn thảo tài liệu giống Word với gợi ý từ AI. Tính năng auto-complete thông minh, định dạng văn bản đầy đủ, và lưu tài liệu tự động.</p>
+                </a>
+            </section>
+
+            <section class="grid cols-2 feature-bottom" aria-label="Upload Features">
+                <a class="card" href="/excel">
+                    <span class="card-emoji" aria-hidden="true">📊</span>
+                    <h3>Excel Upload</h3>
+                    <p class="muted">Tải file Excel lên và tạo form động từ dữ liệu. Hỗ trợ cả định dạng .xlsx và .xls.</p>
+                </a>
+                <a class="card" href="/word-upload">
+                    <span class="card-emoji" aria-hidden="true">📄</span>
+                    <h3>Word Upload</h3>
+                    <p class="muted">Tải file Word lên và trích xuất mẫu form để tái sử dụng dễ dàng và nhanh chóng.</p>
+                </a>
+            </section>
+        </main>
+
+        <footer class="site-footer" aria-label="Footer">
+            <div class="footer-inner">
+                <section class="footer-col">
+                    <h4>AutoFill AI</h4>
+                    <p>Hệ thống hỗ trợ soạn thảo và xử lý tài liệu thông minh, tối ưu hóa quy trình Word và Excel trong cùng một giao diện.</p>
+                </section>
+
+                <section class="footer-col">
+                    <h5>Điều hướng nhanh</h5>
+                    <ul class="footer-links">
+                        <li><a href="/">Trang Chủ</a></li>
+                        <li><a href="/composer">Soạn Thảo</a></li>
+                        <li><a href="/word-upload">Word Upload</a></li>
+                        <li><a href="/excel">Excel Upload</a></li>
+                    </ul>
+                </section>
+
+                <section class="footer-col">
+                    <h5>Hỗ trợ</h5>
+                    <ul class="footer-links">
+                        <li><a href="/login">Đăng Nhập</a></li>
+                        <li><a href="/user-account">Tài Khoản</a></li>
+                        <li data-admin-link style="display:none;"><a href="/admin-dashboard">Admin</a></li>
+                    </ul>
+                </section>
+            </div>
+
+            <div class="footer-bottom">
+                <span>© 2026 AutoFill AI System. All rights reserved.</span>
+            </div>
+        </footer>
+    </div>
+
+    <div id="globalToast" class="toast"></div>
+    <script src="/static/js/site-ui.js?v=20260401-5"></script>
+    <script>
+        // Extra safeguard on homepage to avoid stale cached JS affecting auth UI state.
+        (async function syncHomepageAuthState() {
+            const anonButtons = document.querySelectorAll('[data-auth-anon]');
+            const userButtons = document.querySelectorAll('[data-auth-user]');
+            const accountNames = document.querySelectorAll('[data-account-name]');
+            const adminOnlyItems = document.querySelectorAll('[data-admin-user-only]');
+
+            try {
+                const response = await fetch('/api/auth/session', {
+                    method: 'GET',
+                    credentials: 'include',
+                    cache: 'no-store'
+                });
+                const data = response.ok ? await response.json() : { authenticated: false };
+                const isAuthenticated = Boolean(data && data.authenticated && data.user);
+
+                if (isAuthenticated) {
+                    const displayName = data.user.username || data.user.email || 'Tài khoản';
+                    anonButtons.forEach((el) => {
+                        el.style.display = 'none';
+                    });
+                    userButtons.forEach((el) => {
+                        el.style.display = '';
+                    });
+                    accountNames.forEach((el) => {
+                        el.textContent = displayName;
+                    });
+                    adminOnlyItems.forEach((el) => {
+                        el.style.display = data.user.is_admin ? '' : 'none';
+                    });
+                } else {
+                    anonButtons.forEach((el) => {
+                        el.style.display = '';
+                    });
+                    userButtons.forEach((el) => {
+                        el.style.display = 'none';
+                    });
+                    adminOnlyItems.forEach((el) => {
+                        el.style.display = 'none';
+                    });
+                }
+            } catch (error) {
+                anonButtons.forEach((el) => {
+                    el.style.display = '';
+                });
+                userButtons.forEach((el) => {
+                    el.style.display = 'none';
+                });
+                adminOnlyItems.forEach((el) => {
+                    el.style.display = 'none';
+                });
+            }
+        })();
+    </script>
+</body>
+</html>

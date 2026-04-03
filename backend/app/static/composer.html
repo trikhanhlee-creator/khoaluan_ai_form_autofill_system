@@ -1,0 +1,726 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoFill AI - Composer</title>
+    <script src="/static/js/theme-manager.js?v=20260401-2"></script>
+    <style>
+        :root {
+            --bg: #eef2f7;
+            --surface: #f4f7fb;
+            --surface-2: #ffffff;
+            --line: #5e84ea;
+            --text: #22406f;
+            --muted: #7187a9;
+            --shadow: 0 14px 34px rgba(46, 78, 135, 0.16);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        body.dark-mode {
+            --bg: #0f172a;
+            --surface: #18243f;
+            --surface-2: #111a2e;
+            --line: #6d93ff;
+            --text: #dbeafe;
+            --muted: #94a9c9;
+            --shadow: 0 14px 34px rgba(0, 0, 0, 0.35);
+        }
+
+        .header {
+            height: 72px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px 0 20px;
+            border-bottom: 2px solid var(--line);
+            background: var(--surface);
+            box-shadow: 0 5px 16px rgba(58, 97, 170, 0.12);
+        }
+
+        .header h1 {
+            font-size: 36px;
+            font-weight: 800;
+            color: #2a61d0;
+            letter-spacing: 0.3px;
+        }
+
+        body.dark-mode .header h1 {
+            color: #8eb0ff;
+        }
+
+        .top-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn {
+            border: 1.4px solid var(--line);
+            background: rgba(255, 255, 255, 0.42);
+            color: #2a61d0;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 14px;
+            height: 42px;
+            padding: 0 16px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            background: rgba(255, 255, 255, 0.75);
+            box-shadow: 0 8px 16px rgba(48, 84, 156, 0.2);
+        }
+
+        body.dark-mode .btn {
+            color: #9fc0ff;
+            background: rgba(17, 26, 46, 0.72);
+        }
+
+        .workspace {
+            height: calc(100vh - 72px);
+            display: grid;
+            grid-template-columns: 260px 1fr;
+        }
+
+        .sidebar {
+            border-right: 1px solid color-mix(in srgb, var(--line) 45%, transparent);
+            background: var(--surface);
+            padding: 12px;
+            overflow: auto;
+        }
+
+        .new-doc-btn {
+            width: 100%;
+            height: 44px;
+            border: 0;
+            border-radius: 8px;
+            background: linear-gradient(90deg, #2957c5, #2f68de);
+            color: #fff;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .recent-title {
+            margin: 14px 0 10px;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #7ea3e2;
+            font-weight: 700;
+        }
+
+        .doc-item {
+            border: 1px solid color-mix(in srgb, var(--line) 30%, transparent);
+            border-radius: 8px;
+            background: var(--surface-2);
+            padding: 10px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: border-color 0.2s ease, transform 0.15s ease;
+        }
+
+        .doc-item:hover {
+            border-color: var(--line);
+            transform: translateY(-1px);
+        }
+
+        .doc-item.active {
+            border-color: var(--line);
+            box-shadow: inset 0 0 0 1px var(--line);
+        }
+
+        .doc-name {
+            font-weight: 700;
+            line-height: 1.35;
+            margin-bottom: 5px;
+            color: var(--text);
+            word-break: break-word;
+        }
+
+        .doc-time {
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .editor-pane {
+            display: grid;
+            grid-template-rows: 56px 1fr;
+            min-width: 0;
+        }
+
+        .toolbar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-bottom: 1px solid color-mix(in srgb, var(--line) 30%, transparent);
+            background: var(--surface);
+        }
+
+        .tool {
+            border: 1px solid color-mix(in srgb, var(--line) 35%, transparent);
+            background: var(--surface-2);
+            color: var(--text);
+            min-width: 30px;
+            height: 30px;
+            padding: 0 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .tool.ai {
+            color: #fff;
+            background: linear-gradient(90deg, #6d28d9, #7e22ce);
+            border: 0;
+            padding: 0 12px;
+        }
+
+        .tool-select {
+            height: 30px;
+            border-radius: 6px;
+            border: 1px solid color-mix(in srgb, var(--line) 35%, transparent);
+            background: var(--surface-2);
+            color: var(--text);
+            padding: 0 8px;
+            font-size: 12px;
+            min-width: 74px;
+        }
+
+        .editor-layout {
+            display: grid;
+            grid-template-columns: 1fr 280px;
+            min-height: 0;
+        }
+
+        .editor-main {
+            background: var(--surface-2);
+            border-right: 1px solid color-mix(in srgb, var(--line) 20%, transparent);
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        .title-row {
+            padding: 10px 12px;
+            border-bottom: 1px solid color-mix(in srgb, var(--line) 18%, transparent);
+        }
+
+        #docTitleInput {
+            width: 100%;
+            border: 0;
+            outline: none;
+            background: transparent;
+            color: var(--text);
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        #editor {
+            flex: 1;
+            padding: 18px;
+            overflow: auto;
+            outline: none;
+            white-space: pre-wrap;
+            line-height: 1.6;
+            font-size: 15px;
+            color: var(--text);
+        }
+
+        #editor:empty::before {
+            content: attr(data-placeholder);
+            color: var(--muted);
+        }
+
+        .ai-panel {
+            background: var(--surface);
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+
+        .ai-head {
+            padding: 12px;
+            font-weight: 700;
+            font-size: 13px;
+            color: #f59e0b;
+            border-bottom: 1px solid color-mix(in srgb, var(--line) 18%, transparent);
+        }
+
+        .ai-body {
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            overflow: auto;
+        }
+
+        #aiInstruction {
+            border: 1px solid color-mix(in srgb, var(--line) 35%, transparent);
+            background: var(--surface-2);
+            color: var(--text);
+            border-radius: 8px;
+            min-height: 80px;
+            padding: 10px;
+            resize: vertical;
+        }
+
+        .suggestion {
+            border: 1px solid color-mix(in srgb, var(--line) 30%, transparent);
+            border-radius: 8px;
+            background: var(--surface-2);
+            padding: 10px;
+            color: var(--text);
+            font-size: 13px;
+            line-height: 1.45;
+        }
+
+        .suggestion-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 8px;
+        }
+
+        .hint {
+            color: var(--muted);
+            font-size: 13px;
+            text-align: center;
+            margin-top: 12px;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 18px;
+            right: 18px;
+            background: #0f172a;
+            color: #fff;
+            border-radius: 8px;
+            padding: 10px 12px;
+            display: none;
+            z-index: 99;
+        }
+
+        .toast.show {
+            display: block;
+        }
+
+        @media (max-width: 1200px) {
+            .workspace {
+                grid-template-columns: 220px 1fr;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .workspace {
+                grid-template-columns: 1fr;
+                grid-template-rows: 240px 1fr;
+            }
+
+            .sidebar {
+                border-right: 0;
+                border-bottom: 1px solid color-mix(in srgb, var(--line) 45%, transparent);
+            }
+
+            .editor-layout {
+                grid-template-columns: 1fr;
+                grid-template-rows: 1fr 260px;
+            }
+
+            .editor-main {
+                border-right: 0;
+                border-bottom: 1px solid color-mix(in srgb, var(--line) 20%, transparent);
+            }
+
+            .header h1 {
+                font-size: 22px;
+            }
+        }
+    </style>
+</head>
+<body>
+<header class="header">
+    <h1>AI Document Composer - Soạn Thảo Tài Liệu</h1>
+    <div class="top-actions">
+        <a class="btn" href="/">← Quay lại</a>
+        <button class="btn" data-theme-toggle><span data-theme-icon>☀️</span><span data-theme-label>Sáng</span></button>
+        <button class="btn" id="saveBtn">Lưu</button>
+        <button class="btn" id="exportBtn">Xuất</button>
+        <button class="btn" id="settingsBtn">Cài đặt</button>
+    </div>
+</header>
+
+<main class="workspace">
+    <aside class="sidebar">
+        <button class="new-doc-btn" id="newDocBtn">+ Tài Liệu Mới</button>
+        <div class="recent-title">Tài liệu gần đây</div>
+        <div id="recentList"></div>
+    </aside>
+
+    <section class="editor-pane">
+        <div class="toolbar">
+            <button class="tool" data-cmd="bold">B</button>
+            <button class="tool" data-cmd="italic">I</button>
+            <button class="tool" data-cmd="underline">U</button>
+            <select class="tool-select" id="fontSelect">
+                <option value="Segoe UI">Font</option>
+                <option value="Arial">Arial</option>
+                <option value="Times New Roman">Times</option>
+                <option value="Calibri">Calibri</option>
+            </select>
+            <select class="tool-select" id="sizeSelect">
+                <option value="3">Size</option>
+                <option value="2">12</option>
+                <option value="3">14</option>
+                <option value="4">16</option>
+                <option value="5">18</option>
+            </select>
+            <button class="tool" data-cmd="justifyCenter">≡</button>
+            <button class="tool" data-cmd="insertOrderedList">1.</button>
+            <button class="tool" id="clearFormatBtn">✕</button>
+            <button class="tool ai" id="aiEditBtn">✨ AI Edit</button>
+        </div>
+
+        <div class="editor-layout">
+            <div class="editor-main">
+                <div class="title-row">
+                    <input id="docTitleInput" type="text" placeholder="Tên tài liệu..." />
+                </div>
+                <div id="editor" contenteditable="true" data-placeholder="Bắt đầu soạn thảo tài liệu của bạn ở đây..."></div>
+            </div>
+
+            <aside class="ai-panel">
+                <div class="ai-head">💡 Gợi Ý AI</div>
+                <div class="ai-body">
+                    <textarea id="aiInstruction" placeholder="Viết thêm nội dung, rút gọn, đổi giọng văn..."></textarea>
+                    <button class="btn" id="askAiBtn">Nhận gợi ý</button>
+                    <div id="aiSuggestions"></div>
+                    <div id="aiHint" class="hint">Viết thêm nội dung để nhận gợi ý từ AI...</div>
+                </div>
+            </aside>
+        </div>
+    </section>
+</main>
+
+<div id="toast" class="toast"></div>
+
+<script>
+    const API_BASE = '';
+    let currentDocumentId = null;
+    let documents = [];
+
+    const editor = document.getElementById('editor');
+    const titleInput = document.getElementById('docTitleInput');
+    const recentList = document.getElementById('recentList');
+    const aiSuggestionsEl = document.getElementById('aiSuggestions');
+    const aiHint = document.getElementById('aiHint');
+
+    function bindThemeToggleFallback() {
+        const buttons = document.querySelectorAll('[data-theme-toggle]');
+        buttons.forEach((btn) => {
+            if (btn.dataset.themeBound === '1') return;
+            btn.addEventListener('click', (event) => {
+                event.preventDefault();
+                if (window.themeManager && typeof window.themeManager.toggleTheme === 'function') {
+                    window.themeManager.toggleTheme();
+                }
+            });
+            btn.dataset.themeBound = '1';
+        });
+    }
+
+    bindThemeToggleFallback();
+
+    function showToast(message) {
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 1800);
+    }
+
+    async function ensureAuthenticated() {
+        try {
+            const response = await fetch('/api/auth/check-auth');
+            const data = await response.json();
+            if (!data.authenticated) {
+                const next = encodeURIComponent('/composer');
+                window.location.href = `/login?next=${next}`;
+                return false;
+            }
+            return true;
+        } catch (error) {
+            const next = encodeURIComponent('/composer');
+            window.location.href = `/login?next=${next}`;
+            return false;
+        }
+    }
+
+    async function parseApiResponse(response) {
+        const rawText = await response.text();
+        let data = null;
+        try {
+            data = rawText ? JSON.parse(rawText) : {};
+        } catch (e) {
+            data = null;
+        }
+
+        if (!response.ok) {
+            const message = (data && (data.detail || data.error || data.message))
+                ? (data.detail || data.error || data.message)
+                : (rawText || `HTTP ${response.status}`);
+            throw new Error(message);
+        }
+
+        return data || {};
+    }
+
+    function formatDate(value) {
+        if (!value) return '-';
+        const d = new Date(value);
+        if (Number.isNaN(d.getTime())) return '-';
+        return d.toLocaleString('vi-VN');
+    }
+
+    function escapeHtml(text) {
+        return String(text || '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
+    function renderRecentDocuments() {
+        if (!documents.length) {
+            recentList.innerHTML = '<div class="hint" style="text-align:left;">Chưa có tài liệu nào.</div>';
+            return;
+        }
+
+        recentList.innerHTML = documents.map((doc) => `
+            <div class="doc-item ${doc.id === currentDocumentId ? 'active' : ''}" data-id="${doc.id}">
+                <div class="doc-name">${escapeHtml(doc.title || 'Không có tiêu đề')}</div>
+                <div class="doc-time">${formatDate(doc.updated_at)}</div>
+            </div>
+        `).join('');
+
+        recentList.querySelectorAll('.doc-item').forEach((item) => {
+            item.addEventListener('click', async () => {
+                const id = Number(item.getAttribute('data-id'));
+                await openDocument(id);
+            });
+        });
+    }
+
+    async function loadDocuments() {
+        const response = await fetch(`${API_BASE}/api/composer/documents`);
+        const result = await parseApiResponse(response);
+        documents = Array.isArray(result.data) ? result.data : [];
+        renderRecentDocuments();
+    }
+
+    async function openDocument(documentId) {
+        const response = await fetch(`${API_BASE}/api/composer/documents/${documentId}`);
+        const result = await parseApiResponse(response);
+        const doc = result.data;
+
+        currentDocumentId = doc.id;
+        titleInput.value = doc.title || '';
+        editor.innerHTML = doc.content || '';
+        renderRecentDocuments();
+    }
+
+    async function saveDocument() {
+        const title = titleInput.value.trim() || 'Tài liệu chưa đặt tên';
+        const content = editor.innerHTML.trim();
+
+        if (!content) {
+            showToast('Vui lòng nhập nội dung trước khi lưu');
+            return;
+        }
+
+        if (currentDocumentId) {
+            const response = await fetch(`${API_BASE}/api/composer/documents/${currentDocumentId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title, content })
+            });
+            await parseApiResponse(response);
+            showToast('Đã cập nhật tài liệu');
+        } else {
+            const response = await fetch(`${API_BASE}/api/composer/documents`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title, content, description: '' })
+            });
+            const result = await parseApiResponse(response);
+            currentDocumentId = result.data?.id || null;
+            showToast('Đã lưu tài liệu mới');
+        }
+
+        await loadDocuments();
+    }
+
+    async function askAi() {
+        const contextText = editor.innerText.trim();
+        const instruction = document.getElementById('aiInstruction').value.trim();
+
+        if (!contextText) {
+            showToast('Nhập nội dung trước khi dùng AI');
+            return;
+        }
+
+        const response = await fetch(`${API_BASE}/api/composer/suggestions`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                context: contextText,
+                max_suggestions: 3,
+                suggestion_length: 60,
+                mode: 'rewrite',
+                instruction: instruction || undefined,
+                original_text: window.getSelection().toString() || undefined
+            })
+        });
+
+        const result = await parseApiResponse(response);
+        const suggestions = Array.isArray(result.data) ? result.data : [];
+
+        if (!suggestions.length) {
+            aiSuggestionsEl.innerHTML = '';
+            aiHint.style.display = 'block';
+            aiHint.textContent = 'AI chưa tạo gợi ý, thử cung cấp thêm yêu cầu.';
+            return;
+        }
+
+        aiHint.style.display = 'none';
+        aiSuggestionsEl.innerHTML = suggestions.map((item, index) => {
+            const text = typeof item === 'string' ? item : (item.suggestion || item.text || JSON.stringify(item));
+            return `
+                <div class="suggestion">
+                    <div>${escapeHtml(text)}</div>
+                    <div class="suggestion-actions">
+                        <button class="btn" data-apply-index="${index}">Áp dụng</button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        aiSuggestionsEl.querySelectorAll('button[data-apply-index]').forEach((button) => {
+            button.addEventListener('click', () => {
+                const i = Number(button.getAttribute('data-apply-index'));
+                const item = suggestions[i];
+                const text = typeof item === 'string' ? item : (item.suggestion || item.text || '');
+                if (text) {
+                    document.execCommand('insertText', false, text + ' ');
+                    showToast('Đã áp dụng gợi ý AI');
+                }
+            });
+        });
+    }
+
+    function exportDocument() {
+        const title = (titleInput.value || 'composer-document').replace(/[\\/:*?"<>|]/g, '_');
+        const content = editor.innerText || '';
+        const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `${title}.txt`;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(url);
+        showToast('Đã xuất tài liệu .txt');
+    }
+
+    function newDocument() {
+        currentDocumentId = null;
+        titleInput.value = '';
+        editor.innerHTML = '';
+        aiSuggestionsEl.innerHTML = '';
+        aiHint.style.display = 'block';
+        aiHint.textContent = 'Viết thêm nội dung để nhận gợi ý từ AI...';
+        renderRecentDocuments();
+    }
+
+    document.querySelectorAll('[data-cmd]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+            const cmd = btn.getAttribute('data-cmd');
+            document.execCommand(cmd, false, null);
+            editor.focus();
+        });
+    });
+
+    document.getElementById('fontSelect').addEventListener('change', (e) => {
+        document.execCommand('fontName', false, e.target.value);
+        editor.focus();
+    });
+
+    document.getElementById('sizeSelect').addEventListener('change', (e) => {
+        document.execCommand('fontSize', false, e.target.value);
+        editor.focus();
+    });
+
+    document.getElementById('clearFormatBtn').addEventListener('click', () => {
+        document.execCommand('removeFormat', false, null);
+        editor.focus();
+    });
+
+    document.getElementById('newDocBtn').addEventListener('click', newDocument);
+    document.getElementById('saveBtn').addEventListener('click', async () => {
+        try {
+            await saveDocument();
+        } catch (error) {
+            showToast(`Lưu thất bại: ${error.message}`);
+        }
+    });
+    document.getElementById('exportBtn').addEventListener('click', exportDocument);
+    document.getElementById('settingsBtn').addEventListener('click', () => showToast('Cài đặt sẽ được mở ở bản tiếp theo'));
+    document.getElementById('aiEditBtn').addEventListener('click', async () => {
+        try {
+            await askAi();
+        } catch (error) {
+            showToast(`AI lỗi: ${error.message}`);
+        }
+    });
+    document.getElementById('askAiBtn').addEventListener('click', async () => {
+        try {
+            await askAi();
+        } catch (error) {
+            showToast(`AI lỗi: ${error.message}`);
+        }
+    });
+
+    window.addEventListener('load', async () => {
+        bindThemeToggleFallback();
+        const ok = await ensureAuthenticated();
+        if (!ok) return;
+
+        try {
+            await loadDocuments();
+        } catch (error) {
+            showToast(`Không tải được tài liệu: ${error.message}`);
+        }
+    });
+</script>
+</body>
+</html>

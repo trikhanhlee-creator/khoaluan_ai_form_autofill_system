@@ -1,0 +1,130 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Quản Lý Người Dùng</title>
+    <script src="/static/js/theme-manager.js"></script>
+    <link rel="stylesheet" href="/static/css/admin-styles.css">
+</head>
+<body>
+<div class="admin-layout" id="usersPage">
+    <header class="admin-header">
+        <a class="header-logo" href="/admin-dashboard">⚙️ Admin Panel</a>
+        <div class="header-actions">
+            <button class="btn-icon" id="adminThemeToggle" type="button" title="Đổi giao diện">🌙</button>
+            <a class="btn btn-secondary btn-sm" href="/">🏠 Về Trang Chủ</a>
+            <div class="user-menu" id="adminUserMenuTrigger">
+                <span>👤</span>
+                <span data-admin-username>Admin User</span>
+            </div>
+            <div class="user-menu-content" id="adminUserMenuContent">
+                <a class="user-menu-item" href="/admin-account">⚙️ Tài khoản admin</a>
+                <button class="user-menu-item" type="button" data-admin-logout>🚪 Đăng xuất</button>
+            </div>
+        </div>
+    </header>
+
+    <aside class="admin-sidebar">
+        <div class="sidebar-header">Menu chính</div>
+        <ul class="sidebar-menu">
+            <li class="sidebar-menu-item"><a class="sidebar-menu-link" href="/admin-dashboard"><i>📊</i><span>Bảng Điều Khiển</span></a></li>
+            <li class="sidebar-menu-item"><a class="sidebar-menu-link" href="/admin-users"><i>👥</i><span>Quản Lý Người Dùng</span></a></li>
+            <li class="sidebar-menu-item"><a class="sidebar-menu-link" href="/admin-forms"><i>📋</i><span>Quản Lý Biểu Mẫu</span></a></li>
+            <li class="sidebar-menu-item"><a class="sidebar-menu-link" href="/admin-reports"><i>📈</i><span>Báo Cáo & Thống Kê</span></a></li>
+            <li class="sidebar-menu-item"><a class="sidebar-menu-link" href="/admin-audit-log"><i>🕒</i><span>Lịch Sử Hoạt Động</span></a></li>
+        </ul>
+    </aside>
+
+    <main class="admin-main">
+        <div id="alertHost"></div>
+
+        <div class="page-header">
+            <div>
+                <h1 class="page-title"><span class="page-title-icon">👥</span> Quản Lý Người Dùng</h1>
+                <p class="page-subtitle">Quản trị tài khoản, phân quyền vai trò và trạng thái hoạt động của người dùng.</p>
+            </div>
+            <div class="page-actions">
+                <button class="btn btn-primary" type="button" id="addUserBtn">➕ Thêm Người Dùng</button>
+                <a class="btn btn-secondary" href="/admin-dashboard">⬅️ Dashboard</a>
+            </div>
+        </div>
+
+        <section class="card" style="margin-bottom: 18px;">
+            <div class="search-bar">
+                <div class="search-input-wrapper">
+                    <span class="search-icon">🔎</span>
+                    <input class="form-input" id="userSearchInput" type="text" placeholder="Tìm theo tên đăng nhập hoặc email...">
+                </div>
+                <select class="form-select" id="userRoleFilter" style="max-width: 180px;">
+                    <option value="">Tất cả vai trò</option>
+                    <option value="admin">Admin</option>
+                    <option value="user">User</option>
+                </select>
+                <select class="form-select" id="userStatusFilter" style="max-width: 180px;">
+                    <option value="">Tất cả trạng thái</option>
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                </select>
+                <button class="btn btn-primary" type="button" id="usersSearchBtn">Tìm kiếm</button>
+            </div>
+        </section>
+
+        <section class="card" style="margin-bottom: 20px;">
+            <div class="table-container">
+                <table class="table">
+                    <thead class="table-head">
+                        <tr>
+                            <th class="table-header">ID</th>
+                            <th class="table-header">Tên Người Dùng</th>
+                            <th class="table-header">Email</th>
+                            <th class="table-header">Vai Trò</th>
+                            <th class="table-header">Trạng Thái</th>
+                            <th class="table-header">Ngày Tạo</th>
+                            <th class="table-header">Hành Động</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTableBody">
+                        <tr class="table-row">
+                            <td class="table-cell" colspan="7">Đang tải dữ liệu...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-footer">
+                <span class="table-cell-small" id="usersPaginationInfo">Hiển thị 0 bản ghi</span>
+                <div class="table-actions">
+                    <button class="btn btn-secondary btn-sm" id="usersPrevBtn" type="button">← Trước</button>
+                    <button class="btn btn-secondary btn-sm" id="usersNextBtn" type="button">Tiếp →</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="stats-grid">
+            <article class="stat-card">
+                <span class="stat-card-icon">👥</span>
+                <div class="stat-card-value" id="usersStatAll">0</div>
+                <div class="stat-card-label">Tổng Người Dùng</div>
+            </article>
+            <article class="stat-card">
+                <span class="stat-card-icon">🛡️</span>
+                <div class="stat-card-value" id="usersStatAdmins">0</div>
+                <div class="stat-card-label">Admin</div>
+            </article>
+            <article class="stat-card">
+                <span class="stat-card-icon">✅</span>
+                <div class="stat-card-value" id="usersStatActive">0</div>
+                <div class="stat-card-label">Active</div>
+            </article>
+            <article class="stat-card">
+                <span class="stat-card-icon">⛔</span>
+                <div class="stat-card-value" id="usersStatInactive">0</div>
+                <div class="stat-card-label">Inactive</div>
+            </article>
+        </section>
+    </main>
+</div>
+
+<script src="/static/js/admin-panel.js?v=20260401-1"></script>
+</body>
+</html>

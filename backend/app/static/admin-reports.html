@@ -1,0 +1,119 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Báo Cáo & Thống Kê</title>
+    <script src="/static/js/theme-manager.js"></script>
+    <link rel="stylesheet" href="/static/css/admin-styles.css">
+</head>
+<body>
+<div class="admin-layout" id="reportsPage">
+    <header class="admin-header">
+        <a class="header-logo" href="/admin-dashboard">⚙️ Admin Panel</a>
+        <div class="header-actions">
+            <button class="btn-icon" id="adminThemeToggle" type="button" title="Đổi giao diện">🌙</button>
+            <a class="btn btn-secondary btn-sm" href="/">🏠 Về Trang Chủ</a>
+            <div class="user-menu" id="adminUserMenuTrigger">
+                <span>👤</span>
+                <span data-admin-username>Admin User</span>
+            </div>
+            <div class="user-menu-content" id="adminUserMenuContent">
+                <a class="user-menu-item" href="/admin-account">⚙️ Tài khoản admin</a>
+                <button class="user-menu-item" type="button" data-admin-logout>🚪 Đăng xuất</button>
+            </div>
+        </div>
+    </header>
+
+    <aside class="admin-sidebar">
+        <div class="sidebar-header">Menu chính</div>
+        <ul class="sidebar-menu">
+            <li class="sidebar-menu-item"><a class="sidebar-menu-link" href="/admin-dashboard"><i>📊</i><span>Bảng Điều Khiển</span></a></li>
+            <li class="sidebar-menu-item"><a class="sidebar-menu-link" href="/admin-users"><i>👥</i><span>Quản Lý Người Dùng</span></a></li>
+            <li class="sidebar-menu-item"><a class="sidebar-menu-link" href="/admin-forms"><i>📋</i><span>Quản Lý Biểu Mẫu</span></a></li>
+            <li class="sidebar-menu-item"><a class="sidebar-menu-link" href="/admin-reports"><i>📈</i><span>Báo Cáo & Thống Kê</span></a></li>
+            <li class="sidebar-menu-item"><a class="sidebar-menu-link" href="/admin-audit-log"><i>🕒</i><span>Lịch Sử Hoạt Động</span></a></li>
+        </ul>
+    </aside>
+
+    <main class="admin-main">
+        <div id="alertHost"></div>
+
+        <div class="page-header">
+            <div>
+                <h1 class="page-title"><span class="page-title-icon">📈</span> Báo Cáo & Thống Kê</h1>
+                <p class="page-subtitle">Phân tích số liệu hệ thống theo thời gian để tối ưu vận hành.</p>
+            </div>
+            <div class="page-actions">
+                <button class="btn btn-secondary" type="button">📤 Xuất Báo Cáo</button>
+                <a class="btn btn-secondary" href="/admin-dashboard">⬅️ Dashboard</a>
+            </div>
+        </div>
+
+        <section class="card" style="margin-bottom: 18px;">
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label" for="reportFromDate">Từ ngày</label>
+                    <input class="form-input" type="date" id="reportFromDate">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="reportToDate">Đến ngày</label>
+                    <input class="form-input" type="date" id="reportToDate">
+                </div>
+                <div class="form-group" style="align-self: end;">
+                    <button class="btn btn-primary" type="button" id="reportsSearchBtn">🔍 Tìm kiếm</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="stats-grid">
+            <article class="stat-card">
+                <span class="stat-card-icon">👥</span>
+                <div class="stat-card-value" id="reportTotalUsers">0</div>
+                <div class="stat-card-label">Tổng người dùng</div>
+                <div class="stat-card-trend up">↑ 30 ngày gần đây</div>
+            </article>
+            <article class="stat-card">
+                <span class="stat-card-icon">📄</span>
+                <div class="stat-card-value" id="reportTotalForms">0</div>
+                <div class="stat-card-label">Tổng biểu mẫu</div>
+                <div class="stat-card-trend up">↑ Dữ liệu mới</div>
+            </article>
+            <article class="stat-card">
+                <span class="stat-card-icon">📥</span>
+                <div class="stat-card-value" id="reportTotalSubmissions">0</div>
+                <div class="stat-card-label">Tổng bản ghi</div>
+                <div class="stat-card-trend up">↑ 24h hôm nay</div>
+            </article>
+            <article class="stat-card">
+                <span class="stat-card-icon">⏰</span>
+                <div class="stat-card-value" id="reportAvgActivity">0.0h</div>
+                <div class="stat-card-label">Thời gian trung bình</div>
+                <div class="stat-card-trend up">↑ So với tuần trước</div>
+            </article>
+        </section>
+
+        <section class="form-row">
+            <article class="card">
+                <div class="card-header">
+                    <h2 class="card-title">📊 Biểu đồ tăng trưởng người dùng</h2>
+                </div>
+                <div class="card-content" id="reportGrowthText">
+                    Dữ liệu tăng trưởng sẽ được hiển thị sau khi tải báo cáo.
+                </div>
+            </article>
+            <article class="card">
+                <div class="card-header">
+                    <h2 class="card-title">📈 Biểu đồ sử dụng biểu mẫu</h2>
+                </div>
+                <div class="card-content" id="reportUsageText">
+                    Dữ liệu sử dụng biểu mẫu theo loại sẽ được hiển thị tại đây.
+                </div>
+            </article>
+        </section>
+    </main>
+</div>
+
+<script src="/static/js/admin-panel.js?v=20260401-1"></script>
+</body>
+</html>

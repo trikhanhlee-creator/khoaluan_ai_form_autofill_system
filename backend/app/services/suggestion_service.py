@@ -3,9 +3,10 @@ from app.db.repositories.entry_repo import EntryRepository
 from app.ai.rule_engine import RuleEngine
 from app.core.config import settings
 from app.core.logger import logger
-from app.db.models import Entry
+from app.db.models import Entry, Suggestion
 from typing import List, Dict
 from datetime import datetime
+from sqlalchemy import func
 
 
 class SuggestionService:
@@ -86,6 +87,7 @@ class SuggestionService:
     ) -> Dict:
         """
         Lưu entry từ plugin vào database
+        Không tạo suggestions table - suggestions được lấy trực tiếp từ entries
         
         Args:
             db: Database session
@@ -126,6 +128,58 @@ class SuggestionService:
             db.rollback()
             logger.error(f"Error saving entry: {str(e)}", exc_info=True)
             raise
+
+    @staticmethod
+    def _update_suggestions_cache(
+        db: Session,
+        user_id: int,
+        field_id: int,
+        new_value: str
+    ):
+        """
+        Cập nhật bảng suggestions cache sau khi lưu entry mới
+        
+        Logic:
+        - Nếu giá trị đã tồn tại: tăng frequency
+        - Nếu giá trị chưa tồn tại: thêm mới với frequency=1
+        """
+        try:
+            logger.info(f"Updating suggestions cache: user_id={user_id}, field_id={field_id}, value={new_value}")
+            
+            # Kiểm tra suggestion đã tồn tại
+            existing_suggestion = db.query(Suggestion).filter(
+                Suggestion.user_id == user_id,
+                Suggestion.field_id == field_id,
+                Suggestion.suggested_value == new_value
+            ).first()
+            
+            if existing_suggestion:
+                # Tăng frequency
+                existing_suggestion.frequency += 1
+                existing_suggestion.ranking = existing_suggestion.frequency
+                existing_suggestion.updated_at = datetime.utcnow()
+                logger.info(f"Updated suggestion: frequency → {existing_suggestion.frequency}")
+            else:
+                # Thêm mới
+                new_suggestion = Suggestion(
+                    user_id=user_id,
+                    field_id=field_id,
+                    suggested_value=new_value,
+                    frequency=1,
+                    ranking=1,
+                    created_at=datetime.utcnow(),
+                    updated_at=datetime.utcnow()
+                )
+                db.add(new_suggestion)
+                logger.info(f"Created new suggestion")
+            
+            db.commit()
+            logger.info(f"Suggestions cache updated successfully")
+            
+        except Exception as e:
+            db.rollback()
+            logger.error(f"Error updating suggestions cache: {str(e)}", exc_info=True)
+            # Không raise - nếu cache update fail, entry vẫn lưu được
 
     @staticmethod
     def get_suggestions_with_history(
