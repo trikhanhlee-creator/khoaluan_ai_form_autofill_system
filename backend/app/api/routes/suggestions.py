@@ -2,10 +2,11 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 import re
 import unicodedata
+import json
 from collections import defaultdict
 
 from app.db.session import get_db
-from app.db.models import Field, Entry, Suggestion, User
+from app.db.models import Field, Entry, Suggestion, User, WordSubmission
 from app.services.suggestion_service import SuggestionService
 from app.schemas.suggestion import (
     SuggestionsListResponse,
@@ -65,6 +66,113 @@ def _field_similarity_score(target_key: str, candidate_key: str) -> float:
     return overlap / max(1, len(target_tokens))
 
 
+PERSONA_KEYWORDS: dict[str, tuple[str, ...]] = {
+    "lecturer": (
+        "giang vien",
+        "giao vien",
+        "ma giang vien",
+        "ma giao vien",
+        "bo mon",
+        "hoc vi",
+        "chuc danh",
+        "gv",
+    ),
+    "student": (
+        "sinh vien",
+        "hoc sinh",
+        "hoc vien",
+        "ma sinh vien",
+        "mssv",
+        "sv",
+        "lop",
+        "nien khoa",
+    ),
+    "staff": (
+        "nhan vien",
+        "can bo",
+        "chuyen vien",
+        "ma nhan vien",
+        "cbnv",
+    ),
+    "parent": (
+        "phu huynh",
+        "cha me",
+        "nguoi giam ho",
+    ),
+}
+
+
+def _extract_persona_tags_from_key(field_key: str) -> set[str]:
+    key = f" {field_key or ''} "
+    tags: set[str] = set()
+
+    for persona, markers in PERSONA_KEYWORDS.items():
+        if any(f" {marker} " in key for marker in markers):
+            tags.add(persona)
+
+    return tags
+
+
+def _infer_form_persona_tags(field_names: list[str]) -> set[str]:
+    tag_counts: dict[str, int] = defaultdict(int)
+
+    for field_name in field_names:
+        normalized = _normalize_field_key(field_name)
+        for tag in _extract_persona_tags_from_key(normalized):
+            tag_counts[tag] += 1
+
+    if not tag_counts:
+        return set()
+
+    max_hits = max(tag_counts.values())
+    return {tag for tag, count in tag_counts.items() if count == max_hits and count > 0}
+
+
+def _is_persona_conflict(target_tags: set[str], source_tags: set[str]) -> bool:
+    if not target_tags or not source_tags:
+        return False
+    return target_tags.isdisjoint(source_tags)
+
+
+def _persona_match_score(target_tags: set[str], source_tags: set[str]) -> float:
+    if not target_tags:
+        return 0.0
+    if not source_tags:
+        return 0.2
+    return 1.0 if not target_tags.isdisjoint(source_tags) else 0.0
+
+
+def _target_is_identity_like(target_key: str) -> bool:
+    tokens = set((target_key or "").split())
+    return bool(tokens.intersection({"ho", "ten", "ma", "id", "name", "fullname", "nguoi"}))
+
+
+def _value_conflicts_with_target_persona(value: str, target_tags: set[str], target_key: str) -> bool:
+    if not target_tags or not _target_is_identity_like(target_key):
+        return False
+
+    normalized = _normalize_field_key(value)
+    if not normalized:
+        return False
+
+    key = f" {normalized} "
+    tokens = [tok for tok in normalized.split() if tok]
+
+    if "lecturer" in target_tags:
+        if " sinh vien " in key or " hoc sinh " in key or " mssv " in key or " sv " in key:
+            return True
+        if any(tok.startswith("sv") or tok.startswith("mssv") for tok in tokens):
+            return True
+
+    if "student" in target_tags:
+        if " giang vien " in key or " giao vien " in key or " gv " in key:
+            return True
+        if any(tok.startswith("gv") for tok in tokens):
+            return True
+
+    return False
+
+
 def _is_noise_suggestion_value(value: str) -> bool:
     text = (value or "").strip()
     if not text:
@@ -74,6 +182,10 @@ def _is_noise_suggestion_value(value: str) -> bool:
     if re.match(r"^[a-z0-9]+_[0-9]{8,}$", text.lower()):
         return True
     if re.match(r"^\d{10,}$", text):
+        return True
+    if re.match(r"^[._\-\s]{3,}$", text):
+        return True
+    if text.lower() in {"n/a", "na", "null", "none", "khong", "không", "test", "unknown", "...", "-"}:
         return True
     if len(text) > 80:
         return True
@@ -176,6 +288,8 @@ def _name_quality_score(value: str) -> float:
 async def get_cross_field_suggestions(
     user_id: int | None = Query(None, description="ID của user (optional, admin only)"),
     field_name: str = Query(..., description="Tên trường hiện tại"),
+    current_form_id: int | None = Query(None, description="Form hiện tại để suy luận đối tượng điền"),
+    current_template_id: int | None = Query(None, description="Template Word hiện tại để ưu tiên ngữ cảnh cùng mẫu"),
     q: str | None = Query(None, description="Tiền tố giá trị đang gõ để lọc gợi ý"),
     top_k: int = Query(5, description="Số lượng gợi ý tối đa (1-10)"),
     db: Session = Depends(get_db),
@@ -197,17 +311,17 @@ async def get_cross_field_suggestions(
         target_is_family_name = _is_family_name_key(target_key)
         target_is_name_related = target_is_fullname or target_is_given_name or target_is_family_name
 
-        rows = db.query(Entry.value, Entry.created_at, Field.field_name, Entry.user_id).join(
+        form_persona_tags: set[str] = set()
+        if current_form_id and current_form_id > 0:
+            form_fields = db.query(Field.field_name).filter(Field.form_id == current_form_id).all()
+            form_persona_tags = _infer_form_persona_tags([row[0] for row in form_fields if row and row[0]])
+
+        target_persona_tags = _extract_persona_tags_from_key(target_key)
+        effective_target_persona = target_persona_tags or form_persona_tags
+
+        rows = db.query(Entry.value, Entry.created_at, Field.field_name, Entry.user_id, Entry.form_id).join(
             Field, Entry.field_id == Field.id
         ).all()
-
-        if not rows:
-            return {
-                "field_name": field_name,
-                "suggestions": [],
-                "total_count": 0,
-                "message": "Chưa có lịch sử nhập liệu"
-            }
 
         stats: dict[str, dict] = defaultdict(lambda: {
             "frequency": 0,
@@ -215,17 +329,66 @@ async def get_cross_field_suggestions(
             "source_fields": set(),
             "similarity": 0.0,
             "own_hits": 0,
+            "template_hits": 0,
+            "persona_hits": 0,
+            "persona_score": 0.0,
         })
         family_name_stats: dict[str, dict] = defaultdict(lambda: {"frequency": 0, "latest_time": None})
         given_name_stats: dict[str, dict] = defaultdict(lambda: {"frequency": 0, "latest_time": None})
 
-        for value, created_at, source_field_name, row_user_id in rows:
+        if current_template_id and current_template_id > 0:
+            template_rows = db.query(WordSubmission.submission_data, WordSubmission.created_at).filter(
+                WordSubmission.user_id == effective_user_id,
+                WordSubmission.template_id == current_template_id
+            ).all()
+
+            for payload, created_at in template_rows:
+                try:
+                    submission_data = json.loads(payload or "{}")
+                except Exception:
+                    continue
+
+                if not isinstance(submission_data, dict):
+                    continue
+
+                for submitted_key, submitted_value in submission_data.items():
+                    similarity = _field_similarity_score(target_key, _normalize_field_key(str(submitted_key)))
+                    if similarity < 0.9:
+                        continue
+
+                    value = (submitted_value or "") if isinstance(submitted_value, str) else str(submitted_value or "")
+                    value = value.strip()
+                    if not value or _is_noise_suggestion_value(value):
+                        continue
+                    if _value_conflicts_with_target_persona(value, effective_target_persona, target_key):
+                        continue
+                    if value_filter and not _normalize_field_key(value).startswith(value_filter):
+                        continue
+
+                    item = stats[value]
+                    item["frequency"] += 1
+                    item["template_hits"] += 1
+                    item["source_fields"].add("Template hiện tại")
+                    item["similarity"] = max(item["similarity"], 1.0)
+                    item["persona_score"] = max(item["persona_score"], 1.0 if effective_target_persona else 0.0)
+                    if created_at and (item["latest_time"] is None or created_at > item["latest_time"]):
+                        item["latest_time"] = created_at
+
+        for value, created_at, source_field_name, row_user_id, _row_form_id in rows:
             source_name = source_field_name or ""
             source_key = _normalize_field_key(source_name)
             similarity = _field_similarity_score(target_key, source_key)
             source_is_fullname = _is_fullname_key(source_key)
             source_is_given = _is_given_name_key(source_key)
             source_is_family = _is_family_name_key(source_key)
+            source_persona_tags = _extract_persona_tags_from_key(source_key)
+
+            if _is_persona_conflict(effective_target_persona, source_persona_tags):
+                continue
+
+            # When target persona is known, suppress unlabeled generic fields to avoid role mixing.
+            if effective_target_persona and not source_persona_tags and similarity < 0.85:
+                continue
 
             # Name-specific boosting so Word/Excel can share Họ + Tên with Họ và tên.
             if target_is_fullname and source_is_fullname:
@@ -247,6 +410,8 @@ async def get_cross_field_suggestions(
             if not suggestion_value:
                 continue
             if _is_noise_suggestion_value(suggestion_value):
+                continue
+            if _value_conflicts_with_target_persona(suggestion_value, effective_target_persona, target_key):
                 continue
 
             # For fullname target, collect Ho/Ten separately to build a combined suggestion later.
@@ -293,6 +458,10 @@ async def get_cross_field_suggestions(
             item["frequency"] += 1
             item["source_fields"].add(source_name)
             item["similarity"] = max(item["similarity"], similarity)
+            persona_score = _persona_match_score(effective_target_persona, source_persona_tags)
+            item["persona_score"] = max(item["persona_score"], persona_score)
+            if persona_score >= 1.0:
+                item["persona_hits"] += 1
             if row_user_id == effective_user_id:
                 item["own_hits"] += 1
             if created_at and (item["latest_time"] is None or created_at > item["latest_time"]):
@@ -343,6 +512,9 @@ async def get_cross_field_suggestions(
         sorted_items = sorted(
             stats.items(),
             key=lambda x: (
+                x[1]["template_hits"],
+                x[1]["persona_hits"],
+                x[1]["persona_score"],
                 x[1]["own_hits"],
                 _name_quality_score(x[0]) if target_is_name_related else 0.0,
                 x[1]["similarity"],
@@ -365,6 +537,7 @@ async def get_cross_field_suggestions(
 
         return {
             "field_name": field_name,
+            "target_persona": sorted(list(effective_target_persona)),
             "suggestions": suggestions,
             "total_count": len(suggestions),
             "message": "Suggestions từ lịch sử trường tương tự"

@@ -3673,12 +3673,25 @@
 
             try {
                 const normalizedFieldKey = removeAccents(fieldName || `field_${fieldId}`);
-                const cacheKey = `${CURRENT_USER_ID || 'anon'}_${normalizedFieldKey}`;
+                const cacheScope = `${currentFormId || 0}_${currentTemplate?.id || 0}`;
+                const cacheKey = `${CURRENT_USER_ID || 'anon'}_${cacheScope}_${normalizedFieldKey}`;
                 
                 if (!suggestionsCache[cacheKey]) {
                     // Use cross-field endpoint to reuse history from similar fields (Word + Excel)
+                    const queryParams = new URLSearchParams({
+                        field_name: fieldName,
+                        top_k: '10'
+                    });
+
+                    if (currentFormId) {
+                        queryParams.set('current_form_id', String(currentFormId));
+                    }
+                    if (currentTemplate?.id) {
+                        queryParams.set('current_template_id', String(currentTemplate.id));
+                    }
+
                     const response = await fetch(
-                        `${API_BASE}/api/suggestions/cross-field?field_name=${encodeURIComponent(fieldName)}&top_k=10`
+                        `${API_BASE}/api/suggestions/cross-field?${queryParams.toString()}`
                     );
 
                     if (!response.ok) {
@@ -3738,7 +3751,8 @@
 
             const fieldName = input.getAttribute('data-field-name') || '';
             const normalizedFieldKey = removeAccents(fieldName || `field_${fieldId}`);
-            const cacheKey = `${CURRENT_USER_ID || 'anon'}_${normalizedFieldKey}`;
+            const cacheScope = `${currentFormId || 0}_${currentTemplate?.id || 0}`;
+            const cacheKey = `${CURRENT_USER_ID || 'anon'}_${cacheScope}_${normalizedFieldKey}`;
             const allSuggestions = suggestionsCache[cacheKey] || [];
 
             // If no suggestions available, hide

@@ -7,6 +7,7 @@ API routes cho soạn thảo tài liệu với AI suggestions
 
 from fastapi import APIRouter, Depends, HTTPException, File, UploadFile
 from sqlalchemy.orm import Session
+from sqlalchemy import inspect, text
 from typing import List, Optional
 from pydantic import BaseModel
 import json
@@ -15,10 +16,85 @@ from app.db.session import get_db
 from app.core.logger import logger
 from app.core.auth import get_current_user
 from app.services.ai_composer_service import AIComposerService
-from app.db.models import Document, User
+from app.db.models import Document, CompositionHistory, User
 
 # Khởi tạo composer service
 composer_service = AIComposerService()
+
+
+def _ensure_table_columns(
+    db: Session,
+    table_name: str,
+    required_columns: dict,
+    backfill_sql: Optional[List[str]] = None,
+) -> None:
+    """Best-effort schema patch for legacy MySQL tables."""
+    bind = db.get_bind()
+    inspector = inspect(bind)
+
+    try:
+        existing_columns = {col["name"] for col in inspector.get_columns(table_name)}
+    except Exception as schema_error:
+        logger.error(f"Unable to inspect table '{table_name}': {schema_error}")
+        raise
+
+    missing_columns = [name for name in required_columns if name not in existing_columns]
+    if not missing_columns:
+        return
+
+    try:
+        for col_name in missing_columns:
+            ddl = required_columns[col_name]
+            db.execute(text(f"ALTER TABLE {table_name} ADD COLUMN {col_name} {ddl}"))
+
+        for stmt in backfill_sql or []:
+            db.execute(text(stmt))
+
+        db.commit()
+        logger.info(f"Patched legacy '{table_name}' schema, added columns: {', '.join(missing_columns)}")
+    except Exception as alter_error:
+        db.rollback()
+        alter_message = str(alter_error).lower()
+        # Another worker may have altered schema at the same time.
+        if "duplicate column" in alter_message or "already exists" in alter_message:
+            refreshed = inspect(bind)
+            refreshed_columns = {col["name"] for col in refreshed.get_columns(table_name)}
+            still_missing = [name for name in required_columns if name not in refreshed_columns]
+            if not still_missing:
+                return
+
+        logger.error(f"Failed to patch '{table_name}' schema: {alter_error}")
+        raise
+
+
+def ensure_composer_schema_compatibility(db: Session) -> None:
+    """Patch legacy composer tables to match ORM columns."""
+    bind = db.get_bind()
+    inspector = inspect(bind)
+
+    if not inspector.has_table("documents"):
+        Document.__table__.create(bind=bind, checkfirst=True)
+    else:
+        _ensure_table_columns(
+            db=db,
+            table_name="documents",
+            required_columns={
+                "document_type": "VARCHAR(50) NULL",
+                "is_public": "BOOLEAN NOT NULL DEFAULT 0",
+            },
+            backfill_sql=["UPDATE documents SET is_public = 0 WHERE is_public IS NULL"],
+        )
+
+    if not inspector.has_table("composition_history"):
+        CompositionHistory.__table__.create(bind=bind, checkfirst=True)
+    else:
+        _ensure_table_columns(
+            db=db,
+            table_name="composition_history",
+            required_columns={
+                "ai_model": "VARCHAR(50) NULL",
+            },
+        )
 
 # Router
 router = APIRouter(
@@ -52,6 +128,7 @@ class SuggestionRequest(BaseModel):
     mode: str = "continuation"  # continuation | rewrite
     original_text: Optional[str] = None
     instruction: Optional[str] = None
+    rewrite_scope: Optional[str] = None  # phrase | sentence | document
 
 
 class CompositionActionRequest(BaseModel):
@@ -108,6 +185,8 @@ async def create_document(
         
         return {"success": True, "data": result}
         
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error creating document: {e}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -138,6 +217,8 @@ async def list_documents(
         
         return {"success": True, "data": documents}
         
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error listing documents: {e}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -280,11 +361,14 @@ async def get_suggestions(
             suggestion_length=suggestion_req.suggestion_length,
             mode=suggestion_req.mode,
             original_text=suggestion_req.original_text,
-            instruction=suggestion_req.instruction
+            instruction=suggestion_req.instruction,
+            rewrite_scope=suggestion_req.rewrite_scope
         )
         
         return {"success": True, "data": suggestions}
         
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error getting suggestions: {e}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -322,6 +406,8 @@ async def save_composition_action(
         
         return {"success": True, "data": result}
         
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error saving composition action: {e}")
         raise HTTPException(status_code=500, detail=str(e))

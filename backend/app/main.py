@@ -29,6 +29,7 @@ async def ensure_legacy_schema_compatibility():
     db = SessionLocal()
     try:
         word.ensure_forms_schema_compatibility(db)
+        composer.ensure_composer_schema_compatibility(db)
         recovered_admin = auth.ensure_default_admin_privilege(db)
         if recovered_admin:
             logger.info(f"Default admin check completed with user: {recovered_admin.username}")

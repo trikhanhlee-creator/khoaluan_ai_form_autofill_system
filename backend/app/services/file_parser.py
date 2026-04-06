@@ -31,15 +31,15 @@ class BaseFileParser(ABC):
     """Base class cho tất cả file parsers"""
     
     FIELD_TYPE_KEYWORDS = {
-        'năm': 'number',
         'ngày': 'date',
+        'năm sinh': 'number',
+        'năm': 'number',
         'điện thoại': 'phone',
         'email': 'email',
         'địa chỉ': 'text',
         'tên': 'text',
         'họ': 'text',
         'số': 'number',
-        'năm sinh': 'number',
     }
     
     SUPPORTED_EXTENSIONS = []
@@ -113,7 +113,8 @@ class DocxParser(BaseFileParser):
         self.doc = Document(file_path)
         self.detected_title = ""
 
-    PLACEHOLDER_RE = re.compile(r'(\.{3,}|_{3,}|…{2,}|-{3,}|─{3,}|\u2026{2,})')
+    PLACEHOLDER_RE = re.compile(r'(\.{3,}|_{3,}|…{2,}|-{3,}|─{3,}|‒{3,}|–{3,}|—{3,}|\u2026{2,})')
+    CHECKBOX_RE = re.compile(r'(?:\[\s*\]|\(\s*\)|□|☐|☑|✓)')
     DATE_TEMPLATE_RE = re.compile(r'ngày\s*[.\-_/…_]{0,10}\s*tháng\s*[.\-_/…_]{0,10}\s*năm', re.IGNORECASE)
 
     HEADING_PREFIXES = (
@@ -145,6 +146,8 @@ class DocxParser(BaseFileParser):
         if not normalized:
             return False
         if self.PLACEHOLDER_RE.search(normalized):
+            return True
+        if self.CHECKBOX_RE.search(normalized):
             return True
         if self.DATE_TEMPLATE_RE.search(normalized):
             return True
@@ -183,10 +186,13 @@ class DocxParser(BaseFileParser):
         if not normalized:
             return True
 
+        if self._is_signature_date_placeholder_line(normalized):
+            return True
+
         lower = normalized.lower()
         words = normalized.split()
 
-        if lower.startswith(self.NON_FIELD_PREFIXES):
+        if lower.startswith(self.NON_FIELD_PREFIXES) and not self._has_placeholder_hint(normalized):
             return True
 
         if len(label) > 120:
@@ -199,9 +205,6 @@ class DocxParser(BaseFileParser):
                 return True
             if re.search(r'[\.!?;]\s+\S', normalized) and len(words) > 12:
                 return True
-
-        if re.match(r'^[\W_]*ngày\s*[.\-_/…_]*\s*tháng\s*[.\-_/…_]*\s*năm', lower):
-            return True
 
         return False
 
@@ -218,6 +221,150 @@ class DocxParser(BaseFileParser):
             return True
 
         return False
+
+    def _is_signature_date_placeholder_line(self, text: str) -> bool:
+        normalized = self._normalize_line(text)
+        if not normalized or not self.DATE_TEMPLATE_RE.search(normalized):
+            return False
+
+        lower = normalized.lower()
+
+        # Explicitly labeled date fields are likely real inputs.
+        if ':' in normalized or '：' in normalized:
+            return False
+        if any(keyword in lower for keyword in ('ngày nộp', 'nộp đơn', 'ngày lập', 'ngày ký')):
+            return False
+
+        compact = re.sub(r'[.\-_/…_‒–—,;:]', ' ', normalized)
+        words = re.findall(r'[a-zà-ỹ]+', compact.lower())
+        core_words = [w for w in words if w not in {'ngày', 'tháng', 'năm'}]
+
+        if not words or not core_words:
+            return True
+
+        # Typical signature footer: optional location before comma + ngày/tháng/năm template.
+        if ',' in normalized and len(core_words) <= 2:
+            return True
+
+        if re.match(r'^[\W_]+', normalized) and len(core_words) <= 3:
+            return True
+
+        return False
+
+    def _create_field(self, label: str, order: int) -> FileField | None:
+        cleaned = self.clean_field_label(label)
+        cleaned = re.sub(r'\s+', ' ', cleaned).strip()
+        if not cleaned or len(cleaned) < 2:
+            return None
+
+        field_name = self.create_field_name(cleaned)
+        if not field_name:
+            return None
+
+        return FileField(
+            name=field_name,
+            field_type=self.detect_field_type(cleaned),
+            label=cleaned,
+            order=order,
+        )
+
+    def _normalize_placeholder_label(self, label: str) -> str:
+        value = re.sub(r'\s+', ' ', (label or '').strip())
+        value = re.sub(r'^(và|hoặc|là|là:|tại|ở|cho|của|theo|về)\s+', '', value, flags=re.IGNORECASE)
+        value = value.strip(' .,:;')
+
+        words = value.split()
+        if len(words) > 8:
+            value = ' '.join(words[-6:])
+
+        lower = value.lower()
+        if any(phrase in lower for phrase in ('tôi tên là', 'họ tên', 'họ và tên')):
+            return 'Họ và tên'
+        if 'sinh ngày' in lower or 'ngày sinh' in lower:
+            return 'Ngày sinh'
+        if 'chỗ ở' in lower or 'địa chỉ' in lower:
+            return 'Địa chỉ hiện tại'
+        if 'điện thoại' in lower:
+            return 'Số điện thoại liên hệ'
+        if 'vị trí' in lower and ('ứng tuyển' in lower or 'tuyển' in lower or len(lower.split()) <= 5):
+            return 'Vị trí ứng tuyển'
+        if 'công ty' in lower:
+            return 'Công ty ứng tuyển'
+        if 'tốt nghiệp' in lower and 'loại' in lower:
+            return 'Xếp loại tốt nghiệp'
+        if re.search(r'(?:^|\s)(tại\s+)?trường$', lower):
+            return 'Trường tốt nghiệp'
+        if 'khóa học' in lower:
+            return 'Khóa học đã tham gia'
+        if self.DATE_TEMPLATE_RE.search(lower) or ('ngày' in lower and 'tháng' in lower and 'năm' in lower):
+            return 'Ngày nộp đơn'
+
+        return value
+
+    def _extract_label_from_placeholder_context(self, prefix: str, suffix: str) -> str:
+        candidate = self._normalize_line(prefix)
+
+        if ':' in candidate or '：' in candidate:
+            parts = re.split(r'[:：]', candidate)
+            after_colon = parts[-1].strip() if parts else ''
+            before_colon = parts[-2].strip() if len(parts) >= 2 else ''
+            candidate = after_colon or before_colon
+
+        candidate = re.split(r'[.!?;]', candidate)[-1].strip()
+
+        if not candidate:
+            candidate = re.split(r'[,:;.!?]', self._normalize_line(suffix))[0].strip()
+
+        return self._normalize_placeholder_label(candidate)
+
+    def _extract_fields_from_placeholder_line(self, text: str, order_start: int = 0) -> List[FileField]:
+        normalized = self._normalize_line(text)
+        if not normalized or not self._has_placeholder_hint(normalized):
+            return []
+
+        if self._is_signature_date_placeholder_line(normalized):
+            return []
+
+        fields: List[FileField] = []
+        seen_names: set[str] = set()
+
+        checkbox_match = self.CHECKBOX_RE.search(normalized)
+        if checkbox_match:
+            checkbox_label = self._extract_label_from_placeholder_context(
+                normalized[:checkbox_match.start()],
+                normalized[checkbox_match.end():],
+            )
+            checkbox_field = self._create_field(checkbox_label, order_start + len(fields))
+            if checkbox_field and checkbox_field.name not in seen_names:
+                seen_names.add(checkbox_field.name)
+                fields.append(checkbox_field)
+
+        matches = list(self.PLACEHOLDER_RE.finditer(normalized))
+        for idx, match in enumerate(matches):
+            prev_end = matches[idx - 1].end() if idx > 0 else 0
+            next_start = matches[idx + 1].start() if idx + 1 < len(matches) else len(normalized)
+
+            prefix = normalized[prev_end:match.start()].strip() if idx > 0 else normalized[:match.start()].strip()
+            suffix = normalized[match.end():next_start].strip()
+
+            label = self._extract_label_from_placeholder_context(prefix, suffix)
+            if not label and idx == 0:
+                label = self._extract_label_from_placeholder_context(
+                    normalized[:match.start()],
+                    normalized[match.end():],
+                )
+
+            field = self._create_field(label, order_start + len(fields)) if label else None
+            if field and field.name not in seen_names:
+                seen_names.add(field.name)
+                fields.append(field)
+
+        if not fields and self.DATE_TEMPLATE_RE.search(normalized) and not self._is_signature_date_placeholder_line(normalized):
+            date_field = self._create_field('Ngày nộp đơn', order_start)
+            if date_field:
+                fields.append(date_field)
+
+        return fields
 
     def _dedupe_fields(self, fields: List[FileField]) -> List[FileField]:
         unique_fields: List[FileField] = []
@@ -263,7 +410,6 @@ class DocxParser(BaseFileParser):
     def parse_paragraphs(self) -> List[FileField]:
         """Trích xuất fields từ paragraphs"""
         fields = []
-        order = 0
         self.detected_title = self._detect_document_title()
         
         for para in self.doc.paragraphs:
@@ -274,6 +420,12 @@ class DocxParser(BaseFileParser):
             if self._is_likely_heading(para, text):
                 continue
 
+            if self._has_placeholder_hint(text):
+                extracted = self._extract_fields_from_placeholder_line(text, len(fields))
+                if extracted:
+                    fields.extend(extracted)
+                    continue
+
             if not self._looks_like_paragraph_field(text):
                 continue
 
@@ -283,59 +435,48 @@ class DocxParser(BaseFileParser):
 
             if self._is_non_field_content(text, label):
                 continue
-            
-            field_name = self.create_field_name(label)
-            if not field_name:
-                continue
-            
-            field_type = self.detect_field_type(label)
-            field = FileField(
-                name=field_name,
-                field_type=field_type,
-                label=label,
-                order=order
-            )
-            fields.append(field)
-            order += 1
+
+            field = self._create_field(label, len(fields))
+            if field:
+                fields.append(field)
 
         return self._dedupe_fields(fields)
     
     def parse_tables(self) -> List[FileField]:
         """Trích xuất fields từ bảng"""
         fields = []
-        order = 0
-        
+ 
         for table in self.doc.tables:
-            if len(table.columns) >= 2:
-                for row in table.rows:
-                    if len(row.cells) >= 2:
-                        text = self._normalize_line(row.cells[0].text)
-                        
-                        if not text:
-                            continue
-                        
-                        label = self.clean_field_label(text)
-                        if not label or len(label) < 2:
-                            continue
+            for row in table.rows:
+                cells = row.cells
+                for cell_idx, cell in enumerate(cells):
+                    text = self._normalize_line(cell.text)
+                    if not text:
+                        continue
 
-                        if self._is_non_field_content(text, label):
-                            continue
-                        
-                        field_name = self.create_field_name(label)
-                        if not field_name:
-                            continue
-                        
-                        field_type = self.detect_field_type(label)
-                        field = FileField(
-                            name=field_name,
-                            field_type=field_type,
-                            label=label,
-                            order=order
-                        )
-                        fields.append(field)
-                        order += 1
+                    if self._has_placeholder_hint(text):
+                        extracted = self._extract_fields_from_placeholder_line(text, len(fields))
+                        if extracted:
+                            fields.extend(extracted)
+                        elif cell_idx > 0:
+                            left_text = self._normalize_line(cells[cell_idx - 1].text)
+                            if left_text and not self._has_placeholder_hint(left_text):
+                                label = self.clean_field_label(left_text)
+                                if label and not self._is_non_field_content(left_text, label):
+                                    left_field = self._create_field(label, len(fields))
+                                    if left_field:
+                                        fields.append(left_field)
 
-                return self._dedupe_fields(fields)
+                    if cell_idx + 1 < len(cells):
+                        right_text = self._normalize_line(cells[cell_idx + 1].text)
+                        if right_text and self._has_placeholder_hint(right_text) and not self._has_placeholder_hint(text):
+                            label = self.clean_field_label(text)
+                            if label and not self._is_non_field_content(text, label):
+                                right_field = self._create_field(label, len(fields))
+                                if right_field:
+                                    fields.append(right_field)
+
+        return self._dedupe_fields(fields)
     
     def parse_all_text_content(self) -> List[FileField]:
         """Fallback: Trích xuất tất cả text content thành fields"""
@@ -378,16 +519,15 @@ class DocxParser(BaseFileParser):
     
     def parse(self) -> List[FileField]:
         """Parse file Word"""
-        fields = self.parse_paragraphs()
-        
-        if not fields:
-            fields = self.parse_tables()
-        
+        paragraph_fields = self.parse_paragraphs()
+        table_fields = self.parse_tables()
+
+        fields = self._dedupe_fields(paragraph_fields + table_fields)
         if not fields:
             fields = self.parse_all_text_content()
-        
-        self.fields = fields
-        return fields
+
+        self.fields = self._dedupe_fields(fields)
+        return self.fields
     
     def get_metadata(self) -> Dict:
         """Lấy metadata của file Word"""

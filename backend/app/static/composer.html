@@ -119,6 +119,50 @@
             cursor: pointer;
         }
 
+        .new-doc-panel {
+            display: none;
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid color-mix(in srgb, var(--line) 30%, transparent);
+            background: var(--surface-2);
+        }
+
+        .new-doc-panel.show {
+            display: block;
+        }
+
+        .new-doc-label {
+            display: block;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--muted);
+            margin-bottom: 6px;
+        }
+
+        .new-doc-input {
+            width: 100%;
+            height: 34px;
+            border: 1px solid color-mix(in srgb, var(--line) 35%, transparent);
+            border-radius: 7px;
+            padding: 0 10px;
+            background: var(--surface-2);
+            color: var(--text);
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .new-doc-save-btn {
+            width: 100%;
+            height: 34px;
+            border: 1px solid color-mix(in srgb, var(--line) 50%, transparent);
+            border-radius: 7px;
+            background: color-mix(in srgb, var(--line) 15%, var(--surface-2));
+            color: var(--text);
+            font-weight: 700;
+            cursor: pointer;
+        }
+
         .recent-title {
             margin: 14px 0 10px;
             font-size: 12px;
@@ -148,12 +192,44 @@
             box-shadow: inset 0 0 0 1px var(--line);
         }
 
+        .doc-item-main {
+            cursor: pointer;
+        }
+
         .doc-name {
             font-weight: 700;
             line-height: 1.35;
             margin-bottom: 5px;
             color: var(--text);
             word-break: break-word;
+        }
+
+        .doc-actions {
+            margin-top: 8px;
+            display: flex;
+            gap: 6px;
+            justify-content: flex-end;
+        }
+
+        .doc-action-btn {
+            border: 1px solid color-mix(in srgb, var(--line) 40%, transparent);
+            background: var(--surface-2);
+            color: var(--text);
+            border-radius: 6px;
+            padding: 3px 8px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .doc-action-btn:hover {
+            border-color: var(--line);
+            background: color-mix(in srgb, var(--line) 10%, var(--surface-2));
+        }
+
+        .doc-action-btn.delete {
+            color: #c62828;
+            border-color: color-mix(in srgb, #c62828 35%, transparent);
         }
 
         .doc-time {
@@ -189,6 +265,18 @@
             font-weight: 700;
         }
 
+        .tool.active {
+            border-color: var(--line);
+            background: color-mix(in srgb, var(--line) 14%, var(--surface-2));
+            color: #123f99;
+            box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--line) 45%, transparent);
+        }
+
+        body.dark-mode .tool.active {
+            color: #cfe0ff;
+            background: color-mix(in srgb, var(--line) 22%, #0f172a);
+        }
+
         .tool.ai {
             color: #fff;
             background: linear-gradient(90deg, #6d28d9, #7e22ce);
@@ -209,8 +297,34 @@
 
         .editor-layout {
             display: grid;
-            grid-template-columns: 1fr 280px;
+            grid-template-columns: 1fr 8px 320px;
             min-height: 0;
+        }
+
+        .ai-resizer {
+            width: 8px;
+            cursor: col-resize;
+            position: relative;
+            background: color-mix(in srgb, var(--line) 10%, transparent);
+            border-left: 1px solid color-mix(in srgb, var(--line) 16%, transparent);
+            border-right: 1px solid color-mix(in srgb, var(--line) 16%, transparent);
+        }
+
+        .ai-resizer::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 2px;
+            height: 40px;
+            border-radius: 999px;
+            background: color-mix(in srgb, var(--line) 50%, transparent);
+        }
+
+        .ai-resizer:hover::after,
+        .ai-resizer.active::after {
+            background: var(--line);
         }
 
         .editor-main {
@@ -259,6 +373,10 @@
             min-height: 0;
         }
 
+        .ai-panel.collapsed {
+            display: none;
+        }
+
         .ai-head {
             padding: 12px;
             font-weight: 700;
@@ -283,6 +401,46 @@
             min-height: 80px;
             padding: 10px;
             resize: vertical;
+        }
+
+        .selection-instruction-box {
+            display: none;
+            flex-direction: column;
+            gap: 6px;
+            padding: 8px;
+            border: 1px solid color-mix(in srgb, var(--line) 28%, transparent);
+            border-radius: 8px;
+            background: color-mix(in srgb, var(--line) 8%, var(--surface-2));
+        }
+
+        .selection-instruction-box.show {
+            display: flex;
+        }
+
+        .selection-instruction-label {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--muted);
+        }
+
+        .selection-preview {
+            font-size: 12px;
+            color: color-mix(in srgb, var(--text) 78%, var(--muted));
+            line-height: 1.45;
+            border-left: 2px solid color-mix(in srgb, var(--line) 35%, transparent);
+            padding-left: 8px;
+            margin-bottom: 2px;
+        }
+
+        #selectionInstruction {
+            border: 1px solid color-mix(in srgb, var(--line) 30%, transparent);
+            background: var(--surface-2);
+            color: var(--text);
+            border-radius: 7px;
+            min-height: 62px;
+            padding: 8px;
+            resize: vertical;
+            font-size: 13px;
         }
 
         .suggestion {
@@ -346,6 +504,10 @@
                 grid-template-rows: 1fr 260px;
             }
 
+            .ai-resizer {
+                display: none;
+            }
+
             .editor-main {
                 border-right: 0;
                 border-bottom: 1px solid color-mix(in srgb, var(--line) 20%, transparent);
@@ -372,6 +534,11 @@
 <main class="workspace">
     <aside class="sidebar">
         <button class="new-doc-btn" id="newDocBtn">+ Tài Liệu Mới</button>
+        <div class="new-doc-panel" id="newDocPanel">
+            <label class="new-doc-label" for="newDocTitleInput">Tên tài liệu mới</label>
+            <input class="new-doc-input" id="newDocTitleInput" type="text" placeholder="Nhập tên tài liệu..." maxlength="255" />
+            <button class="new-doc-save-btn" id="createDocBtn" type="button">Lưu vào gần đây</button>
+        </div>
         <div class="recent-title">Tài liệu gần đây</div>
         <div id="recentList"></div>
     </aside>
@@ -382,13 +549,13 @@
             <button class="tool" data-cmd="italic">I</button>
             <button class="tool" data-cmd="underline">U</button>
             <select class="tool-select" id="fontSelect">
-                <option value="Segoe UI">Font</option>
+                <option value="">Font</option>
                 <option value="Arial">Arial</option>
                 <option value="Times New Roman">Times</option>
                 <option value="Calibri">Calibri</option>
             </select>
             <select class="tool-select" id="sizeSelect">
-                <option value="3">Size</option>
+                <option value="">Size</option>
                 <option value="2">12</option>
                 <option value="3">14</option>
                 <option value="4">16</option>
@@ -408,10 +575,17 @@
                 <div id="editor" contenteditable="true" data-placeholder="Bắt đầu soạn thảo tài liệu của bạn ở đây..."></div>
             </div>
 
-            <aside class="ai-panel">
+            <div class="ai-resizer" id="aiResizer" title="Kéo để thay đổi kích thước phần gợi ý AI" role="separator" aria-orientation="vertical" aria-label="Kéo để thay đổi kích thước phần gợi ý AI"></div>
+
+            <aside class="ai-panel" id="aiPanel">
                 <div class="ai-head">💡 Gợi Ý AI</div>
                 <div class="ai-body">
                     <textarea id="aiInstruction" placeholder="Viết thêm nội dung, rút gọn, đổi giọng văn..."></textarea>
+                    <div class="selection-instruction-box" id="selectionInstructionWrap">
+                        <label class="selection-instruction-label" for="selectionInstruction">Yêu cầu cho phần đã tô đen</label>
+                        <div class="selection-preview" id="selectedSnippet"></div>
+                        <textarea id="selectionInstruction" placeholder="Ví dụ: Giữ nguyên ý nhưng viết tự nhiên hơn, ngắn gọn hơn..."></textarea>
+                    </div>
                     <button class="btn" id="askAiBtn">Nhận gợi ý</button>
                     <div id="aiSuggestions"></div>
                     <div id="aiHint" class="hint">Viết thêm nội dung để nhận gợi ý từ AI...</div>
@@ -433,6 +607,263 @@
     const recentList = document.getElementById('recentList');
     const aiSuggestionsEl = document.getElementById('aiSuggestions');
     const aiHint = document.getElementById('aiHint');
+    const aiPanel = document.getElementById('aiPanel');
+    const aiResizer = document.getElementById('aiResizer');
+    const editorLayout = document.querySelector('.editor-layout');
+    const settingsBtn = document.getElementById('settingsBtn');
+    const newDocPanel = document.getElementById('newDocPanel');
+    const newDocTitleInput = document.getElementById('newDocTitleInput');
+    const createDocBtn = document.getElementById('createDocBtn');
+    const newDocBtn = document.getElementById('newDocBtn');
+    const saveBtn = document.getElementById('saveBtn');
+    const exportBtn = document.getElementById('exportBtn');
+    const aiEditBtn = document.getElementById('aiEditBtn');
+    const askAiBtn = document.getElementById('askAiBtn');
+    const aiInstruction = document.getElementById('aiInstruction');
+    const selectionInstructionWrap = document.getElementById('selectionInstructionWrap');
+    const selectionInstruction = document.getElementById('selectionInstruction');
+    const selectedSnippet = document.getElementById('selectedSnippet');
+    const fontSelect = document.getElementById('fontSelect');
+    const sizeSelect = document.getElementById('sizeSelect');
+    const clearFormatBtn = document.getElementById('clearFormatBtn');
+    const formatButtons = {
+        bold: document.querySelector('[data-cmd="bold"]'),
+        italic: document.querySelector('[data-cmd="italic"]'),
+        underline: document.querySelector('[data-cmd="underline"]')
+    };
+    let pendingSuggestionMode = 'continuation';
+    let pendingRewriteRange = null;
+    let pendingRewriteScope = 'sentence';
+    let lastEditorRange = null;
+    let aiPanelCollapsed = false;
+
+    const AI_PANEL_MIN_WIDTH = 260;
+    const AI_PANEL_MAX_WIDTH = 560;
+    const AI_PANEL_DEFAULT_WIDTH = 320;
+
+    function clampAiPanelWidth(width) {
+        return Math.max(AI_PANEL_MIN_WIDTH, Math.min(AI_PANEL_MAX_WIDTH, width));
+    }
+
+    function applyAiPanelLayout() {
+        if (!editorLayout || !aiPanel || !settingsBtn) return;
+
+        if (window.innerWidth <= 900) {
+            aiPanel.classList.remove('collapsed');
+            editorLayout.style.gridTemplateColumns = '1fr';
+            settingsBtn.textContent = aiPanelCollapsed ? 'Mở AI' : 'Thu gọn AI';
+            return;
+        }
+
+        const savedWidth = Number(localStorage.getItem('composer.aiPanelWidth') || AI_PANEL_DEFAULT_WIDTH);
+        const aiWidth = clampAiPanelWidth(Number.isFinite(savedWidth) ? savedWidth : AI_PANEL_DEFAULT_WIDTH);
+
+        if (aiPanelCollapsed) {
+            aiPanel.classList.add('collapsed');
+            editorLayout.style.gridTemplateColumns = '1fr 8px 0px';
+            settingsBtn.textContent = 'Mở AI';
+        } else {
+            aiPanel.classList.remove('collapsed');
+            editorLayout.style.gridTemplateColumns = `1fr 8px ${aiWidth}px`;
+            settingsBtn.textContent = 'Thu gọn AI';
+        }
+    }
+
+    function setAiPanelWidth(newWidth) {
+        if (!editorLayout) return;
+        const width = clampAiPanelWidth(newWidth);
+        localStorage.setItem('composer.aiPanelWidth', String(width));
+        if (!aiPanelCollapsed && window.innerWidth > 900) {
+            editorLayout.style.gridTemplateColumns = `1fr 8px ${width}px`;
+        }
+    }
+
+    function toggleAiPanel() {
+        aiPanelCollapsed = !aiPanelCollapsed;
+        applyAiPanelLayout();
+    }
+
+    function saveEditorSelection() {
+        const selection = window.getSelection();
+        if (!selection || selection.rangeCount === 0) return;
+
+        const range = selection.getRangeAt(0);
+        if (!editor.contains(range.commonAncestorContainer)) return;
+
+        lastEditorRange = range.cloneRange();
+    }
+
+    function restoreEditorSelection() {
+        const selection = window.getSelection();
+        if (!lastEditorRange) {
+            const range = document.createRange();
+            range.selectNodeContents(editor);
+            range.collapse(false);
+            selection.removeAllRanges();
+            selection.addRange(range);
+            return;
+        }
+        selection.removeAllRanges();
+        selection.addRange(lastEditorRange);
+    }
+
+    function getSelectionInsideEditorRange() {
+        const selection = window.getSelection();
+        if (!selection || selection.rangeCount === 0) return null;
+        const range = selection.getRangeAt(0);
+        if (!editor.contains(range.commonAncestorContainer)) return null;
+        return range;
+    }
+
+    function setFormatButtonState(command, isActive) {
+        const btn = formatButtons[command];
+        if (!btn) return;
+        btn.classList.toggle('active', Boolean(isActive));
+        btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+    }
+
+    function updateFormattingButtonStates() {
+        const range = getSelectionInsideEditorRange();
+        if (!range) {
+            setFormatButtonState('bold', false);
+            setFormatButtonState('italic', false);
+            setFormatButtonState('underline', false);
+            return;
+        }
+
+        let bold = false;
+        let italic = false;
+        let underline = false;
+        try {
+            bold = document.queryCommandState('bold');
+            italic = document.queryCommandState('italic');
+            underline = document.queryCommandState('underline');
+        } catch (error) {
+            // Keep graceful fallback when browser does not support command state APIs.
+        }
+
+        setFormatButtonState('bold', bold);
+        setFormatButtonState('italic', italic);
+        setFormatButtonState('underline', underline);
+    }
+
+    function runEditorCommand(command, value = null) {
+        editor.focus();
+        restoreEditorSelection();
+        const success = document.execCommand(command, false, value);
+        if (!success) {
+            showToast('Trình duyệt không hỗ trợ thao tác này');
+        }
+        saveEditorSelection();
+        updateFormattingButtonStates();
+    }
+
+    function captureEditorSelectionRange() {
+        const selection = window.getSelection();
+        if (!selection || selection.rangeCount === 0) {
+            return lastEditorRange && !lastEditorRange.collapsed ? lastEditorRange.cloneRange() : null;
+        }
+
+        const range = selection.getRangeAt(0);
+        if (!editor.contains(range.commonAncestorContainer) || range.collapsed) {
+            return lastEditorRange && !lastEditorRange.collapsed ? lastEditorRange.cloneRange() : null;
+        }
+
+        return range.cloneRange();
+    }
+
+    function detectRewriteScope(selectedText) {
+        const normalized = String(selectedText || '').replace(/\s+/g, ' ').trim();
+        if (!normalized) {
+            return { scope: 'sentence', wordCount: 0 };
+        }
+
+        const wordCount = normalized.split(' ').filter(Boolean).length;
+        const hasLineBreak = /\n/.test(selectedText || '');
+        const hasTerminalPunctuation = /[.!?…]["')\]]*$/.test(normalized);
+        const scope = (hasLineBreak || hasTerminalPunctuation || wordCount >= 12) ? 'sentence' : 'phrase';
+        return { scope, wordCount };
+    }
+
+    function getSelectedRewriteTarget() {
+        const selectedRange = captureEditorSelectionRange();
+        const selectedText = selectedRange ? selectedRange.toString().replace(/\s+/g, ' ').trim() : '';
+        if (!selectedRange || !selectedText) {
+            return { selectedRange: null, selectedText: '' };
+        }
+        return { selectedRange, selectedText };
+    }
+
+    function truncateSnippet(text, maxLength = 110) {
+        if (!text || text.length <= maxLength) return text;
+        return `${text.slice(0, maxLength - 1)}...`;
+    }
+
+    function syncSelectionInstructionUI() {
+        if (!selectionInstructionWrap || !selectedSnippet) return;
+
+        const { selectedText } = getSelectedRewriteTarget();
+        if (!selectedText) {
+            if (aiInstruction) {
+                aiInstruction.style.display = 'block';
+            }
+            selectionInstructionWrap.classList.remove('show');
+            selectedSnippet.textContent = '';
+            if (selectionInstruction) {
+                selectionInstruction.value = '';
+            }
+            return;
+        }
+
+        if (aiInstruction) {
+            aiInstruction.style.display = 'none';
+        }
+        selectionInstructionWrap.classList.add('show');
+        selectedSnippet.textContent = `Đang chọn: "${truncateSnippet(selectedText)}"`;
+    }
+
+    function applySuggestionText(text) {
+        if (!text) return;
+
+        editor.focus();
+        if (pendingSuggestionMode === 'rewrite' && pendingRewriteScope === 'document') {
+            editor.innerText = text;
+            pendingRewriteRange = null;
+
+            const selection = window.getSelection();
+            const range = document.createRange();
+            range.selectNodeContents(editor);
+            range.collapse(false);
+            selection.removeAllRanges();
+            selection.addRange(range);
+            lastEditorRange = range.cloneRange();
+
+            showToast('Đã áp dụng chỉnh sửa cho toàn bộ bài');
+            syncSelectionInstructionUI();
+            return;
+        }
+
+        if (pendingSuggestionMode === 'rewrite' && pendingRewriteRange) {
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(pendingRewriteRange);
+            document.execCommand('insertText', false, text);
+            pendingRewriteRange = null;
+            saveEditorSelection();
+            const toastMessage = pendingRewriteScope === 'phrase'
+                ? 'Đã chỉnh phần được chọn bằng gợi ý AI'
+                : 'Đã thay thế đoạn được chọn bằng gợi ý AI';
+            showToast(toastMessage);
+            syncSelectionInstructionUI();
+            return;
+        }
+
+        restoreEditorSelection();
+        document.execCommand('insertText', false, `${text} `);
+        saveEditorSelection();
+        showToast('Đã áp dụng gợi ý AI');
+        syncSelectionInstructionUI();
+    }
 
     function bindThemeToggleFallback() {
         const buttons = document.querySelectorAll('[data-theme-toggle]');
@@ -509,15 +940,37 @@
 
         recentList.innerHTML = documents.map((doc) => `
             <div class="doc-item ${doc.id === currentDocumentId ? 'active' : ''}" data-id="${doc.id}">
-                <div class="doc-name">${escapeHtml(doc.title || 'Không có tiêu đề')}</div>
-                <div class="doc-time">${formatDate(doc.updated_at)}</div>
+                <div class="doc-item-main" data-open-id="${doc.id}">
+                    <div class="doc-name">${escapeHtml(doc.title || 'Không có tiêu đề')}</div>
+                    <div class="doc-time">${formatDate(doc.updated_at)}</div>
+                </div>
+                <div class="doc-actions">
+                    <button class="doc-action-btn export" data-export-id="${doc.id}" type="button">Xuất</button>
+                    <button class="doc-action-btn delete" data-delete-id="${doc.id}" type="button">Xóa</button>
+                </div>
             </div>
         `).join('');
 
-        recentList.querySelectorAll('.doc-item').forEach((item) => {
+        recentList.querySelectorAll('[data-open-id]').forEach((item) => {
             item.addEventListener('click', async () => {
-                const id = Number(item.getAttribute('data-id'));
+                const id = Number(item.getAttribute('data-open-id'));
                 await openDocument(id);
+            });
+        });
+
+        recentList.querySelectorAll('[data-delete-id]').forEach((btn) => {
+            btn.addEventListener('click', async (event) => {
+                event.stopPropagation();
+                const id = Number(btn.getAttribute('data-delete-id'));
+                await deleteDocument(id);
+            });
+        });
+
+        recentList.querySelectorAll('[data-export-id]').forEach((btn) => {
+            btn.addEventListener('click', async (event) => {
+                event.stopPropagation();
+                const id = Number(btn.getAttribute('data-export-id'));
+                await exportDocumentById(id);
             });
         });
     }
@@ -535,17 +988,44 @@
         const doc = result.data;
 
         currentDocumentId = doc.id;
+        lastEditorRange = null;
+        pendingRewriteRange = null;
+        pendingRewriteScope = 'sentence';
         titleInput.value = doc.title || '';
         editor.innerHTML = doc.content || '';
+        if (newDocPanel) {
+            newDocPanel.classList.remove('show');
+        }
+        if (newDocTitleInput) {
+            newDocTitleInput.value = '';
+        }
+        syncSelectionInstructionUI();
         renderRecentDocuments();
     }
 
     async function saveDocument() {
-        const title = titleInput.value.trim() || 'Tài liệu chưa đặt tên';
+        const title = titleInput.value.trim();
         const content = editor.innerHTML.trim();
 
-        if (!content) {
-            showToast('Vui lòng nhập nội dung trước khi lưu');
+        if (!title) {
+            showToast('Vui lòng đặt tên tài liệu trước khi lưu');
+            titleInput.focus();
+            return;
+        }
+
+        const contentToSave = content || '<p></p>';
+
+        if (!editor.innerText.trim()) {
+            showToast('Đã lưu tiêu đề, bạn có thể tiếp tục soạn nội dung sau');
+        }
+
+        if (!content && currentDocumentId === null) {
+            // Keep visual editor empty while still persisting a draft entry.
+            editor.innerHTML = '';
+        }
+
+        if (!contentToSave) {
+            showToast('Không thể lưu tài liệu rỗng');
             return;
         }
 
@@ -553,7 +1033,7 @@
             const response = await fetch(`${API_BASE}/api/composer/documents/${currentDocumentId}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ title, content })
+                body: JSON.stringify({ title, content: contentToSave })
             });
             await parseApiResponse(response);
             showToast('Đã cập nhật tài liệu');
@@ -561,7 +1041,7 @@
             const response = await fetch(`${API_BASE}/api/composer/documents`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ title, content, description: '' })
+                body: JSON.stringify({ title, content: contentToSave, description: '' })
             });
             const result = await parseApiResponse(response);
             currentDocumentId = result.data?.id || null;
@@ -571,26 +1051,106 @@
         await loadDocuments();
     }
 
+    async function createDocumentFromSidebar() {
+        if (!newDocTitleInput) return;
+
+        const newTitle = newDocTitleInput.value.trim();
+        if (!newTitle) {
+            showToast('Vui lòng nhập tên tài liệu');
+            newDocTitleInput.focus();
+            return;
+        }
+
+        currentDocumentId = null;
+        titleInput.value = newTitle;
+
+        try {
+            await saveDocument();
+            if (newDocPanel) {
+                newDocPanel.classList.remove('show');
+            }
+            newDocTitleInput.value = '';
+            showToast('Đã lưu và hiển thị trong tài liệu gần đây');
+            editor.focus();
+        } catch (error) {
+            showToast(`Lưu tài liệu thất bại: ${error.message}`);
+        }
+    }
+
     async function askAi() {
         const contextText = editor.innerText.trim();
-        const instruction = document.getElementById('aiInstruction').value.trim();
+        const globalInstruction = aiInstruction ? aiInstruction.value.trim() : '';
+        const selectedInstruction = selectionInstruction ? selectionInstruction.value.trim() : '';
+        const { selectedRange, selectedText } = getSelectedRewriteTarget();
+        const hasSelectedText = Boolean(selectedText);
+        const hasGlobalInstruction = Boolean(globalInstruction);
+
+        let mode = 'continuation';
+        let rewriteScope = 'sentence';
+        let rewriteLength = 24;
+        let rewriteTargetText = '';
+
+        if (hasSelectedText) {
+            mode = 'rewrite';
+            const rewriteMeta = detectRewriteScope(selectedText);
+            rewriteScope = rewriteMeta.scope;
+            rewriteLength = rewriteScope === 'phrase'
+                ? Math.max(3, Math.min(20, rewriteMeta.wordCount + 2))
+                : Math.max(16, Math.min(64, rewriteMeta.wordCount + 12));
+            rewriteTargetText = selectedText;
+        } else if (hasGlobalInstruction) {
+            mode = 'rewrite';
+            rewriteScope = 'document';
+            const contextWordCount = contextText.split(/\s+/).filter(Boolean).length;
+            rewriteLength = Math.max(50, Math.min(260, Math.round(contextWordCount * 1.15)));
+            rewriteTargetText = contextText;
+        }
 
         if (!contextText) {
             showToast('Nhập nội dung trước khi dùng AI');
             return;
         }
 
+        pendingSuggestionMode = mode;
+        pendingRewriteRange = (mode === 'rewrite' && hasSelectedText) ? selectedRange : null;
+        pendingRewriteScope = mode === 'rewrite' ? rewriteScope : 'sentence';
+
+        let scopedInstruction = '';
+        if (mode === 'rewrite' && hasSelectedText) {
+            scopedInstruction = selectedInstruction || '';
+        } else if (mode === 'rewrite' && rewriteScope === 'document') {
+            const documentRule = 'Áp dụng yêu cầu cho toàn bộ bài viết, không chỉ một câu riêng lẻ.';
+            scopedInstruction = globalInstruction
+                ? `${globalInstruction}\n${documentRule}`
+                : documentRule;
+        } else {
+            scopedInstruction = globalInstruction;
+        }
+
+        if (mode === 'rewrite' && hasSelectedText && rewriteScope === 'phrase') {
+            const partialEditRule = 'Chỉ chỉnh đúng phần đã chọn, không viết lại cả câu hoặc cả đoạn.';
+            scopedInstruction = scopedInstruction
+                ? `${scopedInstruction}\n${partialEditRule}`
+                : partialEditRule;
+        }
+
+        const payload = {
+            context: contextText,
+            max_suggestions: 3,
+            suggestion_length: mode === 'rewrite' ? rewriteLength : 24,
+            mode,
+            instruction: scopedInstruction || undefined
+        };
+
+        if (mode === 'rewrite') {
+            payload.original_text = rewriteTargetText;
+            payload.rewrite_scope = rewriteScope;
+        }
+
         const response = await fetch(`${API_BASE}/api/composer/suggestions`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                context: contextText,
-                max_suggestions: 3,
-                suggestion_length: 60,
-                mode: 'rewrite',
-                instruction: instruction || undefined,
-                original_text: window.getSelection().toString() || undefined
-            })
+            body: JSON.stringify(payload)
         });
 
         const result = await parseApiResponse(response);
@@ -604,10 +1164,18 @@
         }
 
         aiHint.style.display = 'none';
+        const suggestionTitle = mode === 'rewrite'
+            ? (rewriteScope === 'phrase'
+                ? 'Gợi ý chỉnh phần đã chọn (không thay toàn câu)'
+                : rewriteScope === 'document'
+                    ? 'Gợi ý chỉnh sửa toàn bài theo yêu cầu'
+                    : 'Gợi ý viết lại cho đoạn đã chọn')
+            : 'Gợi ý viết tiếp theo ngữ cảnh hiện tại';
         aiSuggestionsEl.innerHTML = suggestions.map((item, index) => {
             const text = typeof item === 'string' ? item : (item.suggestion || item.text || JSON.stringify(item));
             return `
                 <div class="suggestion">
+                    <div style="font-size:11px;color:#64748b;margin-bottom:6px;">${escapeHtml(suggestionTitle)}</div>
                     <div>${escapeHtml(text)}</div>
                     <div class="suggestion-actions">
                         <button class="btn" data-apply-index="${index}">Áp dụng</button>
@@ -621,80 +1189,252 @@
                 const i = Number(button.getAttribute('data-apply-index'));
                 const item = suggestions[i];
                 const text = typeof item === 'string' ? item : (item.suggestion || item.text || '');
-                if (text) {
-                    document.execCommand('insertText', false, text + ' ');
-                    showToast('Đã áp dụng gợi ý AI');
-                }
+                applySuggestionText(text);
             });
         });
     }
 
-    function exportDocument() {
-        const title = (titleInput.value || 'composer-document').replace(/[\\/:*?"<>|]/g, '_');
-        const content = editor.innerText || '';
+    function exportTextFile(title, content) {
+        const safeTitle = (title || 'composer-document').replace(/[\\/:*?"<>|]/g, '_');
         const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
-        link.download = `${title}.txt`;
+        link.download = `${safeTitle}.txt`;
         document.body.appendChild(link);
         link.click();
         link.remove();
         URL.revokeObjectURL(url);
+    }
+
+    function exportDocument() {
+        const title = titleInput.value.trim() || 'composer-document';
+        const content = editor.innerText || '';
+        exportTextFile(title, content);
         showToast('Đã xuất tài liệu .txt');
+    }
+
+    async function exportDocumentById(documentId) {
+        try {
+            const response = await fetch(`${API_BASE}/api/composer/documents/${documentId}`);
+            const result = await parseApiResponse(response);
+            const doc = result.data || {};
+            const exportTitle = doc.title || 'composer-document';
+
+            // Convert HTML content to plain text before export.
+            const tmp = document.createElement('div');
+            tmp.innerHTML = doc.content || '';
+            const plainText = tmp.innerText || '';
+
+            exportTextFile(exportTitle, plainText);
+            showToast('Đã xuất tài liệu từ lịch sử');
+        } catch (error) {
+            showToast(`Xuất thất bại: ${error.message}`);
+        }
+    }
+
+    async function deleteDocument(documentId) {
+        const target = documents.find((doc) => doc.id === documentId);
+        const docName = target?.title || `ID ${documentId}`;
+        const confirmed = window.confirm(`Xóa tài liệu "${docName}" khỏi lịch sử?`);
+        if (!confirmed) return;
+
+        try {
+            const response = await fetch(`${API_BASE}/api/composer/documents/${documentId}`, {
+                method: 'DELETE'
+            });
+            await parseApiResponse(response);
+
+            if (currentDocumentId === documentId) {
+                currentDocumentId = null;
+                titleInput.value = '';
+                editor.innerHTML = '';
+                aiSuggestionsEl.innerHTML = '';
+                aiHint.style.display = 'block';
+                aiHint.textContent = 'Viết thêm nội dung để nhận gợi ý từ AI...';
+            }
+
+            await loadDocuments();
+            showToast('Đã xóa tài liệu khỏi lịch sử');
+        } catch (error) {
+            showToast(`Xóa thất bại: ${error.message}`);
+        }
+    }
+
+    function hideNewDocPanelIfEmpty() {
+        if (!newDocPanel || !newDocTitleInput) return;
+        if (!newDocPanel.classList.contains('show')) return;
+        if (newDocTitleInput.value.trim()) return;
+        newDocPanel.classList.remove('show');
     }
 
     function newDocument() {
         currentDocumentId = null;
         titleInput.value = '';
         editor.innerHTML = '';
+        lastEditorRange = null;
+        pendingRewriteRange = null;
+        pendingRewriteScope = 'sentence';
         aiSuggestionsEl.innerHTML = '';
         aiHint.style.display = 'block';
         aiHint.textContent = 'Viết thêm nội dung để nhận gợi ý từ AI...';
+        if (selectionInstruction) {
+            selectionInstruction.value = '';
+        }
+        syncSelectionInstructionUI();
         renderRecentDocuments();
+        if (newDocPanel) {
+            newDocPanel.classList.add('show');
+        }
+        if (newDocTitleInput) {
+            newDocTitleInput.value = '';
+            newDocTitleInput.focus();
+        } else {
+            titleInput.focus();
+        }
+        showToast('Nhập tên tài liệu rồi bấm "Lưu vào gần đây"');
     }
 
+    editor.addEventListener('mouseup', saveEditorSelection);
+    editor.addEventListener('keyup', saveEditorSelection);
+    editor.addEventListener('input', saveEditorSelection);
+    editor.addEventListener('focus', saveEditorSelection);
+    editor.addEventListener('mouseup', updateFormattingButtonStates);
+    editor.addEventListener('keyup', updateFormattingButtonStates);
+    editor.addEventListener('input', updateFormattingButtonStates);
+    editor.addEventListener('focus', updateFormattingButtonStates);
+
+    document.addEventListener('selectionchange', () => {
+        const range = getSelectionInsideEditorRange();
+        if (range) {
+            lastEditorRange = range.cloneRange();
+        }
+        updateFormattingButtonStates();
+        syncSelectionInstructionUI();
+    });
+
+    let resizingAiPanel = false;
+    let resizeStartX = 0;
+    let resizeStartWidth = AI_PANEL_DEFAULT_WIDTH;
+
+    if (aiResizer && aiPanel) {
+        aiResizer.addEventListener('pointerdown', (event) => {
+            if (window.innerWidth <= 900) return;
+            if (aiPanelCollapsed) {
+                aiPanelCollapsed = false;
+                applyAiPanelLayout();
+            }
+
+            resizingAiPanel = true;
+            resizeStartX = event.clientX;
+            resizeStartWidth = aiPanel.getBoundingClientRect().width || AI_PANEL_DEFAULT_WIDTH;
+            aiResizer.classList.add('active');
+            aiResizer.setPointerCapture(event.pointerId);
+            event.preventDefault();
+        });
+
+        aiResizer.addEventListener('pointermove', (event) => {
+            if (!resizingAiPanel || window.innerWidth <= 900) return;
+            const deltaX = event.clientX - resizeStartX;
+            const nextWidth = resizeStartWidth - deltaX;
+            setAiPanelWidth(nextWidth);
+        });
+    }
+
+    function stopResizing(event) {
+        if (!resizingAiPanel) return;
+        resizingAiPanel = false;
+        aiResizer.classList.remove('active');
+        if (event && typeof event.pointerId === 'number') {
+            aiResizer.releasePointerCapture(event.pointerId);
+        }
+    }
+
+    if (aiResizer) {
+        aiResizer.addEventListener('pointerup', stopResizing);
+        aiResizer.addEventListener('pointercancel', stopResizing);
+    }
+
+    window.addEventListener('resize', applyAiPanelLayout);
+
     document.querySelectorAll('[data-cmd]').forEach((btn) => {
+        btn.addEventListener('mousedown', (event) => {
+            // Prevent toolbar buttons from stealing focus before applying command.
+            event.preventDefault();
+        });
         btn.addEventListener('click', () => {
             const cmd = btn.getAttribute('data-cmd');
-            document.execCommand(cmd, false, null);
-            editor.focus();
+            runEditorCommand(cmd);
         });
     });
 
-    document.getElementById('fontSelect').addEventListener('change', (e) => {
-        document.execCommand('fontName', false, e.target.value);
-        editor.focus();
+    fontSelect.addEventListener('change', (e) => {
+        if (!e.target.value) return;
+        runEditorCommand('fontName', e.target.value);
+        e.target.value = '';
     });
 
-    document.getElementById('sizeSelect').addEventListener('change', (e) => {
-        document.execCommand('fontSize', false, e.target.value);
-        editor.focus();
+    sizeSelect.addEventListener('change', (e) => {
+        if (!e.target.value) return;
+        runEditorCommand('fontSize', e.target.value);
+        e.target.value = '';
     });
 
-    document.getElementById('clearFormatBtn').addEventListener('click', () => {
-        document.execCommand('removeFormat', false, null);
-        editor.focus();
+    clearFormatBtn.addEventListener('click', () => {
+        runEditorCommand('removeFormat');
     });
 
-    document.getElementById('newDocBtn').addEventListener('click', newDocument);
-    document.getElementById('saveBtn').addEventListener('click', async () => {
+    // Bind this early and directly so New Document always works.
+    if (newDocBtn) {
+        newDocBtn.onclick = newDocument;
+    }
+
+    if (createDocBtn) {
+        createDocBtn.addEventListener('click', createDocumentFromSidebar);
+    }
+
+    if (newDocTitleInput) {
+        newDocTitleInput.addEventListener('keydown', async (event) => {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                await createDocumentFromSidebar();
+            }
+        });
+    }
+
+    document.addEventListener('pointerdown', (event) => {
+        if (!newDocPanel || !newDocTitleInput || !newDocBtn) return;
+        if (!newDocPanel.classList.contains('show')) return;
+        if (newDocTitleInput.value.trim()) return;
+
+        const target = event.target;
+        const clickedInsidePanel = newDocPanel.contains(target);
+        const clickedNewDocButton = newDocBtn.contains(target);
+        if (!clickedInsidePanel && !clickedNewDocButton) {
+            hideNewDocPanelIfEmpty();
+        }
+    });
+
+    saveBtn.addEventListener('click', async () => {
         try {
             await saveDocument();
         } catch (error) {
             showToast(`Lưu thất bại: ${error.message}`);
         }
     });
-    document.getElementById('exportBtn').addEventListener('click', exportDocument);
-    document.getElementById('settingsBtn').addEventListener('click', () => showToast('Cài đặt sẽ được mở ở bản tiếp theo'));
-    document.getElementById('aiEditBtn').addEventListener('click', async () => {
+    exportBtn.addEventListener('click', exportDocument);
+    settingsBtn.addEventListener('click', () => {
+        toggleAiPanel();
+        showToast(aiPanelCollapsed ? 'Đã thu gọn phần gợi ý AI' : 'Đã mở rộng phần gợi ý AI');
+    });
+    aiEditBtn.addEventListener('click', async () => {
         try {
             await askAi();
         } catch (error) {
             showToast(`AI lỗi: ${error.message}`);
         }
     });
-    document.getElementById('askAiBtn').addEventListener('click', async () => {
+    askAiBtn.addEventListener('click', async () => {
         try {
             await askAi();
         } catch (error) {
@@ -704,6 +1444,9 @@
 
     window.addEventListener('load', async () => {
         bindThemeToggleFallback();
+        applyAiPanelLayout();
+        updateFormattingButtonStates();
+        syncSelectionInstructionUI();
         const ok = await ensureAuthenticated();
         if (!ok) return;
 

@@ -31,12 +31,21 @@ class Settings(BaseSettings):
     
     # AI Composer Configuration
     AI_PROVIDER: str = os.getenv("AI_PROVIDER", "openai")  # 'openai' | 'gemini' | 'openrouter'
+    AI_PROFILE: str = os.getenv("AI_PROFILE", "auto")  # auto | openrouter | openai | gemini
+    AI_FAILOVER_ENABLED: bool = os.getenv("AI_FAILOVER_ENABLED", "true").lower() in {"1", "true", "yes", "on"}
     AI_API_KEY: str = os.getenv("AI_API_KEY", "")
     AI_MODEL: str = os.getenv("AI_MODEL", "gpt-4o-mini")
+
+    # OpenAI Configuration
+    OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "")
+    OPENAI_MODEL: str = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
+    OPENAI_FALLBACK_MODELS: str = os.getenv("OPENAI_FALLBACK_MODELS", "gpt-4o-mini,gpt-4o,gpt-3.5-turbo")
 
     # OpenRouter Configuration (OpenAI-compatible endpoint)
     OPENROUTER_API_KEY: str = os.getenv("OPENROUTER_API_KEY", "")
     OPENROUTER_MODEL: str = os.getenv("OPENROUTER_MODEL", "openai/gpt-oss-120b:free")
+    OPENROUTER_FALLBACK_MODELS: str = os.getenv("OPENROUTER_FALLBACK_MODELS", "")
+    OPENROUTER_AUTO_FAILOVER: bool = os.getenv("OPENROUTER_AUTO_FAILOVER", "true").lower() in {"1", "true", "yes", "on"}
     OPENROUTER_BASE_URL: str = os.getenv("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1")
     OPENROUTER_SITE_URL: str = os.getenv("OPENROUTER_SITE_URL", "http://localhost:8000")
     OPENROUTER_APP_NAME: str = os.getenv("OPENROUTER_APP_NAME", "AutoFill AI System")
