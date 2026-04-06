@@ -37,14 +37,16 @@
                     <div class="hero">
                         <span class="badge info">Auto suggestion engine</span>
                         <h1>Form điền dữ liệu thông minh</h1>
-                        <p>Lấy gợi ý theo lịch sử nhập liệu và lưu lại tự động theo từng trường.</p>
+                        <p>Lấy gợi ý theo lịch sử nhập liệu và lưu theo trạng thái sử dụng.</p>
+                        <p id="modeNotice" class="muted"></p>
+                        <div class="btn-row" id="authActions" style="margin-top: 12px; display:none;">
+                            <a class="btn secondary" href="/login?next=%2Fform">Đăng nhập để lưu lịch sử lâu dài</a>
+                        </div>
                     </div>
 
                     <div class="panel">
                         <div id="message" class="message"></div>
                         <form id="dataForm">
-                            <input type="hidden" id="userId" value="1">
-
                             <div class="form-group">
                                 <label for="name">Họ và tên</label>
                                 <div class="input-wrap">
@@ -102,9 +104,10 @@
     </div>
 
     <div id="globalToast" class="toast"></div>
-    <script src="/static/js/site-ui.js"></script>
+    <script src="/static/js/site-ui.js?v=20260406-1"></script>
     <script>
-        const API_BASE_URL = 'http://127.0.0.1:8000/api';
+        const API_BASE_URL = '/api';
+        const GUEST_HISTORY_KEY = 'autofill-guest-form-history-v1';
         const FIELD_MAPPING = {
             name: { field_id: 1, form_id: 1 },
             email: { field_id: 2, form_id: 1 },
@@ -113,18 +116,118 @@
             company: { field_id: 5, form_id: 1 }
         };
 
-        window.addEventListener('load', async () => {
+        const state = {
+            mode: 'guest',
+            userId: null,
+            guestEntries: []
+        };
+
+        function loadGuestEntries() {
             try {
-                const response = await fetch(`${API_BASE_URL}/suggestions?user_id=1&field_id=1&top_k=1`);
-                if (response.ok) {
-                    showMessage('Kết nối server thành công.', 'success');
-                } else {
-                    throw new Error('Server error');
+                const raw = sessionStorage.getItem(GUEST_HISTORY_KEY);
+                if (!raw) {
+                    return [];
+                }
+                const parsed = JSON.parse(raw);
+                return Array.isArray(parsed) ? parsed : [];
+            } catch (error) {
+                return [];
+            }
+        }
+
+        function saveGuestEntries() {
+            sessionStorage.setItem(GUEST_HISTORY_KEY, JSON.stringify(state.guestEntries));
+        }
+
+        function normalizeText(value) {
+            return String(value || '').trim().toLowerCase();
+        }
+
+        function buildGuestSuggestions(fieldName, typedValue, topK = 5) {
+            const normalizedTyped = normalizeText(typedValue);
+            const stats = new Map();
+
+            state.guestEntries.forEach((entry) => {
+                if (!entry || entry.field_name !== fieldName) {
+                    return;
+                }
+
+                const value = String(entry.value || '').trim();
+                if (!value) {
+                    return;
+                }
+
+                const normalizedValue = normalizeText(value);
+                if (normalizedTyped && !normalizedValue.startsWith(normalizedTyped)) {
+                    return;
+                }
+
+                if (!stats.has(value)) {
+                    stats.set(value, {
+                        value,
+                        frequency: 0,
+                        latest_time: entry.saved_at || ''
+                    });
+                }
+
+                const row = stats.get(value);
+                row.frequency += 1;
+                if (entry.saved_at && entry.saved_at > row.latest_time) {
+                    row.latest_time = entry.saved_at;
+                }
+            });
+
+            return Array.from(stats.values())
+                .sort((a, b) => {
+                    if (b.frequency !== a.frequency) {
+                        return b.frequency - a.frequency;
+                    }
+                    return String(b.latest_time || '').localeCompare(String(a.latest_time || ''));
+                })
+                .slice(0, topK);
+        }
+
+        function setModeNotice(message) {
+            const modeNotice = document.getElementById('modeNotice');
+            if (modeNotice) {
+                modeNotice.textContent = message;
+            }
+        }
+
+        function toggleAuthActions(show) {
+            const authActions = document.getElementById('authActions');
+            if (authActions) {
+                authActions.style.display = show ? '' : 'none';
+            }
+        }
+
+        async function detectUsageMode() {
+            state.guestEntries = loadGuestEntries();
+
+            try {
+                const response = await fetch('/api/auth/session', {
+                    method: 'GET',
+                    credentials: 'include',
+                    cache: 'no-store'
+                });
+                const data = response.ok ? await response.json() : { authenticated: false };
+
+                if (data && data.authenticated && data.user) {
+                    state.mode = 'account';
+                    state.userId = data.user.user_id;
+                    setModeNotice(`Đang đăng nhập: ${data.user.username || data.user.email}. Lịch sử sẽ lưu riêng theo tài khoản.`);
+                    toggleAuthActions(false);
+                    return;
                 }
             } catch (error) {
-                showMessage('Không thể kết nối server, vui lòng kiểm tra backend.', 'error');
+                // Fallback to guest mode.
             }
-        });
+
+            state.mode = 'guest';
+            state.userId = null;
+            setModeNotice('Chế độ miễn phí: lịch sử gợi ý chỉ lưu trong phiên trình duyệt hiện tại và sẽ mất khi tắt web.');
+            toggleAuthActions(true);
+        }
 
         document.querySelectorAll('input[type="text"], input[type="email"], input[type="tel"]').forEach(input => {
             const fieldName = input.id;
@@ -180,13 +283,25 @@
 
         async function fetchAndShowSuggestions(fieldName) {
             const conf = FIELD_MAPPING[fieldName];
+            const typedValue = document.getElementById(fieldName).value.trim();
             const dropdown = document.querySelector(`.suggestions-dropdown[data-field="${fieldName}"]`);
 
             try {
-                const response = await fetch(`${API_BASE_URL}/suggestions?user_id=1&field_id=${conf.field_id}&top_k=5`);
-                if (!response.ok) throw new Error('HTTP ' + response.status);
-                const data = await response.json();
-                const suggestions = data.suggestions || [];
+                let suggestions = [];
+
+                if (state.mode === 'account') {
+                    const response = await fetch(`${API_BASE_URL}/suggestions?field_id=${conf.field_id}&top_k=5`, {
+                        method: 'GET',
+                        credentials: 'include'
+                    });
+                    if (!response.ok) {
+                        throw new Error('HTTP ' + response.status);
+                    }
+                    const data = await response.json();
+                    suggestions = Array.isArray(data.suggestions) ? data.suggestions : [];
+                } else {
+                    suggestions = buildGuestSuggestions(fieldName, typedValue, 5);
+                }
 
                 if (!suggestions.length) {
                     updateFieldStatus(fieldName, 'Chưa có gợi ý phù hợp.');
@@ -195,7 +310,8 @@
                 }
 
                 dropdown.innerHTML = suggestions.map(item => {
-                    const value = escapeHtml(item.suggested_value || item.value || '');
+                    const rawValue = item.suggested_value || item.value || '';
+                    const value = escapeHtml(rawValue);
                     const freq = item.frequency || 1;
                     return `<div class="suggestion-item" data-value="${value}"><div><strong>${value}</strong></div><div class="suggestion-meta">Sử dụng ${freq} lần</div></div>`;
                 }).join('');
@@ -217,11 +333,29 @@
 
         async function saveEntry(fieldName, value) {
             const conf = FIELD_MAPPING[fieldName];
+            const normalized = String(value || '').trim();
+            if (!normalized) {
+                return;
+            }
+
             try {
-                const response = await fetch(`${API_BASE_URL}/suggestions/save?user_id=1&field_id=${conf.field_id}&form_id=${conf.form_id}&value=${encodeURIComponent(value)}`, {
-                    method: 'POST'
-                });
-                if (!response.ok) throw new Error('HTTP ' + response.status);
+                if (state.mode === 'account') {
+                    const response = await fetch(`${API_BASE_URL}/suggestions/save?field_id=${conf.field_id}&form_id=${conf.form_id}&value=${encodeURIComponent(normalized)}`, {
+                        method: 'POST',
+                        credentials: 'include'
+                    });
+                    if (!response.ok) {
+                        throw new Error('HTTP ' + response.status);
+                    }
+                } else {
+                    state.guestEntries.push({
+                        field_name: fieldName,
+                        value: normalized,
+                        saved_at: new Date().toISOString()
+                    });
+                    saveGuestEntries();
+                }
+
                 updateFieldStatus(fieldName, 'Đã lưu thành công');
             } catch (error) {
                 updateFieldStatus(fieldName, 'Lưu thất bại');
@@ -268,6 +402,15 @@
                 await saveEntry(field, value);
             }
             showMessage(`Đã lưu ${values.length} trường dữ liệu.`, 'success');
+        });
+
+        window.addEventListener('load', async () => {
+            await detectUsageMode();
+            if (state.mode === 'account') {
+                showMessage('Đang dùng chế độ tài khoản. Lịch sử sẽ lưu riêng cho bạn.', 'success');
+            } else {
+                showMessage('Đang dùng miễn phí. Lịch sử chỉ lưu tạm đến khi tắt trình duyệt.', 'success');
+            }
         });
     </script>
 </body>

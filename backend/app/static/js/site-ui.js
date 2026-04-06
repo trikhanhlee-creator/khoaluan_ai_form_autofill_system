@@ -1,11 +1,37 @@
 document.addEventListener('DOMContentLoaded', () => {
 	const toggleButtons = document.querySelectorAll('[data-theme-toggle]');
 
-	if (toggleButtons.length > 0 && window.themeManager && typeof window.themeManager.toggleTheme === 'function') {
+	if (
+		toggleButtons.length > 0
+		&& window.themeManager
+		&& typeof window.themeManager.getCurrentTheme === 'function'
+		&& typeof window.themeManager.updateThemeUI === 'function'
+	) {
+		window.themeManager.updateThemeUI(window.themeManager.getCurrentTheme());
+	} else if (toggleButtons.length > 0) {
 		toggleButtons.forEach((toggleButton) => {
-			toggleButton.addEventListener('click', () => {
-				window.themeManager.toggleTheme();
+			if (toggleButton.dataset.themeBound === '1') {
+				return;
+			}
+
+			toggleButton.addEventListener('click', (event) => {
+				event.preventDefault();
+				const isLight = document.body.classList.contains('light-mode');
+				document.body.classList.toggle('light-mode', !isLight);
+				document.body.classList.toggle('dark-mode', isLight);
+				localStorage.setItem('app-theme', isLight ? 'dark' : 'light');
+
+				const icon = toggleButton.querySelector('[data-theme-icon]');
+				const label = toggleButton.querySelector('[data-theme-label]');
+				if (icon) {
+					icon.textContent = isLight ? '🌙' : '☀️';
+				}
+				if (label) {
+					label.textContent = isLight ? 'Tối' : 'Sáng';
+				}
 			});
+
+			toggleButton.dataset.themeBound = '1';
 		});
 	}
 
@@ -20,7 +46,9 @@ document.addEventListener('DOMContentLoaded', () => {
 			return;
 		}
 
-		const isActive = (href === '/' && pathname === '/') || (href !== '/' && pathname.startsWith(href));
+		const isHomeHref = href === '/' || href === '/home';
+		const isOnHome = pathname === '/' || pathname === '/home';
+		const isActive = (isHomeHref && isOnHome) || (!isHomeHref && pathname.startsWith(href));
 		link.classList.toggle('active', isActive);
 	});
 

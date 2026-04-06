@@ -24,6 +24,7 @@ sessions = {}  # session_id -> user_info
 user_profile_cache = {}  # user_id -> profile extras not mapped in current DB schema
 
 SESSION_TTL_SECONDS = int(os.getenv("SESSION_TTL_SECONDS", str(60 * 60 * 24 * 2)))  # 2 days inactivity
+GUEST_MODE_COOKIE = "guest_mode"
 
 
 def _get_session_secret() -> str:
@@ -71,16 +72,29 @@ def verify_session_token(token: Optional[str]) -> Optional[int]:
 
 
 def _set_session_cookie(response: Response, user_id: int) -> str:
-    """Issue a fresh signed session token and attach it to response cookie."""
+    """Issue a signed session token and attach it as a browser-session cookie."""
     session_id = generate_session_token(user_id)
     response.set_cookie(
         key="session_id",
         value=session_id,
-        max_age=SESSION_TTL_SECONDS,
         httponly=True,
         samesite="Lax"
     )
     return session_id
+
+
+def _set_guest_mode_cookie(response: Response) -> None:
+    """Mark browser as guest mode using a session cookie (clears on browser close)."""
+    response.set_cookie(
+        key=GUEST_MODE_COOKIE,
+        value="1",
+        httponly=False,
+        samesite="Lax"
+    )
+
+
+def _clear_guest_mode_cookie(response: Response) -> None:
+    response.delete_cookie(GUEST_MODE_COOKIE)
 
 
 def get_authenticated_user_from_request(request: Request, db: Session) -> Optional[User]:
@@ -126,6 +140,21 @@ def generate_session_id():
     """Generate a simple session ID"""
     import uuid
     return str(uuid.uuid4())
+
+
+@router.post("/guest/start")
+async def start_guest_mode():
+    """Start guest mode session (browser-session scoped)."""
+    response = JSONResponse(
+        status_code=200,
+        content={
+            "success": True,
+            "message": "Đã bật chế độ dùng miễn phí. Lịch sử sẽ mất khi tắt trình duyệt.",
+            "mode": "guest",
+        }
+    )
+    _set_guest_mode_cookie(response)
+    return response
 
 @router.post("/login")
 async def login(request: Request, db: Session = Depends(get_db)):
@@ -197,6 +226,7 @@ async def login(request: Request, db: Session = Depends(get_db)):
             }
         )
         session_id = _set_session_cookie(response, user.id)
+        _clear_guest_mode_cookie(response)
         sessions[session_id] = user_info
         return response
         
@@ -307,6 +337,7 @@ async def logout(request: Request, db: Session = Depends(get_db)):
             content={"success": True, "message": "Đã đăng xuất"}
         )
         response.delete_cookie("session_id")
+        _clear_guest_mode_cookie(response)
         return response
     except Exception as e:
         return JSONResponse(
@@ -324,6 +355,8 @@ async def get_session(request: Request, db: Session = Depends(get_db)):
                 status_code=200,
                 content={
                     "authenticated": True,
+                    "guest": False,
+                    "mode": "authenticated",
                     "user": {
                         "user_id": user.id,
                         "username": user.username,
@@ -339,9 +372,14 @@ async def get_session(request: Request, db: Session = Depends(get_db)):
             _set_session_cookie(response, user.id)
             return response
         else:
+            guest_mode = request.cookies.get(GUEST_MODE_COOKIE) == "1"
             return JSONResponse(
                 status_code=200,
-                content={"authenticated": False}
+                content={
+                    "authenticated": False,
+                    "guest": guest_mode,
+                    "mode": "guest" if guest_mode else "anonymous",
+                }
             )
     except Exception as e:
         return JSONResponse(
@@ -358,6 +396,8 @@ async def check_auth(request: Request, db: Session = Depends(get_db)):
             status_code=200,
             content={
                 "authenticated": True,
+                "guest": False,
+                "mode": "authenticated",
                 "user": {
                     "user_id": user.id,
                     "username": user.username,
@@ -368,7 +408,15 @@ async def check_auth(request: Request, db: Session = Depends(get_db)):
         )
         _set_session_cookie(response, user.id)
         return response
-    return JSONResponse(status_code=200, content={"authenticated": False})
+    guest_mode = request.cookies.get(GUEST_MODE_COOKIE) == "1"
+    return JSONResponse(
+        status_code=200,
+        content={
+            "authenticated": False,
+            "guest": guest_mode,
+            "mode": "guest" if guest_mode else "anonymous",
+        }
+    )
 
 
 @router.get("/activity-history")

@@ -49,8 +49,15 @@
         }
 
         .shell {
-            max-width: 980px;
+            max-width: 1240px;
             margin: 0 auto;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1.45fr) minmax(320px, 0.95fr);
+            gap: 22px;
+            align-items: start;
         }
 
         .header {
@@ -117,7 +124,7 @@
             box-shadow: var(--shadow);
             border-radius: 14px;
             padding: 24px 26px;
-            margin-bottom: 22px;
+            margin-bottom: 0;
         }
 
         .panel h2 {
@@ -127,6 +134,24 @@
             font-weight: 800;
             border-bottom: 3px solid var(--line);
             padding-bottom: 8px;
+        }
+
+        .upload-panel {
+            min-height: 100%;
+        }
+
+        .history-panel {
+            position: sticky;
+            top: 14px;
+            display: flex;
+            flex-direction: column;
+            min-height: 540px;
+            max-height: calc(100vh - 32px);
+        }
+
+        .history-panel .sessions-header h2 {
+            font-size: 28px;
+            margin-bottom: 0;
         }
 
         body.dark-mode .panel h2 {
@@ -265,6 +290,24 @@
             margin-top: 8px;
             display: grid;
             gap: 10px;
+            overflow-y: auto;
+            padding-right: 6px;
+            margin-right: -4px;
+            max-height: calc(100vh - 235px);
+        }
+
+        .sessions-list::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .sessions-list::-webkit-scrollbar-track {
+            background: color-mix(in srgb, var(--surface-2) 65%, transparent);
+            border-radius: 10px;
+        }
+
+        .sessions-list::-webkit-scrollbar-thumb {
+            background: color-mix(in srgb, var(--line) 55%, transparent);
+            border-radius: 10px;
         }
 
         .session-item {
@@ -324,12 +367,33 @@
         }
 
         @media (max-width: 960px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .history-panel {
+                position: static;
+                min-height: 0;
+                max-height: none;
+            }
+
+            .sessions-list {
+                max-height: none;
+                overflow: visible;
+                padding-right: 0;
+                margin-right: 0;
+            }
+
             .title {
                 font-size: 28px;
             }
 
             .panel h2 {
                 font-size: 32px;
+            }
+
+            .history-panel .sessions-header h2 {
+                font-size: 30px;
             }
         }
 
@@ -364,40 +428,42 @@
         </div>
     </header>
 
-    <section class="panel">
-        <h2>Tải File Excel Lên</h2>
-        <div id="excelMessage" class="message"></div>
+    <div class="content-grid">
+        <section class="panel upload-panel">
+            <h2>Tải File Excel Lên</h2>
+            <div id="excelMessage" class="message"></div>
 
-        <div class="upload-area" id="excelUploadArea">
-            <div><strong>Kéo file Excel vào đây</strong></div>
-            <div>hoặc bấm nút "Chọn File" bên dưới</div>
-            <input id="excelFile" type="file" accept=".xlsx,.xls" style="display:none;" />
-        </div>
+            <div class="upload-area" id="excelUploadArea">
+                <div><strong>Kéo file Excel vào đây</strong></div>
+                <div>hoặc bấm nút "Chọn File" bên dưới</div>
+                <input id="excelFile" type="file" accept=".xlsx,.xls" style="display:none;" />
+            </div>
 
-        <div class="or-divider"><span class="or-chip">HOẶC</span></div>
+            <div class="or-divider"><span class="or-chip">HOẶC</span></div>
 
-        <button class="primary-btn" id="excelUploadBtn" type="button">Chọn File Excel</button>
+            <button class="primary-btn" id="excelUploadBtn" type="button">Chọn File Excel</button>
 
-        <div class="note">
-            <h4>Yêu cầu File Excel</h4>
-            <ul>
-                <li>Định dạng: .xlsx hoặc .xls</li>
-                <li>Dòng đầu tiên: Tên các trường (headers)</li>
-                <li>Các dòng tiếp theo: Dữ liệu cần điền vào form</li>
-                <li>Tối đa 10,000 dòng dữ liệu</li>
-            </ul>
-        </div>
-    </section>
+            <div class="note">
+                <h4>Yêu cầu File Excel</h4>
+                <ul>
+                    <li>Định dạng: .xlsx hoặc .xls</li>
+                    <li>Dòng đầu tiên: Tên các trường (headers)</li>
+                    <li>Các dòng tiếp theo: Dữ liệu cần điền vào form</li>
+                    <li>Tối đa 10,000 dòng dữ liệu</li>
+                </ul>
+            </div>
+        </section>
 
-    <section class="panel">
-        <div class="sessions-header">
-            <h2>Sessions Gần Đây</h2>
-            <button class="btn" id="reloadSessionsBtn" type="button">Làm mới</button>
-        </div>
+        <section class="panel history-panel">
+            <div class="sessions-header">
+                <h2>Sessions Gần Đây</h2>
+                <button class="btn" id="reloadSessionsBtn" type="button">Làm mới</button>
+            </div>
 
-        <div id="sessionsList" class="sessions-list"></div>
-        <div id="sessionsEmpty" class="empty">Chưa có file Excel nào được tải lên</div>
-    </section>
+            <div id="sessionsList" class="sessions-list"></div>
+            <div id="sessionsEmpty" class="empty">Chưa có file Excel nào được tải lên</div>
+        </section>
+    </div>
 </div>
 
 <script>
@@ -432,18 +498,10 @@ function showMessage(type, text) {
 
 async function ensureAuthenticated() {
     try {
-        const response = await fetch('/api/auth/check-auth');
-        const data = await response.json();
-        if (!data.authenticated) {
-            const next = encodeURIComponent('/excel');
-            window.location.href = `/login?next=${next}`;
-            return false;
-        }
+        await fetch('/api/auth/check-auth');
         return true;
     } catch (error) {
-        const next = encodeURIComponent('/excel');
-        window.location.href = `/login?next=${next}`;
-        return false;
+        return true;
     }
 }
 

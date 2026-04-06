@@ -10,9 +10,9 @@
 <body>
     <div class="page-shell">
         <header class="topbar">
-            <a class="brand" href="/"><span>AutoFill AI</span></a>
+            <a class="brand" href="/home"><span>AutoFill AI</span></a>
             <nav class="main-nav" aria-label="Main Navigation">
-                <a class="nav-link active" href="/">Trang Chủ</a>
+                <a class="nav-link active" href="/home">Trang Chủ</a>
                 <a class="nav-link" href="/word-upload">Word Upload</a>
                 <a class="nav-link" href="/excel">Excel Upload</a>
                 <a class="nav-link" href="/composer">Soạn Thảo</a>
@@ -53,13 +53,10 @@
         <main class="main-wrap fade-in">
             <section class="hero">
                 <h1>AI Document Composer</h1>
-                <h2>Vui lòng đăng nhập để bắt đầu</h2>
-                <p>Soạn thảo tài liệu với gợi ý thông minh từ AI</p>
-                <p>Giống Word nhưng mạnh mẽ hơn với sức mạnh của AI</p>
-                <div class="hero-actions">
-                    <a class="btn primary" href="/login">Bắt đầu ngay</a>
-                    <a class="btn secondary" href="/composer">Mở Composer</a>
-                </div>
+                <h2>Dùng ngay không cần đăng nhập</h2>
+                <p>Người dùng có thể sử dụng trực tiếp các chức năng hiện có mà không cần tài khoản.</p>
+                <p>Đăng nhập để đồng bộ lịch sử và dữ liệu riêng theo từng tài khoản.</p>
+                <p id="usageModeHint" class="muted">Bạn đang ở chế độ dùng miễn phí mặc định.</p>
             </section>
 
             <section class="feature feature-wide" aria-label="Main Feature">
@@ -94,7 +91,7 @@
                 <section class="footer-col">
                     <h5>Điều hướng nhanh</h5>
                     <ul class="footer-links">
-                        <li><a href="/">Trang Chủ</a></li>
+                        <li><a href="/home">Trang Chủ</a></li>
                         <li><a href="/composer">Soạn Thảo</a></li>
                         <li><a href="/word-upload">Word Upload</a></li>
                         <li><a href="/excel">Excel Upload</a></li>
@@ -118,7 +115,7 @@
     </div>
 
     <div id="globalToast" class="toast"></div>
-    <script src="/static/js/site-ui.js?v=20260401-5"></script>
+    <script src="/static/js/site-ui.js?v=20260406-1"></script>
     <script>
         // Extra safeguard on homepage to avoid stale cached JS affecting auth UI state.
         (async function syncHomepageAuthState() {
@@ -126,6 +123,7 @@
             const userButtons = document.querySelectorAll('[data-auth-user]');
             const accountNames = document.querySelectorAll('[data-account-name]');
             const adminOnlyItems = document.querySelectorAll('[data-admin-user-only]');
+            const usageModeHint = document.getElementById('usageModeHint');
 
             try {
                 const response = await fetch('/api/auth/session', {
@@ -150,6 +148,9 @@
                     adminOnlyItems.forEach((el) => {
                         el.style.display = data.user.is_admin ? '' : 'none';
                     });
+                    if (usageModeHint) {
+                        usageModeHint.textContent = `Đang đăng nhập: ${displayName}. Lịch sử sẽ được lưu theo tài khoản.`;
+                    }
                 } else {
                     anonButtons.forEach((el) => {
                         el.style.display = '';
@@ -160,6 +161,9 @@
                     adminOnlyItems.forEach((el) => {
                         el.style.display = 'none';
                     });
+                    if (usageModeHint) {
+                        usageModeHint.textContent = 'Bạn đang ở chế độ dùng miễn phí mặc định. Có thể dùng ngay mọi chức năng không cần đăng nhập.';
+                    }
                 }
             } catch (error) {
                 anonButtons.forEach((el) => {
@@ -171,6 +175,9 @@
                 adminOnlyItems.forEach((el) => {
                     el.style.display = 'none';
                 });
+                if (usageModeHint) {
+                    usageModeHint.textContent = 'Không kiểm tra được trạng thái đăng nhập. Hệ thống vẫn cho phép dùng miễn phí.';
+                }
             }
         })();
     </script>

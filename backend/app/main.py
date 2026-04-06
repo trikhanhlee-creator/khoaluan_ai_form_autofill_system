@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Request, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import RedirectResponse
+from fastapi.responses import RedirectResponse, HTMLResponse
 from sqlalchemy.orm import Session
 import os
 from urllib.parse import quote
@@ -138,6 +138,11 @@ def _authorize_user_ui(request: Request, db: Session):
     return user, None
 
 
+def _get_optional_authenticated_user(request: Request, db: Session):
+    """Return authenticated user if present, otherwise None."""
+    return auth.get_authenticated_user_from_request(request, db)
+
+
 def _authorize_admin_ui(request: Request, db: Session):
     """Ensure only admin users can access admin HTML pages."""
     user, auth_response = _authorize_user_ui(request, db)
@@ -184,11 +189,9 @@ async def form_page(request: Request, db: Session = Depends(get_db)):
     """Serve the form HTML page"""
     from fastapi.responses import HTMLResponse
 
-    user, auth_response = _authorize_user_ui(request, db)
-    if auth_response:
-        return auth_response
-
-    _record_user_activity(db, user.id, request, description="Opened form page")
+    user = _get_optional_authenticated_user(request, db)
+    if user:
+        _record_user_activity(db, user.id, request, description="Opened form page")
 
     with open(os.path.join(static_dir, "form.html"), "r", encoding="utf-8") as f:
         return HTMLResponse(content=f.read())
@@ -199,11 +202,9 @@ async def excel_page(request: Request, db: Session = Depends(get_db)):
     """Serve the Excel upload page"""
     from fastapi.responses import HTMLResponse
 
-    user, auth_response = _authorize_user_ui(request, db)
-    if auth_response:
-        return auth_response
-
-    _record_user_activity(db, user.id, request, description="Opened Excel upload page")
+    user = _get_optional_authenticated_user(request, db)
+    if user:
+        _record_user_activity(db, user.id, request, description="Opened Excel upload page")
 
     try:
         with open(os.path.join(static_dir, "excel-upload.html"), "r", encoding="utf-8") as f:
@@ -218,11 +219,9 @@ async def word_upload_page(request: Request, db: Session = Depends(get_db)):
     """Serve the Word upload page"""
     from fastapi.responses import HTMLResponse
 
-    user, auth_response = _authorize_user_ui(request, db)
-    if auth_response:
-        return auth_response
-
-    _record_user_activity(db, user.id, request, description="Opened Word upload page")
+    user = _get_optional_authenticated_user(request, db)
+    if user:
+        _record_user_activity(db, user.id, request, description="Opened Word upload page")
 
     try:
         with open(os.path.join(static_dir, "word-upload.html"), "r", encoding="utf-8") as f:
@@ -237,11 +236,9 @@ async def excel_form_page(session_id: str, request: Request, db: Session = Depen
     """Serve the Excel form page"""
     from fastapi.responses import HTMLResponse
 
-    user, auth_response = _authorize_user_ui(request, db)
-    if auth_response:
-        return auth_response
-
-    _record_user_activity(db, user.id, request, description=f"Opened Excel form session {session_id}")
+    user = _get_optional_authenticated_user(request, db)
+    if user:
+        _record_user_activity(db, user.id, request, description=f"Opened Excel form session {session_id}")
 
     try:
         with open(os.path.join(static_dir, "excel-form.html"), "r", encoding="utf-8") as f:
@@ -259,11 +256,9 @@ async def excel_data_form_page(session_id: str, request: Request, db: Session = 
     """Serve the Excel data auto-fill form page"""
     from fastapi.responses import HTMLResponse
 
-    user, auth_response = _authorize_user_ui(request, db)
-    if auth_response:
-        return auth_response
-
-    _record_user_activity(db, user.id, request, description=f"Opened Excel data form session {session_id}")
+    user = _get_optional_authenticated_user(request, db)
+    if user:
+        _record_user_activity(db, user.id, request, description=f"Opened Excel data form session {session_id}")
 
     try:
         with open(os.path.join(static_dir, "excel-data-form.html"), "r", encoding="utf-8") as f:
@@ -273,21 +268,14 @@ async def excel_data_form_page(session_id: str, request: Request, db: Session = 
         raise
 
 
-@app.get("/", tags=["ui"])
-async def root(request: Request, db: Session = Depends(get_db)):
-    """Root endpoint - serve main menu"""
+def _load_homepage_html():
     from fastapi.responses import HTMLResponse
-
-    user, auth_response = _authorize_user_ui(request, db)
-    if auth_response:
-        return auth_response
-
-    _record_user_activity(db, user.id, request, description="Opened main menu")
 
     try:
         with open(os.path.join(static_dir, "menu.html"), "r", encoding="utf-8") as f:
             return HTMLResponse(content=f.read())
-    except:
+    except Exception as e:
+        logger.error(f"Error loading menu.html: {e}")
         return {
             "message": "AutoFill AI System API",
             "version": "1.0.0",
@@ -295,16 +283,26 @@ async def root(request: Request, db: Session = Depends(get_db)):
             "menu": "/static/menu.html"
         }
 
+
+@app.get("/", tags=["ui"])
+async def root():
+    """Root endpoint - always show homepage."""
+    return _load_homepage_html()
+
+
+@app.get("/home", tags=["ui"])
+async def home_page():
+    """Alias homepage route for explicit navigation."""
+    return _load_homepage_html()
+
 @app.get("/composer", tags=["ui"])
 async def composer_page(request: Request, db: Session = Depends(get_db)):
     """Serve the document composer page"""
     from fastapi.responses import HTMLResponse
 
-    user, auth_response = _authorize_user_ui(request, db)
-    if auth_response:
-        return auth_response
-
-    _record_user_activity(db, user.id, request, description="Opened document composer")
+    user = _get_optional_authenticated_user(request, db)
+    if user:
+        _record_user_activity(db, user.id, request, description="Opened document composer")
 
     try:
         with open(os.path.join(static_dir, "composer.html"), "r", encoding="utf-8") as f:

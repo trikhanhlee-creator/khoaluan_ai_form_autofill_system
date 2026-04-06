@@ -410,18 +410,10 @@ async function parseApiResponse(response) {
 
 async function ensureAuthenticated() {
     try {
-        const response = await fetch('/api/auth/check-auth');
-        const data = await response.json();
-        if (!data.authenticated) {
-            const next = encodeURIComponent(window.location.pathname);
-            window.location.href = `/login?next=${next}`;
-            return false;
-        }
+        await fetch('/api/auth/check-auth');
         return true;
     } catch (error) {
-        const next = encodeURIComponent(window.location.pathname);
-        window.location.href = `/login?next=${next}`;
-        return false;
+        return true;
     }
 }
 

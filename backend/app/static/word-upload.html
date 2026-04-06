@@ -862,53 +862,6 @@
             min-width: 0;
         }
 
-        .btn-ai-edit {
-            padding: 8px 18px;
-            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
-            color: #ffffff;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            font-size: 14px;
-            white-space: nowrap;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
-            letter-spacing: 0.3px;
-            flex-shrink: 0;
-            min-height: 40px;
-        }
-
-        .btn-ai-edit:hover {
-            background: linear-gradient(135deg, #9d5eff 0%, #8b5cf6 100%);
-            box-shadow: 0 6px 16px rgba(139, 92, 246, 0.4);
-            transform: translateY(-2px);
-        }
-
-        .btn-ai-edit:active {
-            transform: translateY(0px);
-        }
-
-        .btn-ai-edit:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-        body.light-mode .btn-ai-edit {
-            background: linear-gradient(135deg, #9d4edd 0%, #7209b7 100%);
-            color: #ffffff;
-            box-shadow: 0 4px 12px rgba(114, 9, 183, 0.2);
-        }
-
-        body.light-mode .btn-ai-edit:hover {
-            background: linear-gradient(135deg, #a855f7 0%, #9d4edd 100%);
-            box-shadow: 0 6px 16px rgba(114, 9, 183, 0.3);
-        }
-
         .form-actions {
             display: flex;
             justify-content: space-between;
@@ -989,7 +942,7 @@
             color: #5a67d8;
         }
 
-        /* AI Enhancement Panel */
+        /* Related Autofill Panel */
         .ai-enhancement-panel {
             background: linear-gradient(135deg, rgba(139, 92, 246, 0.08) 0%, rgba(168, 85, 247, 0.05) 100%);
             border: 1px solid rgba(139, 92, 246, 0.25);
@@ -1015,11 +968,60 @@
             gap: 12px;
         }
 
-        #aiFieldSelect:focus,
-        #aiEditRequestPanel:focus {
-            border-color: #7c3aed;
-            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
-            outline: none;
+        .autofill-hint {
+            margin: 0;
+            font-size: 12px;
+            color: #cbd5e0;
+            line-height: 1.5;
+        }
+
+        .autofill-preview {
+            border: 1px dashed rgba(139, 92, 246, 0.35);
+            border-radius: 8px;
+            padding: 10px;
+            background: rgba(30, 41, 59, 0.35);
+            min-height: 84px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .autofill-preview.empty {
+            color: #a8b1c4;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .autofill-preview-header {
+            font-size: 12px;
+            color: #c4b5fd;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .autofill-preview-item {
+            padding: 8px;
+            border-radius: 6px;
+            background: rgba(15, 23, 42, 0.45);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            margin-bottom: 6px;
+        }
+
+        .autofill-preview-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .autofill-preview-field {
+            font-size: 12px;
+            color: #a5b4fc;
+            margin-bottom: 4px;
+        }
+
+        .autofill-preview-value {
+            font-size: 13px;
+            color: #e2e8f0;
+            word-break: break-word;
         }
 
         body.light-mode .ai-enhancement-panel {
@@ -1027,17 +1029,34 @@
             border-color: rgba(168, 85, 247, 0.3);
         }
 
-        body.light-mode #aiFieldSelect,
-        body.light-mode #aiEditRequestPanel {
-            background: #faf8ff;
-            color: #1e293b;
-            border-color: rgba(168, 85, 247, 0.2);
+        body.light-mode .autofill-hint {
+            color: #64748b;
         }
 
-        body.light-mode #aiFieldSelect:focus,
-        body.light-mode #aiEditRequestPanel:focus {
-            border-color: #8b5cf6;
-            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+        body.light-mode .autofill-preview {
+            background: rgba(255, 255, 255, 0.7);
+            border-color: rgba(168, 85, 247, 0.3);
+        }
+
+        body.light-mode .autofill-preview.empty {
+            color: #64748b;
+        }
+
+        body.light-mode .autofill-preview-header {
+            color: #7c3aed;
+        }
+
+        body.light-mode .autofill-preview-item {
+            background: #ffffff;
+            border-color: #d8b4fe;
+        }
+
+        body.light-mode .autofill-preview-field {
+            color: #7c3aed;
+        }
+
+        body.light-mode .autofill-preview-value {
+            color: #1e293b;
         }
 
         body.light-mode .form-content-with-ai-panel {
@@ -1053,7 +1072,7 @@
         }
 
         /* Suggestions */
-        .suggestions-list {
+        .form-group > .suggestions-list {
             position: absolute;
             top: calc(100% + 4px);
             left: 0;
@@ -1068,11 +1087,11 @@
             box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
         }
 
-        .suggestions-list.show {
+        .form-group > .suggestions-list.show {
             display: block;
         }
 
-        .suggestion-item {
+        .form-group > .suggestions-list .suggestion-item {
             padding: 10px 12px;
             cursor: pointer;
             border-top: 1px solid #444;
@@ -1081,15 +1100,15 @@
             word-break: break-word;
         }
 
-        .suggestion-item:first-child {
+        .form-group > .suggestions-list .suggestion-item:first-child {
             border-top: none;
         }
 
-        .suggestion-item:hover {
+        .form-group > .suggestions-list .suggestion-item:hover {
             background: rgba(102, 126, 234, 0.1);
         }
 
-        .suggestion-meta {
+        .form-group > .suggestions-list .suggestion-meta {
             font-size: 11px;
             color: #a8a8a8;
             margin-top: 3px;
@@ -1412,118 +1431,34 @@
             box-shadow: 0 4px 16px rgba(37, 99, 235, 0.2);
         }
 
-        /* AI Suggestions Modal */
-        #suggestionsModal {
-            max-width: 550px;
+        body.light-mode .form-group > .suggestions-list {
+            background: #ffffff;
+            border-color: #cbd5f5;
+            box-shadow: 0 10px 24px rgba(37, 99, 235, 0.15);
         }
 
-        .suggestions-modal-content {
-            background: linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.95) 100%) !important;
-            border: 1px solid rgba(139, 92, 246, 0.2) !important;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        body.light-mode .form-group > .suggestions-list .suggestion-item {
+            color: #1e293b;
+            border-top: 1px solid #e2e8f0;
+            background: transparent;
+            border-radius: 0;
+            margin-bottom: 0;
+            padding: 10px 12px;
         }
 
-        #suggestionsModal .suggestions-list {
-            max-height: 350px;
-            overflow-y: auto;
-            background: rgba(30, 41, 59, 0.3);
-            border: 1px solid rgba(139, 92, 246, 0.15);
-            border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 20px;
-            position: static;
-            left: auto;
-            right: auto;
-            top: auto;
+        body.light-mode .form-group > .suggestions-list .suggestion-item:first-child {
+            border-top: none;
+        }
+
+        body.light-mode .form-group > .suggestions-list .suggestion-item:hover {
+            background: rgba(37, 99, 235, 0.08);
+            border-color: #e2e8f0;
             box-shadow: none;
-            display: block;
+            transform: none;
         }
 
-        #suggestionsModal .suggestions-list::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        #suggestionsModal .suggestions-list::-webkit-scrollbar-track {
-            background: rgba(139, 92, 246, 0.1);
-            border-radius: 10px;
-        }
-
-        #suggestionsModal .suggestions-list::-webkit-scrollbar-thumb {
-            background: rgba(139, 92, 246, 0.5);
-            border-radius: 10px;
-        }
-
-        .suggestion-item {
-            background: linear-gradient(135deg, rgba(139, 92, 246, 0.08) 0%, rgba(168, 85, 247, 0.05) 100%);
-            border: 1px solid rgba(139, 92, 246, 0.3);
-            border-radius: 8px;
-            padding: 14px;
-            margin-bottom: 10px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .suggestion-item:hover {
-            background: linear-gradient(135deg, rgba(139, 92, 246, 0.18) 0%, rgba(168, 85, 247, 0.12) 100%);
-            border-color: rgba(139, 92, 246, 0.5);
-            box-shadow: 0 8px 16px rgba(139, 92, 246, 0.25);
-            transform: translateY(-2px);
-        }
-
-        .suggestion-value {
-            font-weight: 700;
-            color: #c4b5fd;
-            margin-bottom: 8px;
-            word-break: break-word;
-            font-size: 14px;
-            line-height: 1.4;
-        }
-
-        .suggestion-reason {
-            font-size: 13px;
-            color: #a0aec0;
-            margin-bottom: 8px;
-            line-height: 1.4;
-        }
-
-        .suggestion-confidence {
-            display: inline-block;
-            background: linear-gradient(135deg, rgba(139, 92, 246, 0.25) 0%, rgba(168, 85, 247, 0.15) 100%);
-            color: #cbd5e0;
-            padding: 4px 12px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 600;
-            border: 1px solid rgba(139, 92, 246, 0.2);
-        }
-
-        body.light-mode .suggestions-list {
-            background: rgba(242, 242, 252, 0.5);
-            border-color: rgba(168, 85, 247, 0.2);
-        }
-
-        body.light-mode .suggestion-item {
-            background: rgba(233, 213, 255, 0.3);
-            border-color: rgba(168, 85, 247, 0.4);
-        }
-
-        body.light-mode .suggestion-item:hover {
-            background: rgba(233, 213, 255, 0.5);
-            border-color: rgba(168, 85, 247, 0.6);
-            box-shadow: 0 4px 12px rgba(168, 85, 247, 0.2);
-        }
-
-        body.light-mode .suggestion-value {
-            color: #8b5cf6;
-        }
-
-        body.light-mode .suggestion-reason {
+        body.light-mode .form-group > .suggestions-list .suggestion-meta {
             color: #64748b;
-        }
-
-        body.light-mode .suggestion-confidence {
-            background: rgba(168, 85, 247, 0.2);
-            color: #8b5cf6;
         }
 
         /* History */
@@ -1949,26 +1884,14 @@
                     </form>
                 </div>
 
-                <!-- AI Enhancement Panel (Right - 1/4) -->
+                <!-- Related Autofill Panel (Right - 1/4) -->
                 <div class="ai-panel-sidebar">
                     <div id="aiEnhancementPanel" class="ai-enhancement-panel">
-                        <div class="ai-panel-header">🎯 Hỗ Trợ Chỉnh Sửa AI</div>
+                        <div class="ai-panel-header">⚡ Tự Động Điền Liên Quan</div>
                         <div class="ai-panel-content">
-                            <div style="margin-bottom: 12px;">
-                                <label style="display: block; margin-bottom: 6px; font-size: 13px; font-weight: 500; color: #cbd5e0;">Chọn trường:</label>
-                                <select id="aiFieldSelect" style="width: 100%; padding: 8px 12px; border: 1px solid #334155; border-radius: 6px; background: #1e293b; color: #e2e8f0; font-size: 13px;">
-                                    <option value="">-- Chọn trường --</option>
-                                </select>
-                            </div>
-                            <div style="margin-bottom: 12px;">
-                                <label style="display: block; margin-bottom: 6px; font-size: 13px; font-weight: 500; color: #cbd5e0;">Yêu cầu chỉnh sửa:</label>
-                                <textarea 
-                                    id="aiEditRequestPanel" 
-                                    placeholder="Viết chi tiết hơn...Làm chuyên nghiệp...Viết ngắn..."
-                                    style="width: 100%; padding: 10px 12px; border: 1px solid #334155; border-radius: 6px; background: #1e293b; color: #e2e8f0; font-family: inherit; font-size: 12px; resize: vertical; min-height: 80px;"
-                                ></textarea>
-                            </div>
-                            <button type="button" class="btn btn-primary" onclick="getAIEnhancementSuggestions()" style="width: 100%; background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);">🚀 Nhận Gợi Ý AI</button>
+                            <p class="autofill-hint">Nhập ít nhất 1 trường (ví dụ họ tên, mã, email, số điện thoại), sau đó bấm nút bên dưới để hệ thống tự so khớp và tự điền toàn bộ trường liên quan.</p>
+                            <div id="autofillPreview" class="autofill-preview empty">Chưa có dữ liệu so khớp</div>
+                            <button type="button" id="applyAllFillBtn" class="btn btn-primary" onclick="autoFillRelatedData()" style="width: 100%; background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);">⚡ Tự động nhập liệu</button>
                         </div>
                     </div>
                 </div>
@@ -2005,26 +1928,14 @@
                     </form>
                 </div>
 
-                <!-- AI Enhancement Panel (Right - 1/4) -->
+                <!-- Related Autofill Panel (Right - 1/4) -->
                 <div class="ai-panel-sidebar">
                     <div id="aiEnhancementPanelSubmission" class="ai-enhancement-panel">
-                        <div class="ai-panel-header">🎯 Hỗ Trợ Chỉnh Sửa AI</div>
+                        <div class="ai-panel-header">⚡ Tự Động Điền Liên Quan</div>
                         <div class="ai-panel-content">
-                            <div style="margin-bottom: 12px;">
-                                <label style="display: block; margin-bottom: 6px; font-size: 13px; font-weight: 500; color: #cbd5e0;">Chọn trường:</label>
-                                <select id="aiFieldSelectSubmission" style="width: 100%; padding: 8px 12px; border: 1px solid #334155; border-radius: 6px; background: #1e293b; color: #e2e8f0; font-size: 13px;">
-                                    <option value="">-- Chọn trường --</option>
-                                </select>
-                            </div>
-                            <div style="margin-bottom: 12px;">
-                                <label style="display: block; margin-bottom: 6px; font-size: 13px; font-weight: 500; color: #cbd5e0;">Yêu cầu chỉnh sửa:</label>
-                                <textarea 
-                                    id="aiEditRequestPanelSubmission" 
-                                    placeholder="Viết chi tiết hơn...Làm chuyên nghiệp...Viết ngắn..."
-                                    style="width: 100%; padding: 10px 12px; border: 1px solid #334155; border-radius: 6px; background: #1e293b; color: #e2e8f0; font-family: inherit; font-size: 12px; resize: vertical; min-height: 80px;"
-                                ></textarea>
-                            </div>
-                            <button type="button" class="btn btn-primary" onclick="getAIEnhancementSuggestionsSubmission()" style="width: 100%; background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);">🚀 Nhận Gợi Ý AI</button>
+                            <p class="autofill-hint">Điền một trường bất kỳ rồi bấm tự động nhập liệu. Hệ thống sẽ tự chọn trường nhận diện tốt nhất để điền các trường còn lại.</p>
+                            <div id="autofillPreviewSubmission" class="autofill-preview empty">Chưa có dữ liệu so khớp</div>
+                            <button type="button" id="applyAllFillBtnSubmission" class="btn btn-primary" onclick="autoFillRelatedDataSubmission()" style="width: 100%; background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);">⚡ Tự động nhập liệu</button>
                         </div>
                     </div>
                 </div>
@@ -2043,22 +1954,17 @@
         let selectedSubmissionIds = new Set();
         let exportMode = 'single';
         let bulkExportSubmissionIds = [];
+        let submissionDetailCache = {};
 
         async function ensureAuthenticated() {
             try {
                 const response = await fetch('/api/auth/check-auth');
                 const data = await response.json();
-                if (!data.authenticated) {
-                    const next = encodeURIComponent('/static/word-upload.html');
-                    window.location.href = `/login?next=${next}`;
-                    return false;
-                }
                 CURRENT_USER_ID = data.user?.user_id ?? null;
                 return true;
             } catch (error) {
-                const next = encodeURIComponent('/static/word-upload.html');
-                window.location.href = `/login?next=${next}`;
-                return false;
+                CURRENT_USER_ID = null;
+                return true;
             }
         }
 
@@ -2405,9 +2311,7 @@
                     showMessage('formMessage', '⚠️ Lỗi: Không tất cả các trường được tạo thành công. Vui lòng kiểm tra server logs.', 'error');
                 } else {
                     formFields.innerHTML = validFields.join('');
-                    
-                    // Populate AI field select
-                    populateAIFieldSelect(data.fields);
+                    resetAutofillPanelState('form');
                 }
             } catch (error) {
                 showMessage('formMessage', `❌ Lỗi: ${error.message}`, 'error');
@@ -2455,6 +2359,7 @@
                 const response = await fetch(`${API_BASE}/api/word/submissions`);
                 const data = await parseApiResponse(response);
                 submissions = data.submissions || [];
+                submissionDetailCache = {};
                 const displayedSubmissions = submissions.slice(-10).reverse();
                 const displayedIds = new Set(displayedSubmissions.map((s) => s.id));
 
@@ -2642,10 +2547,18 @@
             }
 
             const details = await fetchBulkSubmissionDetails();
+            if (!details.length) {
+                throw new Error('Không có dữ liệu để xuất.');
+            }
+
             const { headers, rows } = buildBulkFieldMatrix(details);
-            const worksheet = window.XLSX.utils.aoa_to_sheet([headers, ...rows]);
+            if (!headers.length) {
+                throw new Error('Không tìm thấy trường dữ liệu trong các form đã chọn.');
+            }
+
             const workbook = window.XLSX.utils.book_new();
-            window.XLSX.utils.book_append_sheet(workbook, worksheet, 'Submissions');
+            const worksheet = window.XLSX.utils.aoa_to_sheet([headers, ...rows]);
+            window.XLSX.utils.book_append_sheet(workbook, worksheet, 'FormData');
 
             const excelBytes = window.XLSX.write(workbook, {
                 bookType: 'xlsx',
@@ -2829,9 +2742,7 @@
                     `;
                 } else {
                     submissionFields.innerHTML = fieldElements;
-                    
-                    // Populate AI field select
-                    populateAIFieldSelectSubmission(fields);
+                    resetAutofillPanelState('submission');
                 }
                 
                 showMessage('submissionMessage', `📖 Đang xem dữ liệu #${data.id}`, 'info');
@@ -2955,6 +2866,44 @@
                 .join(' ');
         }
 
+        async function tryAutoOpenExportedFile({ blob, fileHandle, mimeType, suggestedName }) {
+            let previewBlob = blob;
+
+            // If available, read back the saved file for opening to reflect the final saved content.
+            if (fileHandle && typeof fileHandle.getFile === 'function') {
+                try {
+                    previewBlob = await fileHandle.getFile();
+                } catch (error) {
+                    console.log('Cannot read saved file handle, fallback to in-memory blob:', error);
+                }
+            }
+
+            const previewUrl = URL.createObjectURL(previewBlob);
+            let opened = false;
+
+            try {
+                const popup = window.open(previewUrl, '_blank', 'noopener');
+                opened = !!popup;
+            } catch (error) {
+                opened = false;
+            }
+
+            if (!opened) {
+                const previewLink = document.createElement('a');
+                previewLink.href = previewUrl;
+                previewLink.target = '_blank';
+                previewLink.rel = 'noopener';
+                previewLink.download = suggestedName || '';
+                previewLink.style.display = 'none';
+                document.body.appendChild(previewLink);
+                previewLink.click();
+                document.body.removeChild(previewLink);
+            }
+
+            // Keep URL alive long enough for browser/app handlers, then clean up.
+            setTimeout(() => URL.revokeObjectURL(previewUrl), 60000);
+        }
+
         async function saveBlobWithLocationPicker(blob, options) {
             const { suggestedName, mimeType, extension } = options;
             const accepts = { [mimeType]: [`.${extension}`] };
@@ -2973,6 +2922,14 @@
                     const writable = await handle.createWritable();
                     await writable.write(blob);
                     await writable.close();
+
+                    await tryAutoOpenExportedFile({
+                        blob,
+                        fileHandle: handle,
+                        mimeType,
+                        suggestedName
+                    });
+
                     return handle.name || suggestedName;
                 } catch (error) {
                     if (error && error.name === 'AbortError') {
@@ -2993,539 +2950,401 @@
             document.body.removeChild(link);
 
             setTimeout(() => URL.revokeObjectURL(url), 0);
+
+            await tryAutoOpenExportedFile({
+                blob,
+                mimeType,
+                suggestedName
+            });
+
             return suggestedName;
         }
 
-        /**
-         * Handle AI edit button click
-         */
-        function handleAIEditClick(button) {
-            const fieldName = button.getAttribute('data-field-name');
-            const fieldId = button.getAttribute('data-field-id');
-            const fieldElement = document.getElementById(fieldId);
-            
-            if (!fieldElement) {
-                console.error('Field not found:', fieldId);
-                return;
-            }
-            
-            const currentValue = fieldElement.value.trim();
-            getFieldSuggestions(fieldName, currentValue, fieldId);
-        }
-
-        /**
-         * Get AI suggestions for field improvement
-         */
-        async function getFieldSuggestions(fieldName, currentValue, fieldId) {
-            if (!currentValue.trim()) {
-                showMessage('submissionMessage', '⚠️ Vui lòng nhập dữ liệu trước', 'error');
-                return;
+        function getAutofillConfig(mode) {
+            if (mode === 'submission') {
+                return {
+                    previewId: 'autofillPreviewSubmission',
+                    applyBtnId: 'applyAllFillBtnSubmission',
+                    messageId: 'submissionMessage',
+                    formSelector: '#submissionFields'
+                };
             }
 
-            const modal = document.getElementById('suggestionsModal');
-            const suggestionsList = document.getElementById('suggestionsList');
-            const suggestionsLoading = document.getElementById('suggestionsLoading');
-            const suggestionsFieldName = document.getElementById('suggestionsFieldName');
-            
-            // Show modal with loading state
-            suggestionsFieldName.textContent = `Trường: ${escapeHtml(fieldName)}`;
-            suggestionsList.innerHTML = '';
-            suggestionsLoading.style.display = 'block';
-            modal.classList.add('show');
-            
-            // Store current field info for applying suggestions
-            window.currentSuggestedField = {
-                name: fieldName,
-                value: currentValue,
-                fieldId: fieldId
+            return {
+                previewId: 'autofillPreview',
+                applyBtnId: 'applyAllFillBtn',
+                messageId: 'formMessage',
+                formSelector: '#formFields'
             };
+        }
 
-            try {
-                const response = await fetch(`${API_BASE}/api/form-edit/suggestions`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        field_name: fieldName,
-                        current_value: currentValue,
-                        field_type: 'text',
-                        context: 'form_submission',
-                        max_suggestions: 3
-                    })
-                });
+        function resetAutofillPanelState(mode) {
+            const config = getAutofillConfig(mode);
+            const preview = document.getElementById(config.previewId);
+            const applyBtn = document.getElementById(config.applyBtnId);
 
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}`);
-                }
+            if (preview) {
+                preview.className = 'autofill-preview empty';
+                preview.textContent = 'Chưa có dữ liệu so khớp';
+            }
 
-                const data = await response.json();
-                suggestionsLoading.style.display = 'none';
+            if (applyBtn) {
+                applyBtn.disabled = false;
+            }
+        }
 
-                if (data.success && data.suggestions && data.suggestions.length > 0) {
-                    // Render suggestions
-                    const suggestionsHTML = data.suggestions.map((suggestion, idx) => `
-                        <div class="suggestion-item" onclick="applySuggestion('${suggestion.text.replace(/'/g, "\\'")}', '${fieldId}')">
-                            <div class="suggestion-value">${escapeHtml(suggestion.text)}</div>
-                            <div class="suggestion-reason">${escapeHtml(suggestion.reason || 'Gợi ý từ AI')}</div>
-                            <div class="suggestion-confidence">Độ chính xác: ${Math.round(suggestion.confidence * 100)}%</div>
-                        </div>
-                    `).join('');
-                    
-                    suggestionsList.innerHTML = suggestionsHTML;
-                    
-                    // Track suggestion view
-                    fetch(`${API_BASE}/api/form-edit/apply-suggestion`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            field_name: fieldName,
-                            original_value: currentValue,
-                            suggested_value: data.suggestions[0].text,
-                            applied: false,
-                            confidence: data.suggestions[0].confidence
-                        })
-                    }).catch(err => console.log('Tracking suggestion view:', err));
+        function cssEscapeValue(value) {
+            const strValue = String(value ?? '');
+            if (window.CSS && typeof window.CSS.escape === 'function') {
+                return window.CSS.escape(strValue);
+            }
+            return strValue.replace(/"/g, '\\"');
+        }
+
+        function normalizeFieldKey(fieldName) {
+            return removeAccents(String(fieldName || '')).replace(/[^a-z0-9]/g, '');
+        }
+
+        function normalizeMatchValue(value) {
+            return removeAccents(String(value || '')).trim();
+        }
+
+        function scoreValueSimilarity(sourceValue, candidateValue) {
+            const source = normalizeMatchValue(sourceValue);
+            const candidate = normalizeMatchValue(candidateValue);
+
+            if (!source || !candidate) return 0;
+            if (source === candidate) return 1;
+            if (candidate.startsWith(source) || source.startsWith(candidate)) return 0.9;
+            if (candidate.includes(source) || source.includes(candidate)) return 0.78;
+
+            const sourceTokens = source.split(/\s+/).filter(Boolean);
+            const candidateTokens = candidate.split(/\s+/).filter(Boolean);
+            if (!sourceTokens.length || !candidateTokens.length) return 0;
+
+            const overlap = sourceTokens.filter((token) => candidateTokens.includes(token)).length;
+            if (overlap === 0) return 0;
+
+            return Math.min(0.72, 0.45 + overlap / Math.max(sourceTokens.length, candidateTokens.length));
+        }
+
+        function findBestFieldInRecord(recordData, targetFieldName) {
+            const targetKey = normalizeFieldKey(targetFieldName);
+            let bestMatch = null;
+
+            Object.entries(recordData || {}).forEach(([recordField, rawValue]) => {
+                const value = String(rawValue ?? '').trim();
+                if (!value) return;
+
+                const recordKey = normalizeFieldKey(recordField);
+                let keyScore = 0;
+
+                if (recordKey === targetKey) {
+                    keyScore = 1;
+                } else if (recordKey && targetKey && (recordKey.includes(targetKey) || targetKey.includes(recordKey))) {
+                    keyScore = 0.82;
                 } else {
-                    suggestionsList.innerHTML = '<p style="text-align: center; color: #cbd5e0;">Không có gợi ý nào từ AI</p>';
-                }
-            } catch (error) {
-                console.error('Get suggestions error:', error);
-                suggestionsLoading.style.display = 'none';
-                suggestionsList.innerHTML = `<p style="text-align: center; color: #ef5350;">❌ Lỗi: ${error.message}</p>`;
-            }
-        }
-
-        /**
-         * Apply AI suggestion to field
-         */
-        function applySuggestion(suggestedValue, fieldId) {
-            try {
-                const field = document.getElementById(fieldId);
-                if (field) {
-                    field.value = suggestedValue;
-                    field.focus();
-                    
-                    // Track suggestion application
-                    if (window.currentSuggestedField) {
-                        fetch(`${API_BASE}/api/form-edit/apply-suggestion`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                field_name: window.currentSuggestedField.name,
-                                original_value: window.currentSuggestedField.value,
-                                suggested_value: suggestedValue,
-                                applied: true,
-                                confidence: 1.0
-                            })
-                        }).catch(err => console.log('Tracking suggestion apply:', err));
+                    const targetTokens = targetKey.match(/[a-z0-9]+/g) || [];
+                    const recordTokens = recordKey.match(/[a-z0-9]+/g) || [];
+                    const overlap = targetTokens.filter((token) => recordTokens.includes(token)).length;
+                    if (overlap > 0) {
+                        keyScore = Math.min(0.72, 0.4 + overlap / Math.max(targetTokens.length, recordTokens.length));
                     }
-                    
-                    closeSuggestionsModal();
-                    showMessage('submissionMessage', `✅ Đã áp dụng gợi ý từ AI`, 'success');
                 }
-            } catch (error) {
-                console.error('Apply suggestion error:', error);
-                showMessage('submissionMessage', `❌ Lỗi áp dụng gợi ý: ${error.message}`, 'error');
-            }
-        }
 
-        /**
-         * Apply Suggestion for Submission
-         */
-        function applySuggestionSubmission(suggestedValue, fieldName) {
-            try {
-                // Find input by name
-                const inputs = document.querySelectorAll(`input[name="${CSS.escape(fieldName)}"]`);
-                if (inputs.length > 0) {
-                    const field = inputs[0];
-                    field.value = suggestedValue;
-                    field.focus();
-                    
-                    // Track suggestion application
-                    if (window.currentSuggestedField) {
-                        fetch(`${API_BASE}/api/form-edit/apply-suggestion`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                field_name: window.currentSuggestedField.name,
-                                original_value: window.currentSuggestedField.value,
-                                suggested_value: suggestedValue,
-                                applied: true,
-                                confidence: 1.0,
-                                context: 'submission_editing'
-                            })
-                        }).catch(err => console.log('Tracking suggestion apply:', err));
-                    }
-                    
-                    closeSuggestionsModal();
-                    showMessage('submissionMessage', `✅ Đã áp dụng gợi ý từ AI`, 'success');
-                }
-            } catch (error) {
-                console.error('Apply suggestion error:', error);
-                showMessage('submissionMessage', `❌ Lỗi áp dụng gợi ý: ${error.message}`, 'error');
-            }
-        }
-
-        /**
-         * Close suggestions modal
-         */
-        function closeSuggestionsModal() {
-            const modal = document.getElementById('suggestionsModal');
-            modal.classList.remove('show');
-            window.currentSuggestedField = null;
-        }
-
-        /**
-         * Populate AI Field Select with available fields
-         */
-        function populateAIFieldSelect(fields) {
-            const selectElement = document.getElementById('aiFieldSelect');
-            selectElement.innerHTML = '<option value="">-- Chọn trường --</option>';
-            
-            fields.forEach(field => {
-                if (field.field_id && field.field_id >= 0) {
-                    const option = document.createElement('option');
-                    option.value = field.field_id;
-                    option.textContent = field.label || field.name;
-                    selectElement.appendChild(option);
+                if (!bestMatch || keyScore > bestMatch.keyScore) {
+                    bestMatch = {
+                        fieldName: recordField,
+                        value,
+                        keyScore
+                    };
                 }
             });
+
+            return bestMatch;
         }
 
-        /**
-         * Get AI Enhancement Suggestions from Panel
-         */
-        async function getAIEnhancementSuggestions() {
-            const fieldSelect = document.getElementById('aiFieldSelect');
-            const requestTextarea = document.getElementById('aiEditRequestPanel');
-            
-            const fieldId = fieldSelect.value.trim();
-            const userRequest = requestTextarea.value.trim();
-            
-            if (!fieldId) {
-                showMessage('formMessage', '⚠️ Vui lòng chọn trường muốn chỉnh sửa', 'error');
-                return;
+        async function fetchAutofillHistoryRecords(limit = 25) {
+            const recentItems = (submissions || []).slice(-limit).reverse();
+            const records = [];
+
+            for (const item of recentItems) {
+                if (!item || !item.id) continue;
+
+                try {
+                    let detail = submissionDetailCache[item.id];
+                    if (!detail) {
+                        const response = await fetch(`${API_BASE}/api/word/submission/${item.id}`);
+                        detail = await parseApiResponse(response);
+                        submissionDetailCache[item.id] = detail;
+                    }
+
+                    if (detail && detail.data && Object.keys(detail.data).length > 0) {
+                        records.push(detail);
+                    }
+                } catch (error) {
+                    console.warn('Skip broken submission for autofill:', item.id, error);
+                }
             }
-            
-            if (!userRequest) {
-                showMessage('formMessage', '⚠️ Vui lòng nhập yêu cầu chỉnh sửa', 'error');
-                return;
-            }
-            
-            try {
-                // Get field information
-                const input = document.querySelector(`input[data-field-id="${fieldId}"]`);
-                if (!input) {
-                    showMessage('formMessage', '❌ Lỗi: Không tìm thấy trường', 'error');
+
+            return records;
+        }
+
+        function buildAutofillUpdates(mode, matchedRecord, sourceInput, sourceFieldName) {
+            const config = getAutofillConfig(mode);
+            const sourceFieldKey = normalizeFieldKey(sourceFieldName);
+            const inputs = Array.from(
+                document.querySelectorAll(`${config.formSelector} input[name], ${config.formSelector} textarea[name], ${config.formSelector} select[name]`)
+            );
+
+            return inputs.reduce((updates, input) => {
+                if (input === sourceInput) return updates;
+
+                const targetFieldName = input.getAttribute('name') || input.getAttribute('data-field-name') || '';
+                if (!targetFieldName) return updates;
+
+                if (normalizeFieldKey(targetFieldName) === sourceFieldKey) {
+                    return updates;
+                }
+
+                const matchedField = findBestFieldInRecord(matchedRecord.data || {}, targetFieldName);
+                if (!matchedField || matchedField.keyScore < 0.72) {
+                    return updates;
+                }
+
+                const currentValue = String(input.value || '').trim();
+                const nextValue = String(matchedField.value || '').trim();
+                if (!nextValue || currentValue === nextValue) {
+                    return updates;
+                }
+
+                const label = input.closest('.form-group')?.querySelector('label')?.textContent?.trim() || targetFieldName;
+
+                updates.push({
+                    inputId: input.id,
+                    fieldName: targetFieldName,
+                    label,
+                    value: nextValue,
+                    matchedFrom: matchedField.fieldName
+                });
+
+                return updates;
+            }, []);
+        }
+
+        function getCandidateSourceLabel(input) {
+            return input.closest('.form-group')?.querySelector('label')?.textContent?.trim()
+                || input.getAttribute('name')
+                || input.getAttribute('data-field-name')
+                || 'Truong mau';
+        }
+
+        function getCandidateSourceName(input) {
+            return input.getAttribute('name') || input.getAttribute('data-field-name') || getCandidateSourceLabel(input);
+        }
+
+        function scoreSourceFieldCandidate(fieldName, value) {
+            const key = normalizeFieldKey(fieldName);
+            const textValue = String(value || '');
+
+            let score = 0.3 + Math.min(textValue.length / 40, 0.2);
+
+            if (/id|ma|code/.test(key)) score += 0.45;
+            if (/cccd|cmnd|mssv|sdt|phone|mobile|email/.test(key)) score += 0.4;
+            if (/hoten|fullname|name|ten/.test(key)) score += 0.33;
+
+            if (/^\d{6,}$/.test(textValue)) score += 0.35;
+            if (/^[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}$/.test(textValue)) score += 0.35;
+            if (/\d/.test(textValue) && /[A-Za-z]/.test(textValue)) score += 0.2;
+            if (textValue.trim().split(/\s+/).length >= 2) score += 0.12;
+
+            return score;
+        }
+
+        function detectBestSourceInput(mode) {
+            const config = getAutofillConfig(mode);
+            const inputs = Array.from(document.querySelectorAll(`${config.formSelector} input, ${config.formSelector} textarea, ${config.formSelector} select`));
+
+            let best = null;
+            inputs.forEach((input) => {
+                const type = (input.getAttribute('type') || '').toLowerCase();
+                if (type === 'hidden') {
                     return;
                 }
-                
-                const fieldName = input.getAttribute('data-field-name');
-                const currentValue = input.value;
-                
-                // Show suggestions modal with loading state
-                const modal = document.getElementById('suggestionsModal');
-                const suggestionsList = document.getElementById('suggestionsList');
-                const suggestionsLoading = document.getElementById('suggestionsLoading');
-                const suggestionsFieldName = document.getElementById('suggestionsFieldName');
-                
-                suggestionsFieldName.textContent = `Trường: ${escapeHtml(fieldName)} | Yêu cầu: ${escapeHtml(userRequest.substring(0, 50))}${userRequest.length > 50 ? '...' : ''}`;
-                suggestionsList.innerHTML = '';
-                suggestionsLoading.style.display = 'block';
-                modal.classList.add('show');
-                
-                // Store current field info
-                window.currentSuggestedField = {
-                    name: fieldName,
-                    value: currentValue,
-                    fieldId: fieldId,
-                    request: userRequest
-                };
-                
-                // Get suggestions with user request
-                const response = await fetch(`${API_BASE}/api/form-edit/suggestions`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        field_name: fieldName,
-                        current_value: currentValue,
-                        field_type: 'text',
-                        context: 'form_filling',
-                        user_request: userRequest,
-                        max_suggestions: 3
-                    })
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}`);
-                }
-                
-                const data = await response.json();
-                suggestionsLoading.style.display = 'none';
-                
-                if (data.success && data.suggestions && data.suggestions.length > 0) {
-                    // Render suggestions
-                    const suggestionsHTML = data.suggestions.map((suggestion, idx) => `
-                        <div class="suggestion-item" onclick="applySuggestion('${suggestion.text.replace(/'/g, "\\'")}', '${fieldId}')">
-                            <div class="suggestion-value">${escapeHtml(suggestion.text)}</div>
-                            <div class="suggestion-reason">${escapeHtml(suggestion.reason || 'Gợi ý từ AI')}</div>
-                            <div class="suggestion-confidence">Độ chính xác: ${Math.round(suggestion.confidence * 100)}%</div>
-                        </div>
-                    `).join('');
-                    
-                    suggestionsList.innerHTML = suggestionsHTML;
-                    
-                    // Clear panel after successful request
-                    requestTextarea.value = '';
-                } else {
-                    suggestionsList.innerHTML = '<div style="padding: 16px; text-align: center; color: #cbd5e0;">❌ Không tìm thấy gợi ý phù hợp</div>';
-                }
-            } catch (error) {
-                const suggestionsLoading = document.getElementById('suggestionsLoading');
-                suggestionsLoading.style.display = 'none';
-                const suggestionsList = document.getElementById('suggestionsList');
-                suggestionsList.innerHTML = `<div style="padding: 16px; color: #f87171; text-align: center;">❌ Lỗi: ${escapeHtml(error.message)}</div>`;
-            }
-        }
 
-        /**
-         * Populate AI Field Select for Submission View
-         */
-        function populateAIFieldSelectSubmission(fields) {
-            const selectElement = document.getElementById('aiFieldSelectSubmission');
-            selectElement.innerHTML = '<option value="">-- Chọn trường --</option>';
-            
-            Object.entries(fields).forEach(([fieldName, fieldValue], idx) => {
-                const option = document.createElement('option');
-                option.value = fieldName;
-                option.textContent = fieldName;
-                selectElement.appendChild(option);
+                const value = String(input.value || '').trim();
+                if (!value) {
+                    return;
+                }
+
+                const fieldName = getCandidateSourceName(input);
+                const score = scoreSourceFieldCandidate(fieldName, value);
+
+                if (!best || score > best.score) {
+                    best = {
+                        input,
+                        fieldName,
+                        fieldLabel: getCandidateSourceLabel(input),
+                        value,
+                        score
+                    };
+                }
             });
+
+            return best;
         }
 
-        /**
-         * Get AI Enhancement Suggestions for Submission
-         */
-        async function getAIEnhancementSuggestionsSubmission() {
-            const fieldSelect = document.getElementById('aiFieldSelectSubmission');
-            const requestTextarea = document.getElementById('aiEditRequestPanelSubmission');
-            
-            const fieldName = fieldSelect.value.trim();
-            const userRequest = requestTextarea.value.trim();
-            
-            if (!fieldName) {
-                showMessage('submissionMessage', '⚠️ Vui lòng chọn trường muốn chỉnh sửa', 'error');
+        function renderAppliedAutofillPreview(mode, plan, updatedCount) {
+            const config = getAutofillConfig(mode);
+            const preview = document.getElementById(config.previewId);
+            if (!preview) return;
+
+            if (!plan || !plan.updates || plan.updates.length === 0 || updatedCount === 0) {
+                preview.className = 'autofill-preview empty';
+                preview.textContent = 'Đã so khớp nhưng không có trường mới cần cập nhật.';
                 return;
             }
-            
-            if (!userRequest) {
-                showMessage('submissionMessage', '⚠️ Vui lòng nhập yêu cầu chỉnh sửa', 'error');
-                return;
-            }
-            
-            try {
-                // Get current field value from submission data
-                const fields = currentSubmission.data || {};
-                const currentValue = String(fields[fieldName] || '');
-                
-                // Show suggestions modal with loading state
-                const modal = document.getElementById('suggestionsModal');
-                const suggestionsList = document.getElementById('suggestionsList');
-                const suggestionsLoading = document.getElementById('suggestionsLoading');
-                const suggestionsFieldName = document.getElementById('suggestionsFieldName');
-                
-                suggestionsFieldName.textContent = `Trường: ${escapeHtml(fieldName)} | Yêu cầu: ${escapeHtml(userRequest.substring(0, 50))}${userRequest.length > 50 ? '...' : ''}`;
-                suggestionsList.innerHTML = '';
-                suggestionsLoading.style.display = 'block';
-                modal.classList.add('show');
-                
-                // Store current field info
-                window.currentSuggestedField = {
-                    name: fieldName,
-                    value: currentValue,
-                    fieldId: null,
-                    request: userRequest,
-                    isSubmission: true
+
+            const topUpdates = plan.updates.slice(0, 6);
+            const hiddenCount = plan.updates.length - topUpdates.length;
+
+            preview.className = 'autofill-preview';
+            preview.innerHTML = `
+                <div class="autofill-preview-header">
+                    Đã tự động điền ${updatedCount} trường từ bản ghi #${plan.submissionId}
+                </div>
+                <div class="autofill-preview-header">
+                    Trường nhận diện: ${escapeHtml(plan.sourceFieldLabel)} (${Math.round(plan.score * 100)}% khớp)
+                </div>
+                ${topUpdates.map((item) => `
+                    <div class="autofill-preview-item">
+                        <div class="autofill-preview-field">${escapeHtml(item.label)}</div>
+                        <div class="autofill-preview-value">${escapeHtml(item.value)}</div>
+                    </div>
+                `).join('')}
+                ${hiddenCount > 0 ? `<div class="autofill-preview-header">...và ${hiddenCount} trường khác</div>` : ''}
+            `;
+        }
+
+        async function buildAutofillPlanByMode(mode) {
+            const source = detectBestSourceInput(mode);
+            if (!source) {
+                return {
+                    error: '⚠️ Vui lòng nhập ít nhất 1 trường trước khi tự động nhập liệu.'
                 };
-                
-                // Get suggestions with user request
-                const response = await fetch(`${API_BASE}/api/form-edit/suggestions`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        field_name: fieldName,
-                        current_value: currentValue,
-                        field_type: 'text',
-                        context: 'submission_editing',
-                        user_request: userRequest,
-                        max_suggestions: 3
-                    })
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}`);
-                }
-                
-                const data = await response.json();
-                suggestionsLoading.style.display = 'none';
-                
-                if (data.success && data.suggestions && data.suggestions.length > 0) {
-                    // Render suggestions
-                    const suggestionsHTML = data.suggestions.map((suggestion, idx) => `
-                        <div class="suggestion-item" onclick="applySuggestionSubmission('${suggestion.text.replace(/'/g, "\\'")}', '${fieldName}')">
-                            <div class="suggestion-value">${escapeHtml(suggestion.text)}</div>
-                            <div class="suggestion-reason">${escapeHtml(suggestion.reason || 'Gợi ý từ AI')}</div>
-                            <div class="suggestion-confidence">Độ chính xác: ${Math.round(suggestion.confidence * 100)}%</div>
-                        </div>
-                    `).join('');
-                    
-                    suggestionsList.innerHTML = suggestionsHTML;
-                    
-                    // Clear panel after successful request
-                    requestTextarea.value = '';
-                } else {
-                    suggestionsList.innerHTML = '<div style="padding: 16px; text-align: center; color: #cbd5e0;">❌ Không tìm thấy gợi ý phù hợp</div>';
-                }
-            } catch (error) {
-                const suggestionsLoading = document.getElementById('suggestionsLoading');
-                suggestionsLoading.style.display = 'none';
-                const suggestionsList = document.getElementById('suggestionsList');
-                suggestionsList.innerHTML = `<div style="padding: 16px; color: #f87171; text-align: center;">❌ Lỗi: ${escapeHtml(error.message)}</div>`;
             }
-        }
 
-        /**
-         * Show AI Edit Request Modal
-         */
-        function showAIEditSuggestions(fieldId, fieldName) {
-            const field = document.getElementById(fieldId);
-            if (!field) return;
+            const records = await fetchAutofillHistoryRecords(25);
+            if (!records.length) {
+                return {
+                    error: '⚠️ Chưa có lịch sử để so khớp. Hãy tạo thêm dữ liệu trước.'
+                };
+            }
 
-            // Store field info for later use
-            window.currentAIEditField = {
-                fieldId: fieldId,
-                fieldName: fieldName,
-                currentValue: field.value || ''
+            let best = null;
+
+            records.forEach((record) => {
+                const sourceMatch = findBestFieldInRecord(record.data || {}, source.fieldName);
+                if (!sourceMatch || sourceMatch.keyScore < 0.58) {
+                    return;
+                }
+
+                const valueScore = scoreValueSimilarity(source.value, sourceMatch.value);
+                const totalScore = valueScore * 0.87 + sourceMatch.keyScore * 0.13;
+
+                if (!best || totalScore > best.score) {
+                    best = {
+                        score: totalScore,
+                        sourceMatch,
+                        record
+                    };
+                }
+            });
+
+            if (!best || best.score < 0.58) {
+                return {
+                    error: '⚠️ Không tìm thấy dữ liệu đủ tương đồng để tự động nhập liệu.'
+                };
+            }
+
+            return {
+                mode,
+                score: best.score,
+                sourceFieldName: source.fieldName,
+                sourceFieldLabel: source.fieldLabel,
+                sourceValue: source.value,
+                submissionId: best.record.id,
+                updates: buildAutofillUpdates(mode, best.record, source.input, source.fieldName)
             };
-
-            // Clear request input
-            document.getElementById('aiEditRequest').value = '';
-            document.getElementById('aiEditFieldName').textContent = `Trường: ${escapeHtml(fieldName)}`;
-
-            // Show request modal
-            const modal = document.getElementById('aiEditRequestModal');
-            modal.classList.add('show');
-
-            // Focus on textarea
-            setTimeout(() => {
-                document.getElementById('aiEditRequest').focus();
-            }, 100);
         }
 
-        /**
-         * Close AI Edit Request Modal
-         */
-        function closeAIEditRequestModal() {
-            const modal = document.getElementById('aiEditRequestModal');
-            modal.classList.remove('show');
-            window.currentAIEditField = null;
-        }
+        async function autoFillRelatedDataByMode(mode) {
+            const config = getAutofillConfig(mode);
+            const applyBtn = document.getElementById(config.applyBtnId);
+            const preview = document.getElementById(config.previewId);
 
-        /**
-         * Get AI suggestions based on user request
-         */
-        async function getAIEditSuggestions() {
-            if (!window.currentAIEditField) {
-                showMessage('formMessage', '❌ Lỗi: Không tìm thấy trường', 'error');
-                return;
-            }
+            if (!applyBtn || !preview) return;
 
-            const request = document.getElementById('aiEditRequest').value.trim();
-            if (!request) {
-                showMessage('formMessage', '⚠️ Vui lòng nhập yêu cầu chỉnh sửa', 'error');
-                return;
-            }
+            applyBtn.disabled = true;
+            preview.className = 'autofill-preview empty';
+            preview.textContent = 'Đang tự động so khớp và nhập liệu...';
 
             try {
-                const { fieldId, fieldName, currentValue } = window.currentAIEditField;
+                const plan = await buildAutofillPlanByMode(mode);
 
-                // Close request modal
-                closeAIEditRequestModal();
+                if (plan.error) {
+                    preview.className = 'autofill-preview empty';
+                    preview.textContent = plan.error.replace(/^⚠️\s*/, '');
+                    showMessage(config.messageId, plan.error, 'error');
+                    return;
+                }
 
-                // Show suggestions modal with loading state
-                const modal = document.getElementById('suggestionsModal');
-                const suggestionsList = document.getElementById('suggestionsList');
-                const suggestionsLoading = document.getElementById('suggestionsLoading');
-                const suggestionsFieldName = document.getElementById('suggestionsFieldName');
-                
-                suggestionsFieldName.textContent = `Trường: ${escapeHtml(fieldName)} | Yêu cầu: ${escapeHtml(request.substring(0, 50))}${request.length > 50 ? '...' : ''}`;
-                suggestionsList.innerHTML = '';
-                suggestionsLoading.style.display = 'block';
-                modal.classList.add('show');
+                let updatedCount = 0;
+                plan.updates.forEach((update) => {
+                    const input = resolveAutofillInput(mode, update);
+                    if (!input) return;
 
-                // Store current field info
-                window.currentSuggestedField = {
-                    name: fieldName,
-                    value: currentValue,
-                    fieldId: fieldId,
-                    request: request
-                };
-
-                // Get suggestions with user request
-                const response = await fetch(`${API_BASE}/api/form-edit/suggestions`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        field_name: fieldName,
-                        current_value: currentValue,
-                        field_type: 'text',
-                        context: 'form_filling',
-                        user_request: request,
-                        max_suggestions: 3
-                    })
+                    input.value = update.value;
+                    input.dispatchEvent(new Event('input', { bubbles: true }));
+                    input.dispatchEvent(new Event('change', { bubbles: true }));
+                    updatedCount += 1;
                 });
 
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}`);
+                renderAppliedAutofillPreview(mode, plan, updatedCount);
+
+                if (updatedCount === 0) {
+                    showMessage(config.messageId, 'ℹ️ Đã tìm thấy bản ghi phù hợp nhưng không có trường mới để cập nhật.', 'info');
+                    return;
                 }
 
-                const data = await response.json();
-                suggestionsLoading.style.display = 'none';
-
-                if (data.success && data.suggestions && data.suggestions.length > 0) {
-                    // Render suggestions
-                    const suggestionsHTML = data.suggestions.map((suggestion, idx) => `
-                        <div class="suggestion-item" onclick="applySuggestion('${suggestion.text.replace(/'/g, "\\'")}', '${fieldId}')">
-                            <div class="suggestion-value">${escapeHtml(suggestion.text)}</div>
-                            <div class="suggestion-reason">${escapeHtml(suggestion.reason || 'Gợi ý từ AI')}</div>
-                            <div class="suggestion-confidence">Độ chính xác: ${Math.round(suggestion.confidence * 100)}%</div>
-                        </div>
-                    `).join('');
-                    
-                    suggestionsList.innerHTML = suggestionsHTML;
-                    
-                    // Track suggestion view
-                    fetch(`${API_BASE}/api/form-edit/apply-suggestion`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            field_name: fieldName,
-                            original_value: currentValue,
-                            suggested_value: data.suggestions[0].text,
-                            user_request: request,
-                            applied: false,
-                            confidence: data.suggestions[0].confidence
-                        })
-                    }).catch(err => console.log('Tracking suggestion view:', err));
-                } else {
-                    suggestionsList.innerHTML = '<p style="text-align: center; color: #cbd5e0;">Không có gợi ý nào từ AI dựa trên yêu cầu của bạn</p>';
-                }
+                showMessage(config.messageId, `✅ Đã tự động điền ${updatedCount} trường liên quan`, 'success');
             } catch (error) {
-                console.error('Get AI suggestions error:', error);
-                const suggestionsLoading = document.getElementById('suggestionsLoading');
-                suggestionsLoading.style.display = 'none';
-                const suggestionsList = document.getElementById('suggestionsList');
-                suggestionsList.innerHTML = `<p style="text-align: center; color: #ef5350;">❌ Lỗi: ${error.message}</p>`;
+                console.error('Autofill related data error:', error);
+                preview.className = 'autofill-preview empty';
+                preview.textContent = 'Lỗi khi tự động nhập liệu. Vui lòng thử lại.';
+                showMessage(config.messageId, `❌ Lỗi tự động nhập liệu: ${error.message}`, 'error');
+            } finally {
+                applyBtn.disabled = false;
             }
+        }
+
+        async function autoFillRelatedData() {
+            await autoFillRelatedDataByMode('form');
+        }
+
+        async function autoFillRelatedDataSubmission() {
+            await autoFillRelatedDataByMode('submission');
+        }
+
+        function resolveAutofillInput(mode, update) {
+            if (update.inputId) {
+                const byId = document.getElementById(update.inputId);
+                if (byId) return byId;
+            }
+
+            const config = getAutofillConfig(mode);
+            const escapedName = cssEscapeValue(update.fieldName);
+            return document.querySelector(`${config.formSelector} input[name="${escapedName}"], ${config.formSelector} textarea[name="${escapedName}"], ${config.formSelector} select[name="${escapedName}"]`);
         }
 
         /**
@@ -3796,6 +3615,8 @@
             document.getElementById('submissionView').classList.remove('active');
             currentTemplate = null;
             currentSubmission = null;
+            resetAutofillPanelState('form');
+            resetAutofillPanelState('submission');
         }
 
         function showMessage(elementId, text, type) {
@@ -4028,47 +3849,6 @@
             </div>
             <div class="modal-footer export-cancel-wrap">
                 <button class="modal-btn modal-btn-cancel" onclick="closeExportModal()">Hủy</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- AI Edit Request Modal -->
-    <div id="aiEditRequestModal" class="modal">
-        <div class="modal-content" style="max-width: 500px;">
-            <div class="modal-header">🎯 Gợi ý AI</div>
-            <div class="modal-body">
-                <p id="aiEditFieldName" style="font-weight: 600; margin-bottom: 12px; text-align: left;"></p>
-                <div style="margin-bottom: 12px;">
-                    <label style="display: block; margin-bottom: 8px; font-weight: 500; color: #e2e8f0;">Nhập yêu cầu chỉnh sửa:</label>
-                    <textarea 
-                        id="aiEditRequest" 
-                        style="width: 100%; padding: 12px; border: 1px solid #334155; border-radius: 8px; background: #1e293b; color: #e2e8f0; font-family: inherit; font-size: 14px; resize: vertical; min-height: 80px;"
-                        placeholder="Ví dụ: Viết để thêm chi tiết hơn... Làm cho nó chuyên nghiệp hơn... Viết ngắn gọn hơn..."
-                    ></textarea>
-                </div>
-                <p style="font-size: 12px; color: #cbd5e0; margin-bottom: 12px;">
-                    💡 Mô tả những gì bạn muốn thay đổi hoặc cải thiện. AI sẽ tạo gợi ý dựa trên yêu cầu của bạn.
-                </p>
-            </div>
-            <div class="modal-footer">
-                <button class="modal-btn modal-btn-cancel" onclick="closeAIEditRequestModal()">Hủy</button>
-                <button class="modal-btn modal-btn-ok" onclick="getAIEditSuggestions()" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);">🚀 Nhận gợi ý</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- AI Suggestions Modal -->
-    <div id="suggestionsModal" class="modal">
-        <div class="modal-content suggestions-modal-content">
-            <div class="modal-header">🎯 Gợi Ý AI</div>
-            <div class="modal-body">
-                <p id="suggestionsFieldName" style="font-weight: 600; margin-bottom: 16px; text-align: left; color: #a78bfa; font-size: 13px;"></p>
-                <p style="color: #cbd5e0; font-size: 14px; margin-bottom: 20px; line-height: 1.5;">Viết thêm nội dung để nhận gợi ý từ AI...</p>
-                <div class="suggestions-list" id="suggestionsList"></div>
-                <p id="suggestionsLoading" style="text-align: center; color: #cbd5e0; padding: 20px 0;">⏳ Đang tải gợi ý...</p>
-            </div>
-            <div class="modal-footer">
-                <button class="modal-btn modal-btn-cancel" id="suggestionsKeepOriginal" onclick="closeSuggestionsModal()">Giữ nguyên</button>
             </div>
         </div>
     </div>

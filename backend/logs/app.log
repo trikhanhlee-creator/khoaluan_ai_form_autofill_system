@@ -4976,3 +4976,80 @@ WHERE documents.user_id = %(user_id_1)s ORDER BY documents.updated_at DESC
 2026-04-01 09:20:13,249 - autofill_ai - INFO - Default admin check completed with user: admin
 2026-04-01 09:21:08,915 - autofill_ai - INFO - OpenRouter client initialized with model: google/gemma-3-4b-it:free
 2026-04-01 09:21:09,227 - autofill_ai - INFO - OpenRouter client initialized with model: google/gemma-3-4b-it:free
+2026-04-06 14:01:11,778 - autofill_ai - INFO - OpenRouter client initialized with model: google/gemma-3-4b-it:free
+2026-04-06 14:01:12,135 - autofill_ai - INFO - OpenRouter client initialized with model: google/gemma-3-4b-it:free
+2026-04-06 14:01:12,541 - autofill_ai - INFO - Default admin check completed with user: admin
+2026-04-06 14:08:05,779 - autofill_ai - INFO - OpenRouter client initialized with model: google/gemma-3-4b-it:free
+2026-04-06 14:08:06,103 - autofill_ai - INFO - OpenRouter client initialized with model: google/gemma-3-4b-it:free
+2026-04-06 14:08:06,399 - autofill_ai - INFO - Default admin check completed with user: admin
+2026-04-06 14:10:05,378 - autofill_ai - INFO - OpenRouter client initialized with model: google/gemma-3-4b-it:free
+2026-04-06 14:10:05,729 - autofill_ai - INFO - OpenRouter client initialized with model: google/gemma-3-4b-it:free
+2026-04-06 14:10:05,979 - autofill_ai - INFO - Default admin check completed with user: admin
+2026-04-06 14:12:27,859 - autofill_ai - INFO - OpenRouter client initialized with model: google/gemma-3-4b-it:free
+2026-04-06 14:12:28,177 - autofill_ai - INFO - OpenRouter client initialized with model: google/gemma-3-4b-it:free
+2026-04-06 14:12:28,410 - autofill_ai - INFO - Default admin check completed with user: admin
+2026-04-06 14:12:43,945 - autofill_ai - INFO - OpenRouter client initialized with model: google/gemma-3-4b-it:free
+2026-04-06 14:12:44,256 - autofill_ai - INFO - OpenRouter client initialized with model: google/gemma-3-4b-it:free
+2026-04-06 14:12:44,502 - autofill_ai - INFO - Default admin check completed with user: admin
+2026-04-06 14:17:54,769 - autofill_ai - INFO - OpenRouter client initialized with model: google/gemma-3-4b-it:free
+2026-04-06 14:17:55,075 - autofill_ai - INFO - OpenRouter client initialized with model: google/gemma-3-4b-it:free
+2026-04-06 14:17:55,321 - autofill_ai - INFO - Default admin check completed with user: admin
+2026-04-06 14:21:32,945 - autofill_ai - INFO - OpenRouter client initialized with model: google/gemma-3-4b-it:free
+2026-04-06 14:21:33,257 - autofill_ai - INFO - OpenRouter client initialized with model: google/gemma-3-4b-it:free
+2026-04-06 14:21:33,497 - autofill_ai - INFO - Default admin check completed with user: admin
+2026-04-06 14:26:32,391 - autofill_ai - INFO - OpenRouter client initialized with model: google/gemma-3-4b-it:free
+2026-04-06 14:26:32,705 - autofill_ai - INFO - OpenRouter client initialized with model: google/gemma-3-4b-it:free
+2026-04-06 14:26:32,947 - autofill_ai - INFO - Default admin check completed with user: admin
+2026-04-06 14:27:28,266 - autofill_ai - INFO - OpenRouter client initialized with model: google/gemma-3-4b-it:free
+2026-04-06 14:27:28,573 - autofill_ai - INFO - OpenRouter client initialized with model: google/gemma-3-4b-it:free
+2026-04-06 14:27:28,810 - autofill_ai - INFO - Default admin check completed with user: admin
+2026-04-06 14:28:00,711 - autofill_ai - INFO - Listing documents for user 1006
+2026-04-06 14:28:00,717 - autofill_ai - ERROR - Error listing documents: (pymysql.err.OperationalError) (1054, "Unknown column 'documents.document_type' in 'field list'")
+[SQL: SELECT documents.id AS documents_id, documents.user_id AS documents_user_id, documents.title AS documents_title, documents.content AS documents_content, documents.description AS documents_description, documents.document_type AS documents_document_type, documents.is_public AS documents_is_public, documents.created_at AS documents_created_at, documents.updated_at AS documents_updated_at 
+FROM documents 
+WHERE documents.user_id = %(user_id_1)s ORDER BY documents.updated_at DESC 
+ LIMIT %(param_1)s, %(param_2)s]
+[parameters: {'user_id_1': 1006, 'param_1': 0, 'param_2': 20}]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2026-04-06 14:28:49,733 - autofill_ai - INFO - Getting suggestions for user 1006
+2026-04-06 14:28:51,434 - autofill_ai - INFO - Getting suggestions for user 1006
+2026-04-06 14:28:51,493 - autofill_ai - ERROR - Chat API error (openrouter): Error code: 401 - {'error': {'message': 'User not found.', 'code': 401}}
+2026-04-06 14:28:51,494 - autofill_ai - INFO - Got 2 suggestions
+2026-04-06 14:28:51,618 - autofill_ai - ERROR - Chat API error (openrouter): Error code: 401 - {'error': {'message': 'User not found.', 'code': 401}}
+2026-04-06 14:28:51,618 - autofill_ai - INFO - Got 2 suggestions
+2026-04-06 14:29:29,878 - autofill_ai - INFO - Upload started: demo5.xlsx (.xlsx)
+2026-04-06 14:29:29,879 - autofill_ai - INFO - File size: 10156 bytes
+2026-04-06 14:29:29,880 - autofill_ai - INFO - Attempting to parse .xlsx with openpyxl...
+2026-04-06 14:30:22,534 - autofill_ai - INFO - Listing documents for user 1006
+2026-04-06 14:30:22,537 - autofill_ai - ERROR - Error listing documents: (pymysql.err.OperationalError) (1054, "Unknown column 'documents.document_type' in 'field list'")
+[SQL: SELECT documents.id AS documents_id, documents.user_id AS documents_user_id, documents.title AS documents_title, documents.content AS documents_content, documents.description AS documents_description, documents.document_type AS documents_document_type, documents.is_public AS documents_is_public, documents.created_at AS documents_created_at, documents.updated_at AS documents_updated_at 
+FROM documents 
+WHERE documents.user_id = %(user_id_1)s ORDER BY documents.updated_at DESC 
+ LIMIT %(param_1)s, %(param_2)s]
+[parameters: {'user_id_1': 1006, 'param_1': 0, 'param_2': 20}]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2026-04-06 14:31:27,029 - autofill_ai - INFO - OpenRouter client initialized with model: google/gemma-3-4b-it:free
+2026-04-06 14:31:27,340 - autofill_ai - INFO - OpenRouter client initialized with model: google/gemma-3-4b-it:free
+2026-04-06 14:31:27,570 - autofill_ai - INFO - Default admin check completed with user: admin
+2026-04-06 14:54:20,618 - autofill_ai - INFO - submit_form called: template_id=49, user_id=1001, form_id=7
+2026-04-06 14:54:20,673 - autofill_ai - INFO - Submission saved: 11
+2026-04-06 14:54:20,680 - autofill_ai - INFO - Template has 4 fields
+2026-04-06 14:54:20,704 - autofill_ai - INFO - Processing field: mssv
+2026-04-06 14:54:20,705 - autofill_ai - INFO -   Field mssv value: '123456'
+2026-04-06 14:54:20,741 - autofill_ai - INFO - Saved 4 entries for submission 11
+2026-04-06 14:54:20,741 - autofill_ai - INFO - Submit completed for submission 11
+2026-04-06 15:02:38,901 - autofill_ai - INFO - submit_form called: template_id=49, user_id=1001, form_id=7
+2026-04-06 15:02:38,916 - autofill_ai - INFO - Submission saved: 12
+2026-04-06 15:02:38,918 - autofill_ai - INFO - Template has 4 fields
+2026-04-06 15:02:38,941 - autofill_ai - INFO - Processing field: mssv
+2026-04-06 15:02:38,941 - autofill_ai - INFO -   Field mssv value: '225327'
+2026-04-06 15:02:38,974 - autofill_ai - INFO - Saved 4 entries for submission 12
+2026-04-06 15:02:38,974 - autofill_ai - INFO - Submit completed for submission 12
+2026-04-06 15:03:56,649 - autofill_ai - INFO - submit_form called: template_id=64, user_id=1001, form_id=7
+2026-04-06 15:03:56,664 - autofill_ai - INFO - Submission saved: 13
+2026-04-06 15:03:56,665 - autofill_ai - INFO - Template has 3 fields
+2026-04-06 15:03:56,718 - autofill_ai - INFO - Saved 3 entries for submission 13
+2026-04-06 15:03:56,719 - autofill_ai - INFO - Submit completed for submission 13
+2026-04-06 15:19:40,504 - autofill_ai - INFO - Upload started: demo5.xlsx (.xlsx)
+2026-04-06 15:19:40,505 - autofill_ai - INFO - File size: 10156 bytes
+2026-04-06 15:19:40,507 - autofill_ai - INFO - Attempting to parse .xlsx with openpyxl...
