@@ -3,8 +3,12 @@ Script để kết nối lại MySQL và thiết kế lại database
 """
 
 import sys
+from pathlib import Path
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
+
+BACKEND_DIR = Path(__file__).resolve().parents[2]
+DATABASE_DIR = BACKEND_DIR.parent / "database"
 
 # Thông số kết nối MySQL
 MYSQL_HOST = "localhost"
@@ -36,7 +40,8 @@ def setup_schema():
     engine = create_engine(DATABASE_URL, echo=True)
     
     # Đọc schema SQL
-    with open('../database/schema.sql', 'r', encoding='utf-8') as f:
+    schema_file = DATABASE_DIR / 'schema.sql'
+    with open(schema_file, 'r', encoding='utf-8') as f:
         schema_sql = f.read()
     
     with engine.connect() as connection:
@@ -69,7 +74,7 @@ def seed_data():
     """Nhập dữ liệu seed nếu file tồn tại"""
     import os
     
-    seed_file = '../database/seed.sql'
+    seed_file = DATABASE_DIR / 'seed.sql'
     if not os.path.exists(seed_file):
         print(f"\n⚠ File {seed_file} không tồn tại, bỏ qua seed dữ liệu")
         return

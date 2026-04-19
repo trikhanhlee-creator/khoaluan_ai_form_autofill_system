@@ -185,7 +185,7 @@ db.close()
 
 ### Clean database again
 ```bash
-python clean_data.py
+python scripts/maintenance/clean_data.py
 ```
 
 ---

@@ -3,7 +3,8 @@
 import requests
 from pathlib import Path
 
-sample_path = Path('uploads/sample_data.xlsx')
+BACKEND_DIR = Path(__file__).resolve().parents[2]
+sample_path = BACKEND_DIR / 'uploads' / 'sample_data.xlsx'
 with open(sample_path, 'rb') as f:
     files = {'file': ('sample_data.xlsx', f)}
     response = requests.post('http://127.0.0.1:8000/api/excel/upload', files=files)

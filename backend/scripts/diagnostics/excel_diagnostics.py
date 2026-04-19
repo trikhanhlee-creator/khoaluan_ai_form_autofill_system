@@ -17,6 +17,7 @@ class ExcelDiagnostics:
     def __init__(self):
         self.base_url = "http://127.0.0.1:8000"
         self.results = []
+        self.backend_dir = Path(__file__).resolve().parents[2]
     
     def log(self, status, message):
         """Log a test result"""
@@ -171,7 +172,7 @@ class ExcelDiagnostics:
         """Test with the sample file if it exists"""
         self.print_header("6. Sample File Upload Test")
         
-        sample_path = Path(__file__).parent / "uploads" / "sample_data.xlsx"
+        sample_path = self.backend_dir / "uploads" / "sample_data.xlsx"
         if not sample_path.exists():
             self.log(False, f"Sample file not found at {sample_path}")
             return False

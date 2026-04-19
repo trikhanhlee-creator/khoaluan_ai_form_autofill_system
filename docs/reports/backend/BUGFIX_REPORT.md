@@ -66,7 +66,7 @@ created_at=datetime.utcnow()
 ---
 
 ## 4. Enhanced Database Cleanup ✅
-**File:** [backend/clean_data.py](backend/clean_data.py#L8)
+**File:** [backend/scripts/maintenance/clean_data.py](backend/scripts/maintenance/clean_data.py#L8)
 **Vấn đề:** Xóa dữ liệu không theo đúng thứ tự (entries phải xóa trước fields)
 **Sửa:** Thêm commit sau khi xóa dữ liệu trước khi tạo lại structure
 
@@ -133,7 +133,7 @@ Ví dụ test result:
 1. [backend/app/services/suggestion_service.py](backend/app/services/suggestion_service.py) - Sửa datetime.utcnow()
 2. [backend/app/api/routes/suggestions.py](backend/app/api/routes/suggestions.py) - Sửa duplicate/missing exception handlers
 3. [backend/app/api/routes/word.py](backend/app/api/routes/word.py) - Thêm logging chi tiết
-4. [backend/clean_data.py](backend/clean_data.py) - Cải thiện database cleanup
+4. [backend/scripts/maintenance/clean_data.py](backend/scripts/maintenance/clean_data.py) - Cải thiện database cleanup
 
 ---
 
@@ -148,7 +148,7 @@ Ví dụ test result:
 
 ```bash
 # 1. Chạy clean_data.py để reset database
-python clean_data.py
+python scripts/maintenance/clean_data.py
 
 # 2. Chạy server
 python run.py

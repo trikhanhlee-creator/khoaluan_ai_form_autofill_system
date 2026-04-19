@@ -1,12 +1,15 @@
 """Test Excel upload via HTTP API"""
 import os
 import sys
-sys.path.insert(0, os.path.dirname(__file__))
+from pathlib import Path
+
+BACKEND_DIR = Path(__file__).resolve().parents[2]
+if str(BACKEND_DIR) not in sys.path:
+    sys.path.insert(0, str(BACKEND_DIR))
 
 import requests
 import openpyxl
 from io import BytesIO
-from pathlib import Path
 
 def test_excel_upload_http():
     """Test Excel upload via HTTP"""
@@ -42,7 +45,7 @@ def test_excel_upload_http():
     
     # Test upload 2: Using sample file
     print("3. Testing upload with sample_data.xlsx...")
-    sample_path = Path(__file__).parent / "uploads" / "sample_data.xlsx"
+    sample_path = BACKEND_DIR / "uploads" / "sample_data.xlsx"
     if sample_path.exists():
         try:
             with open(sample_path, 'rb') as f:

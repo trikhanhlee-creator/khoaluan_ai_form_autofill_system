@@ -4,7 +4,11 @@ Setup database cho Word Upload feature
 """
 
 import sys
-sys.path.insert(0, '.')
+from pathlib import Path
+
+BACKEND_DIR = Path(__file__).resolve().parents[2]
+if str(BACKEND_DIR) not in sys.path:
+    sys.path.insert(0, str(BACKEND_DIR))
 
 from app.db.session import engine, Base
 from app.db.models import WordTemplate, WordSubmission

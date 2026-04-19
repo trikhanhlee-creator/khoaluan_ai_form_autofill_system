@@ -133,6 +133,11 @@
             flex-wrap: wrap;
         }
 
+        .reference-info {
+            font-size: 12px;
+            color: var(--muted);
+        }
+
         .row-pill {
             border: 1px solid var(--line-strong);
             border-radius: 8px;
@@ -239,7 +244,8 @@
         }
 
         .form-group input,
-        .form-group textarea {
+        .form-group textarea,
+        .form-group select {
             border: 1px solid var(--line);
             border-radius: 8px;
             padding: 8px 10px;
@@ -251,6 +257,52 @@
         .form-group textarea {
             min-height: 78px;
             resize: vertical;
+        }
+
+        .field-input-wrap {
+            position: relative;
+        }
+
+        .field-input-wrap input,
+        .field-input-wrap textarea {
+            padding-right: 44px;
+        }
+
+        .field-inline-reference {
+            display: none;
+            position: absolute;
+            right: 8px;
+            bottom: 8px;
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
+            border: 1px solid var(--line-strong);
+            background: color-mix(in srgb, var(--primary) 14%, var(--surface-soft));
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+        }
+
+        .field-inline-reference.active {
+            display: flex;
+        }
+
+        .field-inline-reference::after {
+            content: "▼";
+            font-size: 11px;
+            font-weight: 800;
+            pointer-events: none;
+        }
+
+        .field-inline-reference .field-options-select {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .field-options-meta {
+            display: none;
         }
 
         .form-group input:focus,
@@ -318,7 +370,13 @@
                 <span id="rowIndicator" class="row-pill">Dòng hiện tại: 0/0</span>
                 <button id="prevRowBtn" type="button" class="btn">◀ Dòng trước</button>
                 <button id="nextRowBtn" type="button" class="btn">Dòng tiếp ▶</button>
+                <button id="addPageBtn" type="button" class="btn primary">📄 Lưu + Trang mới</button>
                 <button id="saveRowBtn" type="button" class="btn success">💾 Lưu</button>
+            </div>
+            <div class="toolbar-row">
+                <button id="uploadReferenceBtn" type="button" class="btn warning">📤 Upload Excel tham chiếu</button>
+                <input id="referenceExcelInput" type="file" accept=".xlsx,.xls" style="display:none">
+                <span id="referenceInfo" class="reference-info">Chưa có file tham chiếu cho gợi ý theo cột.</span>
             </div>
         </div>
     </section>
@@ -332,7 +390,10 @@ const state = {
     headers: [],
     rows: [],
     currentRowIndex: 0,
-    filename: ''
+    filename: '',
+    referenceOptions: {},
+    referenceFilename: '',
+    isReferenceAutofill: false
 };
 
 const mainMessage = document.getElementById('mainMessage');
@@ -429,22 +490,340 @@ function buildForm() {
         return;
     }
 
-    dynamicForm.innerHTML = state.headers.map((header) => {
+    dynamicForm.innerHTML = state.headers.map((header, index) => {
         const normalized = String(header || '').toLowerCase();
         const isLong = normalized.includes('địa chỉ') || normalized.includes('address') || normalized.includes('ghi chú') || normalized.includes('note');
         const input = isLong
-            ? `<textarea data-field="${escapeHtml(header)}"></textarea>`
-            : `<input type="text" data-field="${escapeHtml(header)}">`;
+            ? `<textarea data-field="${escapeHtml(header)}" data-field-index="${index}"></textarea>`
+            : `<input type="text" data-field="${escapeHtml(header)}" data-field-index="${index}">`;
         const fullClass = isLong ? 'form-group full' : 'form-group';
         return `
             <div class="${fullClass}">
                 <label>${escapeHtml(header)}</label>
-                ${input}
+                <div class="field-input-wrap">
+                    ${input}
+                    <div class="field-inline-reference" data-reference-wrap="${index}">
+                        <select class="field-options-select" data-field-index="${index}">
+                            <option value="">▼</option>
+                        </select>
+                    </div>
+                </div>
             </div>
         `;
     }).join('');
 
+    refreshReferenceOptionControls();
     fillFormFromCurrentRow();
+}
+
+function updateReferenceInfo(text) {
+    const info = document.getElementById('referenceInfo');
+    if (info) {
+        info.textContent = text;
+    }
+}
+
+function normalizeReferenceValue(value) {
+    return String(value || '')
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/đ/g, 'd')
+        .replace(/[^a-z0-9\s]/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+}
+
+function getReferenceInputValueByIndex(index) {
+    const input = dynamicForm.querySelector(`input[data-field-index="${index}"], textarea[data-field-index="${index}"]`);
+    if (!input) {
+        return '';
+    }
+    return String(input.value || '').trim();
+}
+
+function getActiveReferenceFilters(excludeIndex = null) {
+    const filters = [];
+
+    state.headers.forEach((header, index) => {
+        if (excludeIndex != null && index === excludeIndex) {
+            return;
+        }
+
+        const optionData = state.referenceOptions[header];
+        if (!optionData || optionData.is_unique !== false) {
+            return;
+        }
+
+        const rawValue = getReferenceInputValueByIndex(index);
+        const normalizedValue = normalizeReferenceValue(rawValue);
+        if (!normalizedValue) {
+            return;
+        }
+
+        filters.push({
+            header,
+            normalizedValue,
+        });
+    });
+
+    return filters;
+}
+
+function getFilteredRowIndexesForHeader(header, excludeIndex = null) {
+    const optionData = state.referenceOptions[header];
+    const rowValues = optionData?.row_values;
+    if (!optionData || !rowValues || typeof rowValues !== 'object') {
+        return [];
+    }
+
+    let rowIndexes = Object.keys(rowValues);
+    const filters = getActiveReferenceFilters(excludeIndex);
+
+    filters.forEach((filter) => {
+        const filterData = state.referenceOptions[filter.header];
+        const filterRows = filterData?.row_values;
+        if (!filterRows || typeof filterRows !== 'object') {
+            return;
+        }
+
+        rowIndexes = rowIndexes.filter((rowKey) => {
+            const candidate = normalizeReferenceValue(filterRows[rowKey] || '');
+            return candidate.includes(filter.normalizedValue);
+        });
+    });
+
+    return rowIndexes
+        .map((rowKey) => Number(rowKey))
+        .filter((rowIndex) => Number.isInteger(rowIndex) && rowIndex >= 0)
+        .sort((a, b) => a - b);
+}
+
+function buildChoicesFromFilteredRows(optionData, filteredRowIndexes) {
+    if (!optionData || !optionData.row_values || typeof optionData.row_values !== 'object') {
+        return [];
+    }
+
+    const seen = new Set();
+    const choices = [];
+
+    filteredRowIndexes.forEach((rowIndex) => {
+        const value = String(optionData.row_values[String(rowIndex)] || '').trim();
+        if (!value || seen.has(value)) {
+            return;
+        }
+
+        seen.add(value);
+        choices.push({ value, row_index: rowIndex });
+    });
+
+    return choices;
+}
+
+function findUniqueReferenceRowMatchByIndex(index) {
+    if (!Number.isInteger(index) || index < 0 || index >= state.headers.length) {
+        return null;
+    }
+
+    const header = state.headers[index];
+    const optionData = state.referenceOptions[header];
+    if (!optionData || optionData.is_unique === false || !optionData.row_values || typeof optionData.row_values !== 'object') {
+        return null;
+    }
+
+    const normalizedInput = normalizeReferenceValue(getReferenceInputValueByIndex(index));
+    if (!normalizedInput) {
+        return null;
+    }
+
+    const matchedRows = Object.keys(optionData.row_values)
+        .map((rowKey) => {
+            const normalizedValue = normalizeReferenceValue(optionData.row_values[rowKey] || '');
+            return normalizedValue === normalizedInput ? Number(rowKey) : NaN;
+        })
+        .filter((rowIndex) => Number.isInteger(rowIndex) && rowIndex >= 0);
+
+    if (matchedRows.length !== 1) {
+        return null;
+    }
+
+    return matchedRows[0];
+}
+
+function tryAutoFillFromUniqueInput(index) {
+    if (state.isReferenceAutofill) {
+        return false;
+    }
+
+    const rowIndex = findUniqueReferenceRowMatchByIndex(index);
+    if (!Number.isInteger(rowIndex) || rowIndex < 0) {
+        return false;
+    }
+
+    applyReferenceRowAutoFill(rowIndex, index, true);
+    return true;
+}
+
+function refreshReferenceOptionControls() {
+    state.headers.forEach((header, index) => {
+        const wrap = dynamicForm.querySelector(`[data-reference-wrap="${index}"]`);
+        const select = dynamicForm.querySelector(`select.field-options-select[data-field-index="${index}"]`);
+        const optionData = state.referenceOptions[header];
+
+        if (!wrap || !select) {
+            return;
+        }
+
+        if (!optionData || !Array.isArray(optionData.values) || optionData.values.length === 0) {
+            wrap.classList.remove('active');
+            wrap.style.display = 'none';
+            select.innerHTML = '<option value="">▼</option>';
+            return;
+        }
+
+        const filteredRowIndexes = getFilteredRowIndexesForHeader(header, index);
+        const choices = buildChoicesFromFilteredRows(optionData, filteredRowIndexes);
+        if (!choices.length) {
+            wrap.classList.remove('active');
+            wrap.style.display = 'none';
+            select.innerHTML = '<option value="">▼</option>';
+            return;
+        }
+
+        const optionsHtml = choices
+            .map((choice) => {
+                const value = String(choice?.value || '');
+                const rowIndex = choice?.row_index;
+                const rowAttr = rowIndex === '' || rowIndex == null ? '' : ` data-row-index="${String(rowIndex)}"`;
+                return `<option value="${escapeHtml(value)}"${rowAttr}>${escapeHtml(value)}</option>`;
+            })
+            .join('');
+
+        select.innerHTML = `<option value="">▼</option>${optionsHtml}`;
+        wrap.style.display = 'flex';
+        wrap.classList.add('active');
+    });
+}
+
+function applyReferenceRowAutoFill(rowIndex, sourceFieldIndex, fillAllFields = false) {
+    if (!Number.isInteger(rowIndex) || rowIndex < 0) {
+        return;
+    }
+
+    state.isReferenceAutofill = true;
+    try {
+        state.headers.forEach((header, index) => {
+            if (index === sourceFieldIndex) {
+                return;
+            }
+
+            const optionData = state.referenceOptions[header];
+            if (!optionData || !optionData.row_values || typeof optionData.row_values !== 'object') {
+                return;
+            }
+
+            if (!fillAllFields && optionData.is_unique === false) {
+                return;
+            }
+
+            const mappedValue = optionData.row_values[String(rowIndex)];
+            const value = mappedValue == null ? '' : String(mappedValue).trim();
+            if (!value) {
+                return;
+            }
+
+            const input = dynamicForm.querySelector(`input[data-field-index="${index}"], textarea[data-field-index="${index}"]`);
+            if (!input) {
+                return;
+            }
+
+            input.value = value;
+            input.dispatchEvent(new Event('input', { bubbles: true }));
+        });
+    } finally {
+        state.isReferenceAutofill = false;
+    }
+}
+
+function applyReferenceSelectValue(selectElement) {
+    const index = Number(selectElement.dataset.fieldIndex);
+    if (!Number.isInteger(index) || index < 0) {
+        return;
+    }
+
+    const value = selectElement.value || '';
+    if (!value) {
+        return;
+    }
+
+    const input = dynamicForm.querySelector(`input[data-field-index="${index}"], textarea[data-field-index="${index}"]`);
+    if (!input) {
+        return;
+    }
+
+    const selectedOption = selectElement.options[selectElement.selectedIndex];
+    const rowIndexRaw = selectedOption ? selectedOption.getAttribute('data-row-index') : null;
+    const rowIndex = rowIndexRaw == null || rowIndexRaw === '' ? NaN : Number(rowIndexRaw);
+
+    state.isReferenceAutofill = true;
+    try {
+        input.value = value;
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+    } finally {
+        state.isReferenceAutofill = false;
+    }
+
+    const header = state.headers[index];
+    const optionData = state.referenceOptions[header];
+    if (optionData && optionData.is_unique !== false && Number.isInteger(rowIndex) && rowIndex >= 0) {
+        applyReferenceRowAutoFill(rowIndex, index, true);
+    }
+
+    refreshReferenceOptionControls();
+    selectElement.selectedIndex = 0;
+}
+
+async function uploadReferenceExcelFile() {
+    const fileInput = document.getElementById('referenceExcelInput');
+    const file = fileInput.files && fileInput.files[0] ? fileInput.files[0] : null;
+    if (!file) {
+        return;
+    }
+
+    if (!state.headers.length) {
+        showMessage('error', 'Không có trường form để đối chiếu dữ liệu tham chiếu.');
+        fileInput.value = '';
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('fields_json', JSON.stringify(state.headers));
+
+    try {
+        updateReferenceInfo(`Đang xử lý file tham chiếu: ${file.name}...`);
+
+        const response = await fetch('/api/excel/reference-field-options', {
+            method: 'POST',
+            credentials: 'same-origin',
+            body: formData
+        });
+
+        const data = await parseApiResponse(response);
+        state.referenceOptions = (data.matches && typeof data.matches === 'object') ? data.matches : {};
+        state.referenceFilename = file.name;
+
+        refreshReferenceOptionControls();
+
+        const matchedCount = Number(data.matched_count || 0);
+        updateReferenceInfo(`Đã nạp ${matchedCount} trường gợi ý từ file: ${state.referenceFilename}`);
+        showMessage('success', data.message || `Đã đối chiếu ${matchedCount} trường từ file tham chiếu.`);
+    } catch (error) {
+        updateReferenceInfo('Không thể đọc file tham chiếu. Vui lòng thử lại.');
+        showMessage('error', error.message || 'Không thể xử lý file Excel tham chiếu.');
+    } finally {
+        fileInput.value = '';
+    }
 }
 
 function clampRowIndex(index) {
@@ -459,6 +838,7 @@ function updateRowIndicator() {
 
     document.getElementById('prevRowBtn').disabled = total <= 1 || state.currentRowIndex === 0;
     document.getElementById('nextRowBtn').disabled = total <= 1 || state.currentRowIndex >= total - 1;
+    document.getElementById('addPageBtn').disabled = state.headers.length === 0;
     document.getElementById('saveRowBtn').disabled = total === 0;
 }
 
@@ -479,6 +859,7 @@ function fillFormWithData(rowData) {
 
 function fillFormFromCurrentRow() {
     fillFormWithData(getCurrentRowData());
+    refreshReferenceOptionControls();
     updateRowIndicator();
 }
 
@@ -488,6 +869,18 @@ function collectFormData() {
         data[el.dataset.field] = el.value;
     });
     return data;
+}
+
+function hasAnyValue(rowData) {
+    return Object.values(rowData || {}).some((value) => String(value ?? '').trim() !== '');
+}
+
+function buildEmptyRow() {
+    const row = {};
+    state.headers.forEach((header) => {
+        row[header] = '';
+    });
+    return row;
 }
 
 function goToRow(rowIndex) {
@@ -529,9 +922,86 @@ async function saveCurrentRow() {
     window.location.href = '/excel';
 }
 
+async function addNewPage() {
+    if (!state.sessionId) {
+        showMessage('error', 'Không tìm thấy session để thêm trang mới.');
+        return;
+    }
+
+    if (!state.headers.length) {
+        showMessage('error', 'Không có trường dữ liệu để tạo trang mới.');
+        return;
+    }
+
+    const rowData = collectFormData();
+    const shouldSaveCurrent = state.rows.length > 0 && hasAnyValue(rowData);
+
+    if (shouldSaveCurrent) {
+        const saveResponse = await fetch(`/api/excel/save/${encodeURIComponent(state.sessionId)}/${state.currentRowIndex}`, {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ row_data: rowData })
+        });
+        await parseApiResponse(saveResponse);
+        state.rows[state.currentRowIndex] = rowData;
+    }
+
+    const response = await fetch(`/api/excel/add-page/${encodeURIComponent(state.sessionId)}`, {
+        method: 'POST',
+        credentials: 'same-origin'
+    });
+    const result = await parseApiResponse(response);
+
+    const serverRow = (result && result.row_data && typeof result.row_data === 'object')
+        ? result.row_data
+        : buildEmptyRow();
+    state.rows.push(serverRow);
+    state.currentRowIndex = state.rows.length - 1;
+
+    updateMeta();
+    fillFormFromCurrentRow();
+    showMessage('success', shouldSaveCurrent
+        ? '✅ Đã lưu trang hiện tại và tạo trang mới.'
+        : '✅ Đã tạo trang mới, bạn có thể tiếp tục nhập.');
+}
+
 function bindEvents() {
     document.getElementById('prevRowBtn').addEventListener('click', () => goToRow(state.currentRowIndex - 1));
     document.getElementById('nextRowBtn').addEventListener('click', () => goToRow(state.currentRowIndex + 1));
+    document.getElementById('uploadReferenceBtn').addEventListener('click', () => {
+        document.getElementById('referenceExcelInput').click();
+    });
+    document.getElementById('referenceExcelInput').addEventListener('change', async () => {
+        await uploadReferenceExcelFile();
+    });
+    dynamicForm.addEventListener('change', (event) => {
+        if (event.target && event.target.matches('.field-options-select')) {
+            applyReferenceSelectValue(event.target);
+        }
+    });
+    dynamicForm.addEventListener('input', (event) => {
+        if (event.target && event.target.matches('input[data-field], textarea[data-field]')) {
+            if (state.isReferenceAutofill) {
+                return;
+            }
+
+            const fieldIndex = Number(event.target.dataset.fieldIndex);
+            if (Number.isInteger(fieldIndex) && fieldIndex >= 0) {
+                tryAutoFillFromUniqueInput(fieldIndex);
+            }
+
+            refreshReferenceOptionControls();
+        }
+    });
+
+    document.getElementById('addPageBtn').addEventListener('click', async () => {
+        try {
+            await addNewPage();
+        } catch (error) {
+            showMessage('error', error.message || 'Không thể thêm trang mới.');
+        }
+    });
 
     document.getElementById('saveRowBtn').addEventListener('click', async () => {
         try {
@@ -557,9 +1027,9 @@ window.addEventListener('load', async () => {
     try {
         await loadSessionData();
         if (state.rows.length > 0) {
-            showMessage('info', 'Đã tạo form tự động từ file Excel. Dùng Dòng trước/Dòng tiếp để xem dữ liệu, bấm Lưu để ghi lịch sử.');
+            showMessage('info', 'Đã tạo form tự động từ file Excel. Dùng Dòng trước/Dòng tiếp để xem dữ liệu, bấm Lưu để ghi lịch sử hoặc Lưu + Trang mới để nhập liên tục.');
         } else {
-            showMessage('error', 'Session không có dữ liệu dòng.');
+            showMessage('info', 'Session chưa có dòng dữ liệu. Hãy bấm Lưu + Trang mới để bắt đầu nhập.');
         }
     } catch (error) {
         showMessage('error', error.message || 'Không thể tải dữ liệu session.');

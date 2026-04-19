@@ -7,7 +7,9 @@ from fastapi import UploadFile
 from pathlib import Path
 
 # Add the backend directory to path
-sys.path.insert(0, os.path.dirname(__file__))
+BACKEND_DIR = Path(__file__).resolve().parents[2]
+if str(BACKEND_DIR) not in sys.path:
+    sys.path.insert(0, str(BACKEND_DIR))
 
 def test_excel_upload():
     """Test the Excel upload endpoint"""
@@ -74,7 +76,7 @@ def test_excel_upload():
     
     # Test 3: Test with the sample file if it exists
     print("\n3. Testing with sample_data.xlsx...")
-    sample_path = Path(__file__).parent / "uploads" / "sample_data.xlsx"
+    sample_path = BACKEND_DIR / "uploads" / "sample_data.xlsx"
     if sample_path.exists():
         try:
             with open(sample_path, 'rb') as f:

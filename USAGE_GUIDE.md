@@ -203,8 +203,8 @@ python run.py
 ### Database error
 ```bash
 cd backend
-python clean_database.py
-python setup_word_db.py
+python scripts/maintenance/clean_data.py
+python scripts/maintenance/setup_word_db.py
 ```
 
 ---

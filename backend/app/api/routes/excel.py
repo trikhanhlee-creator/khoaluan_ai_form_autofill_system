@@ -1,7 +1,7 @@
 """
 API routes for Excel file handling
 """
-from fastapi import APIRouter, UploadFile, File, HTTPException, Depends, Query, Body
+from fastapi import APIRouter, UploadFile, File, HTTPException, Depends, Query, Body, Form
 from fastapi.responses import JSONResponse, StreamingResponse
 from sqlalchemy.orm import Session
 from sqlalchemy import text, inspect
@@ -13,6 +13,7 @@ import zipfile
 import xlrd
 import re
 import json
+import unicodedata
 from datetime import datetime
 from typing import Any
 from uuid import uuid4
@@ -28,24 +29,298 @@ excel_data_store = {}
 
 
 def _normalize_lookup_key(value: str) -> str:
+    return _normalize_match_key(value)
+
+
+def _normalize_match_key(value: str) -> str:
+    """Normalize text for fuzzy header-field matching (supports Vietnamese accents)."""
     text = (value or "").strip().lower()
+    if not text:
+        return ""
+
     text = text.replace("đ", "d")
+    text = unicodedata.normalize("NFD", text)
+    text = "".join(ch for ch in text if unicodedata.category(ch) != "Mn")
     text = re.sub(r"[^a-z0-9\s]", " ", text)
     return re.sub(r"\s+", " ", text).strip()
 
 
+def _match_header_score(field_candidate: str, header: str) -> int:
+    field_key = _normalize_match_key(field_candidate)
+    header_key = _normalize_match_key(header)
+
+    if not field_key or not header_key:
+        return 0
+
+    if field_key == header_key:
+        return 100
+
+    if field_key in header_key or header_key in field_key:
+        overlap_penalty = abs(len(field_key) - len(header_key))
+        return max(70, 92 - overlap_penalty)
+
+    field_tokens = set(field_key.split())
+    header_tokens = set(header_key.split())
+    if not field_tokens or not header_tokens:
+        return 0
+
+    overlap = field_tokens.intersection(header_tokens)
+    if not overlap:
+        return 0
+
+    base = int((len(overlap) / max(len(field_tokens), len(header_tokens))) * 80)
+    if field_tokens.issubset(header_tokens) or header_tokens.issubset(field_tokens):
+        base += 10
+    return min(base, 95)
+
+
+def _extract_row_values_from_header(rows: list[dict], header: str) -> dict[str, str]:
+    row_values: dict[str, str] = {}
+    for row_index, row in enumerate(rows):
+        if not isinstance(row, dict):
+            continue
+
+        value = str(row.get(header, "") or "").strip()
+        if not value:
+            continue
+
+        row_values[str(row_index)] = value
+
+    return row_values
+
+
+def _build_distinct_choices_from_row_values(row_values: dict[str, str], limit: int = 200) -> list[dict[str, Any]]:
+    seen: set[str] = set()
+    choices: list[dict[str, Any]] = []
+
+    def _sort_key(item: str) -> tuple[int, str]:
+        try:
+            return (0, f"{int(item):09d}")
+        except Exception:
+            return (1, item)
+
+    for row_key in sorted(row_values.keys(), key=_sort_key):
+        value = str(row_values.get(row_key, "") or "").strip()
+        if not value or value in seen:
+            continue
+
+        seen.add(value)
+        try:
+            row_index = int(row_key)
+        except Exception:
+            row_index = row_key
+
+        choices.append({
+            "value": value,
+            "row_index": row_index,
+        })
+
+        if len(choices) >= limit:
+            break
+
+    return choices
+
+
+def _is_unique_row_values(row_values: dict[str, str]) -> bool:
+    values = [str(v).strip() for v in row_values.values() if str(v).strip()]
+    if not values:
+        return False
+    return len(values) == len(set(values))
+
+
+def _normalize_reference_targets(raw_targets: Any) -> list[dict[str, Any]]:
+    targets: list[dict[str, Any]] = []
+    if not isinstance(raw_targets, list):
+        return targets
+
+    for idx, item in enumerate(raw_targets):
+        key = ""
+        display = ""
+        candidates: list[str] = []
+
+        if isinstance(item, str):
+            text = item.strip()
+            if not text:
+                continue
+            key = text
+            display = text
+            candidates = [text]
+        elif isinstance(item, dict):
+            key = str(
+                item.get("field_id")
+                or item.get("key")
+                or item.get("field_name")
+                or item.get("name")
+                or item.get("field_label")
+                or item.get("label")
+                or f"field_{idx}"
+            ).strip()
+
+            display = str(
+                item.get("field_label")
+                or item.get("label")
+                or item.get("field_name")
+                or item.get("name")
+                or key
+            ).strip()
+
+            candidates = [
+                str(item.get("field_label") or "").strip(),
+                str(item.get("label") or "").strip(),
+                str(item.get("field_name") or "").strip(),
+                str(item.get("name") or "").strip(),
+                display,
+            ]
+            candidates = [c for c in candidates if c]
+
+            if not key:
+                key = display or f"field_{idx}"
+        else:
+            continue
+
+        dedup_candidates: list[str] = []
+        seen_candidates: set[str] = set()
+        for candidate in candidates:
+            normalized = _normalize_match_key(candidate)
+            if not normalized or normalized in seen_candidates:
+                continue
+            seen_candidates.add(normalized)
+            dedup_candidates.append(candidate)
+
+        if not dedup_candidates:
+            continue
+
+        targets.append({
+            "key": key,
+            "display": display or key,
+            "candidates": dedup_candidates,
+        })
+
+    return targets
+
+
 def _is_family_name_header(normalized: str) -> bool:
     key = f" {normalized} "
-    if " ten " in key:
+    tokens = set(normalized.split())
+    if "ten" in tokens and "ho" not in tokens:
         return False
-    return key.strip() in {"ho", "ho dem", "ho lot", "surname", "last name", "family name"}
+
+    if key.strip() in {"ho", "ho dem", "ho lot", "surname", "last name", "family name"}:
+        return True
+
+    return "ho" in tokens and "ten" not in tokens
 
 
 def _is_given_name_header(normalized: str) -> bool:
     key = f" {normalized} "
-    if " ho " in key:
+    tokens = set(normalized.split())
+    if "ho" in tokens and "ten" not in tokens:
         return False
-    return key.strip() in {"ten", "given name", "first name", "name"}
+
+    if key.strip() in {"ten", "given name", "first name", "name"}:
+        return True
+
+    return "ten" in tokens and "ho" not in tokens
+
+
+def _is_middle_name_header(normalized: str) -> bool:
+    key = f" {normalized} "
+    tokens = set(normalized.split())
+    if key.strip() in {"dem", "ten dem", "middle", "middle name"}:
+        return True
+    return "dem" in tokens or "lot" in tokens
+
+
+def _is_full_name_header(normalized: str) -> bool:
+    key = f" {normalized} "
+    compact = key.strip()
+    if compact in {"ho va ten", "ho ten", "ten day du", "full name", "fullname"}:
+        return True
+
+    tokens = set(compact.split())
+    if {"ho", "ten"}.issubset(tokens):
+        return True
+
+    return False
+
+
+def _is_full_name_target(target: dict[str, Any]) -> bool:
+    candidates = [target.get("display", "")]
+    candidates.extend(target.get("candidates", []) if isinstance(target.get("candidates"), list) else [])
+
+    for text in candidates:
+        normalized = _normalize_match_key(str(text))
+        if not normalized:
+            continue
+
+        if "ho va ten" in normalized or "ho ten" in normalized:
+            return True
+        if "full name" in normalized or "ten day du" in normalized:
+            return True
+        if "ho" in normalized.split() and "ten" in normalized.split():
+            return True
+
+    return False
+
+
+def _find_explicit_full_name_header(headers: list[str]) -> str | None:
+    for header in headers:
+        normalized = _normalize_lookup_key(header)
+        if normalized and _is_full_name_header(normalized):
+            return header
+    return None
+
+
+def _find_name_part_headers(headers: list[str]) -> tuple[str | None, str | None, str | None]:
+    family_header: str | None = None
+    middle_header: str | None = None
+    given_header: str | None = None
+
+    for header in headers:
+        normalized = _normalize_lookup_key(header)
+        if not normalized:
+            continue
+
+        if family_header is None and _is_family_name_header(normalized):
+            family_header = header
+            continue
+
+        if middle_header is None and _is_middle_name_header(normalized):
+            middle_header = header
+            continue
+
+        if given_header is None and _is_given_name_header(normalized):
+            given_header = header
+
+    return family_header, middle_header, given_header
+
+
+def _extract_composite_full_name_row_values(
+    rows: list[dict],
+    family_header: str,
+    given_header: str,
+    middle_header: str | None = None,
+    limit: int = 2000,
+) -> dict[str, str]:
+    row_values: dict[str, str] = {}
+
+    for row_index, row in enumerate(rows):
+        if not isinstance(row, dict):
+            continue
+
+        family_name = str(row.get(family_header, "") or "").strip()
+        middle_name = str(row.get(middle_header, "") or "").strip() if middle_header else ""
+        given_name = str(row.get(given_header, "") or "").strip()
+
+        full_name = " ".join(part for part in [family_name, middle_name, given_name] if part).strip()
+        if not full_name:
+            continue
+
+        row_values[str(row_index)] = full_name
+        if len(row_values) >= limit:
+            break
+
+    return row_values
 
 
 def _get_or_create_excel_form_id(db: Session, user_id: int) -> int:
@@ -851,6 +1126,154 @@ def parse_xls_file(file_content: bytes) -> tuple[list, list, str]:
         else:
             raise Exception(f"Lỗi: Không thể đọc file XLS: {error_msg}")
 
+
+@router.post("/reference-field-options")
+async def get_reference_field_options(
+    file: UploadFile = File(...),
+    fields_json: str = Form("[]"),
+    current_user: User = Depends(get_current_user)
+):
+    """Read a reference Excel file and return matched dropdown options by field."""
+    _ = current_user
+
+    try:
+        filename = file.filename or ""
+        file_ext = os.path.splitext(filename)[1].lower()
+        if file_ext not in ('.xlsx', '.xls'):
+            raise HTTPException(
+                status_code=400,
+                detail="Chi hỗ trợ file Excel tham chiếu (.xlsx, .xls)"
+            )
+
+        raw_content = await file.read()
+        if not raw_content:
+            raise HTTPException(status_code=400, detail="File tham chiếu rỗng hoặc không hợp lệ")
+
+        if file_ext == '.xlsx':
+            is_valid, error_msg = is_valid_xlsx(raw_content)
+            if not is_valid:
+                raise HTTPException(status_code=400, detail=f"File Excel không hợp lệ: {error_msg}")
+
+        try:
+            parsed_targets = json.loads(fields_json or "[]")
+        except Exception:
+            raise HTTPException(status_code=400, detail="fields_json không hợp lệ")
+
+        targets = _normalize_reference_targets(parsed_targets)
+        if not targets:
+            return JSONResponse({
+                "status": "success",
+                "filename": filename,
+                "matches": {},
+                "unmatched_keys": [],
+                "matched_count": 0,
+                "message": "Không có trường mục tiêu để đối chiếu"
+            })
+
+        if file_ext == '.xlsx':
+            headers, rows, _ = parse_excel_with_openpyxl(BytesIO(raw_content))
+        else:
+            headers, rows, _ = parse_xls_file(raw_content)
+
+        matches: dict[str, dict[str, Any]] = {}
+        unmatched_keys: list[str] = []
+        explicit_full_name_header = _find_explicit_full_name_header(headers)
+        family_header, middle_header, given_header = _find_name_part_headers(headers)
+
+        for target in targets:
+            if _is_full_name_target(target):
+                full_name_row_values: dict[str, str] = {}
+                full_name_header_label = ""
+                matched_by = "full_name_composition"
+
+                if explicit_full_name_header:
+                    full_name_row_values = _extract_row_values_from_header(rows, explicit_full_name_header)
+                    if full_name_row_values:
+                        full_name_header_label = explicit_full_name_header
+                        matched_by = explicit_full_name_header
+
+                if (not full_name_row_values) and family_header and given_header:
+                    full_name_row_values = _extract_composite_full_name_row_values(
+                        rows=rows,
+                        family_header=family_header,
+                        middle_header=middle_header,
+                        given_header=given_header,
+                    )
+                    if full_name_row_values:
+                        full_name_header_label = (
+                            f"{family_header} + {middle_header} + {given_header}"
+                            if middle_header
+                            else f"{family_header} + {given_header}"
+                        )
+                        matched_by = "full_name_composition"
+
+                if full_name_row_values:
+                    full_name_choices = _build_distinct_choices_from_row_values(full_name_row_values)
+                    full_name_values = [item["value"] for item in full_name_choices]
+                    matches[target["key"]] = {
+                        "field": target["display"],
+                        "matched_header": full_name_header_label,
+                        "matched_by": matched_by,
+                        "score": 97,
+                        "values": full_name_values,
+                        "choices": full_name_choices,
+                        "row_values": full_name_row_values,
+                        "is_unique": _is_unique_row_values(full_name_row_values),
+                        "total_values": len(full_name_values),
+                    }
+                    continue
+
+            best_header = ""
+            best_score = 0
+            best_candidate = ""
+
+            for candidate in target["candidates"]:
+                for header in headers:
+                    score = _match_header_score(candidate, header)
+                    if score > best_score:
+                        best_score = score
+                        best_header = header
+                        best_candidate = candidate
+
+            if not best_header or best_score < 55:
+                unmatched_keys.append(target["key"])
+                continue
+
+            row_values = _extract_row_values_from_header(rows, best_header)
+            choices = _build_distinct_choices_from_row_values(row_values)
+            values = [item["value"] for item in choices]
+            if not values:
+                unmatched_keys.append(target["key"])
+                continue
+
+            matches[target["key"]] = {
+                "field": target["display"],
+                "matched_header": best_header,
+                "matched_by": best_candidate,
+                "score": best_score,
+                "values": values,
+                "choices": choices,
+                "row_values": row_values,
+                "is_unique": _is_unique_row_values(row_values),
+                "total_values": len(values),
+            }
+
+        return JSONResponse({
+            "status": "success",
+            "filename": filename,
+            "matches": matches,
+            "unmatched_keys": unmatched_keys,
+            "matched_count": len(matches),
+            "total_rows": len(rows),
+            "message": f"Đã đối chiếu {len(matches)}/{len(targets)} trường"
+        })
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error generating reference field options: {str(e)}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Lỗi đọc file tham chiếu: {str(e)}")
+
 @router.post("/upload")
 async def upload_excel(
     file: UploadFile = File(...),
@@ -1033,6 +1456,57 @@ async def get_excel_row(
     except Exception as e:
         logger.error(f"Error getting row: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error getting row: {str(e)}")
+
+
+@router.post("/add-page/{session_id}")
+async def add_excel_page(
+    session_id: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Append a new blank page (row) with the same headers in the current session."""
+    try:
+        session_data = _get_session_data_or_404(session_id, current_user, db)
+
+        headers = session_data.get('headers', [])
+        new_row = {
+            str(header): ""
+            for header in headers
+            if str(header or "").strip()
+        }
+
+        rows = session_data.get('rows')
+        if not isinstance(rows, list):
+            rows = []
+            session_data['rows'] = rows
+
+        rows.append(new_row)
+        session_data['total_rows'] = len(rows)
+
+        _persist_session_to_db(
+            db=db,
+            session_id=session_id,
+            user_id=current_user.id,
+            filename=session_data.get('filename', ''),
+            headers=headers,
+            rows=rows,
+            created_at=session_data.get('created_at') or datetime.utcnow().isoformat(),
+            history=session_data.get('history', []),
+        )
+
+        return JSONResponse({
+            "status": "success",
+            "new_row_index": len(rows) - 1,
+            "total_rows": len(rows),
+            "row_data": new_row,
+            "message": "Đã thêm trang mới"
+        })
+    except HTTPException:
+        raise
+    except Exception as e:
+        db.rollback()
+        logger.error(f"Error adding excel page: {str(e)}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Lỗi thêm trang mới: {str(e)}")
 
 
 @router.delete("/session/{session_id}")

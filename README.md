@@ -27,7 +27,7 @@ autofill-ai-system/
 │   │   ├── static/             # Static files (form.html)
 │   │   └── main.py             # FastAPI app
 │   ├── run.py                  # Server launcher
-│   └── setup_word_db.py        # Database setup
+│   └── scripts/maintenance/    # Database + maintenance scripts
 ├── ui/                         # Frontend HTML files
 │   ├── word-upload.html        # Word upload & form builder UI
 │   └── form.html               # AutoFill suggestions form

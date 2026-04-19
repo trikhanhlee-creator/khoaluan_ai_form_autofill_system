@@ -796,6 +796,48 @@
             line-height: 1.5;
         }
 
+        .form-page-indicator {
+            margin-top: 8px;
+            color: #5a67d8 !important;
+            font-size: 12px !important;
+            font-weight: 600;
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 999px;
+            background: rgba(90, 103, 216, 0.15);
+            border: 1px solid rgba(90, 103, 216, 0.35);
+        }
+
+        .inline-page-nav {
+            margin-top: 10px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .reference-upload-row {
+            margin-top: 14px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 1px solid rgba(90, 103, 216, 0.35);
+            background: rgba(90, 103, 216, 0.08);
+        }
+
+        .reference-upload-status {
+            font-size: 12px;
+            color: #bfc9f6;
+        }
+
+        .inline-page-nav .btn {
+            min-height: 38px;
+            padding: 8px 14px;
+            font-size: 13px;
+        }
+
         .form-group {
             margin-bottom: 28px;
             position: relative;
@@ -860,6 +902,46 @@
             flex: 1;
             width: auto !important;
             min-width: 0;
+            padding-right: 44px;
+        }
+
+        .excel-reference-inline {
+            display: none;
+            position: absolute;
+            right: 8px;
+            bottom: 8px;
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
+            border: 1px solid rgba(90, 103, 216, 0.65);
+            background: rgba(90, 103, 216, 0.2);
+            align-items: center;
+            justify-content: center;
+            color: #dbe6ff;
+        }
+
+        .excel-reference-inline.active {
+            display: flex;
+        }
+
+        .excel-reference-inline::after {
+            content: "▼";
+            font-size: 11px;
+            font-weight: 800;
+            pointer-events: none;
+        }
+
+        .excel-reference-select {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .excel-reference-meta {
+            display: none;
         }
 
         .form-actions {
@@ -1461,6 +1543,25 @@
             color: #64748b;
         }
 
+        body.light-mode .reference-upload-row {
+            border-color: rgba(37, 99, 235, 0.35);
+            background: rgba(37, 99, 235, 0.08);
+        }
+
+        body.light-mode .reference-upload-status {
+            color: #1e40af;
+        }
+
+        body.light-mode .excel-reference-inline {
+            border-color: #93c5fd;
+            background: #eff6ff;
+            color: #1e3a8a;
+        }
+
+        body.light-mode .excel-reference-meta {
+            color: #1d4ed8;
+        }
+
         /* History */
         .history-table-wrapper {
             max-height: 400px;
@@ -1868,6 +1969,16 @@
                     <div class="form-header">
                         <h3 id="formTitle">Form</h3>
                         <p id="formDescription">Điền thông tin vào form</p>
+                        <p id="formPageIndicator" class="form-page-indicator">Trang nhập liệu: 1</p>
+                        <div class="inline-page-nav">
+                            <button id="formPrevPageBtn" type="button" class="btn btn-secondary" onclick="goToPrevWordFormPage()">◀ Trang trước</button>
+                            <button id="formNextPageBtn" type="button" class="btn btn-secondary" onclick="goToNextWordFormPage()">Trang tiếp ▶</button>
+                        </div>
+                        <div class="reference-upload-row">
+                            <button id="wordReferenceUploadBtn" type="button" class="btn btn-secondary">📤 Upload Excel tham chiếu</button>
+                            <input id="wordReferenceUploadInput" type="file" accept=".xlsx,.xls" style="display: none;" />
+                            <span id="wordReferenceStatus" class="reference-upload-status">Chưa có file tham chiếu cho dropdown.</span>
+                        </div>
                     </div>
 
                     <form id="dynamicForm" onsubmit="submitForm(event)">
@@ -1876,6 +1987,7 @@
                         <div class="form-actions">
                             <div class="form-actions-primary">
                                 <button type="submit" class="btn btn-primary">💾 Lưu & Submit</button>
+                                <button type="button" class="btn btn-secondary" onclick="submitFormAndAddPage(event)">📄 Lưu + Trang mới</button>
                             </div>
                             <div class="form-actions-secondary">
                                 <button type="button" class="btn btn-secondary" onclick="clearFormWithConfirm()">🗑️ Làm Sạch Dữ Liệu</button>
@@ -1912,6 +2024,11 @@
                     <div class="form-header">
                         <h3 id="submissionTitle">Chi tiết Dữ liệu Đã Điền</h3>
                         <p id="submissionDescription" style="font-size: 12px; color: #a8a8a8;">Cập nhật: <span id="submissionDate">-</span></p>
+                        <p id="submissionNavIndicator" class="form-page-indicator">Mục lịch sử: 0/0</p>
+                        <div class="inline-page-nav">
+                            <button id="submissionPrevBtn" type="button" class="btn btn-secondary" onclick="navigateSubmissionHistory(-1)">◀ Dòng trước</button>
+                            <button id="submissionNextBtn" type="button" class="btn btn-secondary" onclick="navigateSubmissionHistory(1)">Dòng tiếp ▶</button>
+                        </div>
                     </div>
 
                     <form id="editForm" onsubmit="saveSubmissionChanges(event)">
@@ -1955,6 +2072,202 @@
         let exportMode = 'single';
         let bulkExportSubmissionIds = [];
         let submissionDetailCache = {};
+        let formPages = [{ data: {}, submissionId: null }];
+        let currentFormPageIndex = 0;
+        let submissionHistoryOrder = [];
+        let currentSubmissionNavIndex = -1;
+        let excelReferenceOptions = {};
+        let excelReferenceFileName = '';
+        let isWordReferenceAutofill = false;
+
+        function getDisplayedSubmissions() {
+            return [...submissions]
+                .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+                .slice(0, 10);
+        }
+
+        function buildSubmissionHistoryOrderForTemplate(templateId) {
+            const targetTemplateId = Number(templateId);
+            if (!targetTemplateId) {
+                submissionHistoryOrder = [];
+                currentSubmissionNavIndex = -1;
+                updateSubmissionNavigation();
+                return;
+            }
+
+            submissionHistoryOrder = [...submissions]
+                .filter((item) => Number(item.template_id) === targetTemplateId)
+                .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+                .map((item) => item.id);
+
+            if (currentSubmission?.id) {
+                currentSubmissionNavIndex = submissionHistoryOrder.indexOf(currentSubmission.id);
+            }
+
+            updateSubmissionNavigation();
+        }
+
+        function collectCurrentFormValues() {
+            const form = document.getElementById('dynamicForm');
+            if (!form) return {};
+
+            const values = {};
+            form.querySelectorAll('[name]').forEach((input) => {
+                if (!input.name) return;
+                if (input.type === 'checkbox') {
+                    values[input.name] = input.checked;
+                } else {
+                    values[input.name] = input.value || '';
+                }
+            });
+
+            return values;
+        }
+
+        function applyFormValues(values = {}) {
+            const form = document.getElementById('dynamicForm');
+            if (!form) return;
+
+            form.querySelectorAll('[name]').forEach((input) => {
+                const value = values[input.name];
+                if (input.type === 'checkbox') {
+                    input.checked = Boolean(value);
+                } else {
+                    input.value = value ?? '';
+                }
+            });
+        }
+
+        function saveCurrentFormPageDraft() {
+            if (!formPages[currentFormPageIndex]) {
+                formPages[currentFormPageIndex] = { data: {}, submissionId: null };
+            }
+
+            formPages[currentFormPageIndex].data = collectCurrentFormValues();
+        }
+
+        function updateFormPageIndicator() {
+            const indicator = document.getElementById('formPageIndicator');
+            if (!indicator) return;
+
+            const totalPages = Math.max(formPages.length, 1);
+            indicator.textContent = `Trang nhập liệu: ${currentFormPageIndex + 1}/${totalPages}`;
+        }
+
+        function updateFormPageNavigation() {
+            const prevBtn = document.getElementById('formPrevPageBtn');
+            const nextBtn = document.getElementById('formNextPageBtn');
+
+            if (prevBtn) {
+                prevBtn.disabled = currentFormPageIndex <= 0;
+            }
+
+            if (nextBtn) {
+                nextBtn.disabled = currentFormPageIndex >= formPages.length - 1;
+            }
+        }
+
+        function resetFormPageCounter() {
+            formPages = [{ data: {}, submissionId: null }];
+            currentFormPageIndex = 0;
+            updateFormPageIndicator();
+            updateFormPageNavigation();
+        }
+
+        function goToWordFormPage(index) {
+            if (index < 0 || index >= formPages.length) {
+                return;
+            }
+
+            saveCurrentFormPageDraft();
+            currentFormPageIndex = index;
+            applyFormValues(formPages[currentFormPageIndex]?.data || {});
+            refreshWordReferenceDropdowns();
+            resetAutofillPanelState('form');
+            updateFormPageIndicator();
+            updateFormPageNavigation();
+        }
+
+        function goToPrevWordFormPage() {
+            goToWordFormPage(currentFormPageIndex - 1);
+        }
+
+        function goToNextWordFormPage() {
+            goToWordFormPage(currentFormPageIndex + 1);
+        }
+
+        function goToNextFormPage() {
+            saveCurrentFormPageDraft();
+
+            const nextIndex = currentFormPageIndex + 1;
+            if (!formPages[nextIndex]) {
+                formPages.push({ data: {}, submissionId: null });
+            }
+
+            currentFormPageIndex = nextIndex;
+            applyFormValues(formPages[currentFormPageIndex]?.data || {});
+            resetAutofillPanelState('form');
+            updateFormPageIndicator();
+            updateFormPageNavigation();
+        }
+
+        function updateSubmissionNavigation() {
+            const indicator = document.getElementById('submissionNavIndicator');
+            const prevBtn = document.getElementById('submissionPrevBtn');
+            const nextBtn = document.getElementById('submissionNextBtn');
+
+            if (!submissionHistoryOrder.length) {
+                if (indicator) indicator.textContent = 'Mục lịch sử: 0/0';
+                if (prevBtn) prevBtn.disabled = true;
+                if (nextBtn) nextBtn.disabled = true;
+                currentSubmissionNavIndex = -1;
+                return;
+            }
+
+            if (currentSubmission?.id) {
+                const foundIndex = submissionHistoryOrder.indexOf(currentSubmission.id);
+                if (foundIndex >= 0) {
+                    currentSubmissionNavIndex = foundIndex;
+                }
+            }
+
+            if (currentSubmissionNavIndex < 0) {
+                currentSubmissionNavIndex = 0;
+            }
+
+            if (indicator) {
+                indicator.textContent = `Mục lịch sử: ${currentSubmissionNavIndex + 1}/${submissionHistoryOrder.length}`;
+            }
+
+            if (prevBtn) {
+                prevBtn.disabled = currentSubmissionNavIndex <= 0;
+            }
+
+            if (nextBtn) {
+                nextBtn.disabled = currentSubmissionNavIndex >= submissionHistoryOrder.length - 1;
+            }
+        }
+
+        async function navigateSubmissionHistory(step) {
+            if (!submissionHistoryOrder.length) {
+                return;
+            }
+
+            if (currentSubmissionNavIndex < 0 && currentSubmission?.id) {
+                currentSubmissionNavIndex = submissionHistoryOrder.indexOf(currentSubmission.id);
+            }
+
+            if (currentSubmissionNavIndex < 0) {
+                currentSubmissionNavIndex = 0;
+            }
+
+            const nextIndex = currentSubmissionNavIndex + Number(step || 0);
+            if (nextIndex < 0 || nextIndex >= submissionHistoryOrder.length) {
+                return;
+            }
+
+            await viewSubmissionDetail(submissionHistoryOrder[nextIndex], { suppressMessage: true });
+        }
 
         async function ensureAuthenticated() {
             try {
@@ -2016,6 +2329,18 @@
 
         // Load templates on page load
         window.addEventListener('load', async () => {
+            updateFormPageIndicator();
+            updateFormPageNavigation();
+            updateSubmissionNavigation();
+
+            const wordReferenceUploadBtn = document.getElementById('wordReferenceUploadBtn');
+            const wordReferenceUploadInput = document.getElementById('wordReferenceUploadInput');
+            if (wordReferenceUploadBtn && wordReferenceUploadInput) {
+                wordReferenceUploadBtn.addEventListener('click', () => wordReferenceUploadInput.click());
+                wordReferenceUploadInput.addEventListener('change', uploadWordReferenceExcel);
+            }
+            updateWordReferenceStatus('Chưa có file tham chiếu cho dropdown.');
+
             const ok = await ensureAuthenticated();
             if (!ok) {
                 return;
@@ -2262,6 +2587,8 @@
                 
                 document.getElementById('formTitle').textContent = data.name;
                 document.getElementById('formDescription').textContent = `${data.fields.length} trường`;
+                resetFormPageCounter();
+                resetWordReferenceOptions();
 
                 // Render form fields with suggestions
                 const formFields = document.getElementById('formFields');
@@ -2293,6 +2620,11 @@
                                 onInput="filterSuggestions(event)"
                                 onBlur="hideSuggestionsOnBlur(event)"
                             />
+                            <div class="excel-reference-inline" data-field-id="${fieldId}">
+                                <select class="excel-reference-select" data-field-id="${fieldId}" onchange="applyWordReferenceSelection(event)">
+                                    <option value="">▼</option>
+                                </select>
+                            </div>
                         </div>
                         <div class="suggestions-list" id="suggestions_${fieldId}"></div>
                     </div>
@@ -2311,47 +2643,98 @@
                     showMessage('formMessage', '⚠️ Lỗi: Không tất cả các trường được tạo thành công. Vui lòng kiểm tra server logs.', 'error');
                 } else {
                     formFields.innerHTML = validFields.join('');
+                    refreshWordReferenceDropdowns();
+                    applyFormValues(formPages[currentFormPageIndex]?.data || {});
+                    refreshWordReferenceDropdowns();
                     resetAutofillPanelState('form');
+                    updateFormPageNavigation();
                 }
             } catch (error) {
                 showMessage('formMessage', `❌ Lỗi: ${error.message}`, 'error');
             }
         }
 
-        async function submitForm(event) {
-            event.preventDefault();
+        async function submitForm(event, options = {}) {
+            if (event) {
+                event.preventDefault();
+            }
+
+            const keepFormOpen = Boolean(options.keepFormOpen);
+            const currentPage = formPages[currentFormPageIndex] || { data: {}, submissionId: null };
+            const existingSubmissionId = currentPage.submissionId;
+            const successText = options.successText || (existingSubmissionId
+                ? '✅ Đã cập nhật trang hiện tại.'
+                : '✅ Submit thành công!');
 
             const formData = new FormData(document.getElementById('dynamicForm'));
             const data = Object.fromEntries(formData);
 
             try {
-                const response = await fetch(
-                    `${API_BASE}/api/word/submit?template_id=${currentTemplate.id}`,
-                    {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(data)
-                    }
-                );
+                let response;
 
-                await parseApiResponse(response);
-                showMessage('formMessage', '✅ Submit thành công!', 'success');
+                if (existingSubmissionId) {
+                    response = await fetch(
+                        `${API_BASE}/api/word/submission/${existingSubmissionId}`,
+                        {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(data)
+                        }
+                    );
+                } else {
+                    response = await fetch(
+                        `${API_BASE}/api/word/submit?template_id=${currentTemplate.id}`,
+                        {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(data)
+                        }
+                    );
+                }
+
+                const result = await parseApiResponse(response);
+
+                if (!formPages[currentFormPageIndex]) {
+                    formPages[currentFormPageIndex] = { data: {}, submissionId: null };
+                }
+                formPages[currentFormPageIndex].data = { ...data };
+                formPages[currentFormPageIndex].submissionId = existingSubmissionId || result.submission_id || result.id || null;
+
+                showMessage('formMessage', successText, 'success');
                 
                 // Clear suggestions cache để lần tiếp theo gọi API lấy dữ liệu mới
                 suggestionsCache = {};
                 console.log("Cleared suggestions cache after submit");
-                
+
+                await loadSubmissions();
+                await loadTemplates();
+
+                if (keepFormOpen) {
+                    goToNextFormPage();
+                    return;
+                }
+
                 document.getElementById('dynamicForm').reset();
+                resetAutofillPanelState('form');
                 
                 setTimeout(() => {
                     backToMain();
-                    loadSubmissions();
-                    loadTemplates();
                 }, 2000);
             } catch (error) {
                 console.error("Fetch error:", error);
                 showMessage('formMessage', `❌ Lỗi: ${error.message}`, 'error');
             }
+        }
+
+        async function submitFormAndAddPage(event) {
+            if (event) {
+                event.preventDefault();
+            }
+
+            await submitForm(null, {
+                keepFormOpen: true,
+                successText: '✅ Đã lưu trang hiện tại và tạo trang mới.'
+            });
         }
 
         async function loadSubmissions() {
@@ -2360,7 +2743,7 @@
                 const data = await parseApiResponse(response);
                 submissions = data.submissions || [];
                 submissionDetailCache = {};
-                const displayedSubmissions = submissions.slice(-10).reverse();
+                const displayedSubmissions = getDisplayedSubmissions();
                 const displayedIds = new Set(displayedSubmissions.map((s) => s.id));
 
                 selectedSubmissionIds.forEach((id) => {
@@ -2381,6 +2764,9 @@
                     selectedSubmissionIds.clear();
                     historyWrapper.style.display = 'none';
                     emptyHistory.style.display = 'none';
+                    submissionHistoryOrder = [];
+                    currentSubmissionNavIndex = -1;
+                    updateSubmissionNavigation();
                     if (historyHint) {
                         historyHint.style.display = 'block';
                     }
@@ -2396,6 +2782,9 @@
                     selectedSubmissionIds.clear();
                     historyWrapper.style.display = 'none';
                     emptyHistory.style.display = 'block';
+                    submissionHistoryOrder = [];
+                    currentSubmissionNavIndex = -1;
+                    updateSubmissionNavigation();
                     updateHistoryBulkActions();
                     return;
                 }
@@ -2422,8 +2811,16 @@
 
                 updateHistoryBulkActions();
 
+                if (currentSubmission?.template_id) {
+                    buildSubmissionHistoryOrderForTemplate(currentSubmission.template_id);
+                } else {
+                    submissionHistoryOrder = [];
+                    currentSubmissionNavIndex = -1;
+                    updateSubmissionNavigation();
+                }
+
                 document.getElementById('lastUpdate').textContent = 
-                    submissions.length > 0 ? new Date(submissions[submissions.length - 1].created_at).toLocaleDateString('vi-VN') : '-';
+                    displayedSubmissions.length > 0 ? new Date(displayedSubmissions[0].created_at).toLocaleDateString('vi-VN') : '-';
             } catch (error) {
                 console.error('Load submissions error:', error);
             }
@@ -2435,7 +2832,7 @@
             const exportBtn = document.getElementById('exportSelectedSubmissionsBtn');
             const deleteBtn = document.getElementById('deleteSelectedSubmissionsBtn');
             const selectAll = document.getElementById('selectAllSubmissions');
-            const displayedSubmissions = submissions.slice(-10).reverse();
+            const displayedSubmissions = getDisplayedSubmissions();
 
             if (!bulkActions || !selectedCount || !exportBtn || !deleteBtn || !selectAll) {
                 return;
@@ -2471,7 +2868,7 @@
         }
 
         function toggleSelectAllSubmissions(checked) {
-            const displayedSubmissions = submissions.slice(-10).reverse();
+            const displayedSubmissions = getDisplayedSubmissions();
             if (checked) {
                 displayedSubmissions.forEach((submission) => selectedSubmissionIds.add(submission.id));
             } else {
@@ -2697,11 +3094,14 @@
             }
         }
 
-        async function viewSubmissionDetail(submissionId) {
+        async function viewSubmissionDetail(submissionId, options = {}) {
+            const suppressMessage = Boolean(options.suppressMessage);
             try {
                 const response = await fetch(`${API_BASE}/api/word/submission/${submissionId}`);
                 const data = await parseApiResponse(response);
                 currentSubmission = data;
+                buildSubmissionHistoryOrderForTemplate(data.template_id);
+                currentSubmissionNavIndex = submissionHistoryOrder.indexOf(data.id);
                 
                 // Hiển thị submission view
                 document.getElementById('mainView').style.display = 'none';
@@ -2744,8 +3144,12 @@
                     submissionFields.innerHTML = fieldElements;
                     resetAutofillPanelState('submission');
                 }
-                
-                showMessage('submissionMessage', `📖 Đang xem dữ liệu #${data.id}`, 'info');
+
+                updateSubmissionNavigation();
+
+                if (!suppressMessage) {
+                    showMessage('submissionMessage', `📖 Đang xem dữ liệu #${data.id}`, 'info');
+                }
             } catch (error) {
                 console.error('View submission error:', error);
                 showMessage('submissionMessage', `❌ Lỗi tải dữ liệu: ${error.message}`, 'error');
@@ -3615,8 +4019,11 @@
             document.getElementById('submissionView').classList.remove('active');
             currentTemplate = null;
             currentSubmission = null;
+            currentSubmissionNavIndex = -1;
+            resetWordReferenceOptions();
             resetAutofillPanelState('form');
             resetAutofillPanelState('submission');
+            updateSubmissionNavigation();
         }
 
         function showMessage(elementId, text, type) {
@@ -3650,6 +4057,340 @@
         function escapeHtml(text) {
             const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
             return text.replace(/[&<>"']/g, m => map[m]);
+        }
+
+        function updateWordReferenceStatus(text) {
+            const statusEl = document.getElementById('wordReferenceStatus');
+            if (statusEl) {
+                statusEl.textContent = text;
+            }
+        }
+
+        function resetWordReferenceOptions() {
+            excelReferenceOptions = {};
+            excelReferenceFileName = '';
+
+            document.querySelectorAll('.excel-reference-inline').forEach((wrapper) => {
+                wrapper.classList.remove('active');
+                wrapper.style.display = 'none';
+            });
+
+            const uploadInput = document.getElementById('wordReferenceUploadInput');
+            if (uploadInput) {
+                uploadInput.value = '';
+            }
+
+            updateWordReferenceStatus('Chưa có file tham chiếu cho dropdown.');
+        }
+
+        function getWordReferenceTargets() {
+            if (!currentTemplate || !Array.isArray(currentTemplate.fields)) {
+                return [];
+            }
+
+            return currentTemplate.fields
+                .filter((field) => Number(field.field_id) > 0)
+                .map((field) => ({
+                    field_id: Number(field.field_id),
+                    field_name: String(field.name || '').trim(),
+                    field_label: String(field.label || field.name || '').trim()
+                }));
+        }
+
+        function normalizeReferenceValue(value) {
+            return String(value || '')
+                .toLowerCase()
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .replace(/đ/g, 'd')
+                .replace(/[^a-z0-9\s]/g, ' ')
+                .replace(/\s+/g, ' ')
+                .trim();
+        }
+
+        function getWordInputByFieldId(fieldId) {
+            return document.querySelector(`#dynamicForm input[data-field-id="${fieldId}"], #dynamicForm textarea[data-field-id="${fieldId}"]`);
+        }
+
+        function getActiveWordReferenceFilters(excludeFieldId = '') {
+            const filters = [];
+
+            document.querySelectorAll('#dynamicForm input[data-field-id], #dynamicForm textarea[data-field-id]').forEach((input) => {
+                const fieldId = String(input.getAttribute('data-field-id') || '');
+                if (!fieldId || fieldId === excludeFieldId) {
+                    return;
+                }
+
+                const optionData = excelReferenceOptions[fieldId];
+                if (!optionData || optionData.is_unique !== false) {
+                    return;
+                }
+
+                const normalizedValue = normalizeReferenceValue(input.value || '');
+                if (!normalizedValue) {
+                    return;
+                }
+
+                filters.push({
+                    fieldId,
+                    normalizedValue,
+                });
+            });
+
+            return filters;
+        }
+
+        function getFilteredRowIndexesForWordField(fieldId, excludeFieldId = '') {
+            const optionData = excelReferenceOptions[fieldId];
+            const rowValues = optionData?.row_values;
+            if (!optionData || !rowValues || typeof rowValues !== 'object') {
+                return [];
+            }
+
+            let rowIndexes = Object.keys(rowValues);
+            const filters = getActiveWordReferenceFilters(excludeFieldId);
+
+            filters.forEach((filter) => {
+                const filterData = excelReferenceOptions[filter.fieldId];
+                const filterRows = filterData?.row_values;
+                if (!filterRows || typeof filterRows !== 'object') {
+                    return;
+                }
+
+                rowIndexes = rowIndexes.filter((rowKey) => {
+                    const candidate = normalizeReferenceValue(filterRows[rowKey] || '');
+                    return candidate.includes(filter.normalizedValue);
+                });
+            });
+
+            return rowIndexes
+                .map((rowKey) => Number(rowKey))
+                .filter((rowIndex) => Number.isInteger(rowIndex) && rowIndex >= 0)
+                .sort((a, b) => a - b);
+        }
+
+        function buildWordChoicesFromFilteredRows(optionData, filteredRowIndexes) {
+            if (!optionData || !optionData.row_values || typeof optionData.row_values !== 'object') {
+                return [];
+            }
+
+            const seen = new Set();
+            const choices = [];
+
+            filteredRowIndexes.forEach((rowIndex) => {
+                const value = String(optionData.row_values[String(rowIndex)] || '').trim();
+                if (!value || seen.has(value)) {
+                    return;
+                }
+
+                seen.add(value);
+                choices.push({ value, row_index: rowIndex });
+            });
+
+            return choices;
+        }
+
+        function findWordUniqueRowMatch(fieldId) {
+            const optionData = excelReferenceOptions[fieldId];
+            if (!optionData || optionData.is_unique === false || !optionData.row_values || typeof optionData.row_values !== 'object') {
+                return null;
+            }
+
+            const input = getWordInputByFieldId(fieldId);
+            if (!input) {
+                return null;
+            }
+
+            const normalizedInput = normalizeReferenceValue(input.value || '');
+            if (!normalizedInput) {
+                return null;
+            }
+
+            const matchedRows = Object.keys(optionData.row_values)
+                .map((rowKey) => {
+                    const normalizedValue = normalizeReferenceValue(optionData.row_values[rowKey] || '');
+                    return normalizedValue === normalizedInput ? Number(rowKey) : NaN;
+                })
+                .filter((rowIndex) => Number.isInteger(rowIndex) && rowIndex >= 0);
+
+            if (matchedRows.length !== 1) {
+                return null;
+            }
+
+            return matchedRows[0];
+        }
+
+        function tryWordAutoFillFromUniqueInput(fieldId) {
+            if (isWordReferenceAutofill) {
+                return false;
+            }
+
+            const rowIndex = findWordUniqueRowMatch(fieldId);
+            if (!Number.isInteger(rowIndex) || rowIndex < 0) {
+                return false;
+            }
+
+            applyWordReferenceRowAutoFill(rowIndex, fieldId, true);
+            return true;
+        }
+
+        function refreshWordReferenceDropdowns() {
+            document.querySelectorAll('.excel-reference-inline').forEach((wrapper) => {
+                const fieldId = String(wrapper.getAttribute('data-field-id') || '');
+                const select = wrapper.querySelector('.excel-reference-select');
+                const optionData = excelReferenceOptions[fieldId];
+
+                if (!select || !optionData || !Array.isArray(optionData.values) || optionData.values.length === 0) {
+                    if (select) {
+                        select.innerHTML = '<option value="">▼</option>';
+                    }
+                    wrapper.classList.remove('active');
+                    wrapper.style.display = 'none';
+                    return;
+                }
+
+                const filteredRowIndexes = getFilteredRowIndexesForWordField(fieldId, fieldId);
+                const choices = buildWordChoicesFromFilteredRows(optionData, filteredRowIndexes);
+                if (!choices.length) {
+                    wrapper.classList.remove('active');
+                    wrapper.style.display = 'none';
+                    select.innerHTML = '<option value="">▼</option>';
+                    return;
+                }
+
+                const optionsHtml = choices
+                    .map((choice) => {
+                        const value = String(choice?.value || '');
+                        const rowIndex = choice?.row_index;
+                        const rowAttr = rowIndex === '' || rowIndex == null ? '' : ` data-row-index="${String(rowIndex)}"`;
+                        return `<option value="${escapeHtml(value)}"${rowAttr}>${escapeHtml(value)}</option>`;
+                    })
+                    .join('');
+
+                select.innerHTML = `<option value="">▼</option>${optionsHtml}`;
+                wrapper.style.display = 'flex';
+                wrapper.classList.add('active');
+            });
+        }
+
+        function applyWordReferenceRowAutoFill(rowIndex, sourceFieldId, fillAllFields = false) {
+            if (!Number.isInteger(rowIndex) || rowIndex < 0) {
+                return;
+            }
+
+            isWordReferenceAutofill = true;
+            try {
+                document.querySelectorAll('#dynamicForm input[data-field-id], #dynamicForm textarea[data-field-id]').forEach((input) => {
+                    const fieldId = String(input.getAttribute('data-field-id') || '');
+                    if (!fieldId || fieldId === sourceFieldId) {
+                        return;
+                    }
+
+                    const optionData = excelReferenceOptions[fieldId];
+                    if (!optionData || !optionData.row_values || typeof optionData.row_values !== 'object') {
+                        return;
+                    }
+
+                    if (!fillAllFields && optionData.is_unique === false) {
+                        return;
+                    }
+
+                    const mappedValue = optionData.row_values[String(rowIndex)];
+                    const value = mappedValue == null ? '' : String(mappedValue).trim();
+                    if (!value) {
+                        return;
+                    }
+
+                    input.value = value;
+                    input.dispatchEvent(new Event('input', { bubbles: true }));
+                });
+            } finally {
+                isWordReferenceAutofill = false;
+            }
+        }
+
+        function applyWordReferenceSelection(event) {
+            const select = event.target;
+            const fieldId = String(select.getAttribute('data-field-id') || '');
+            const value = select.value || '';
+            if (!fieldId || !value) {
+                return;
+            }
+
+            const input = document.querySelector(`#dynamicForm input[data-field-id="${fieldId}"], #dynamicForm textarea[data-field-id="${fieldId}"]`);
+            if (!input) {
+                return;
+            }
+
+            const selectedOption = select.options[select.selectedIndex];
+            const rowIndexRaw = selectedOption ? selectedOption.getAttribute('data-row-index') : null;
+            const rowIndex = rowIndexRaw == null || rowIndexRaw === '' ? NaN : Number(rowIndexRaw);
+
+            isWordReferenceAutofill = true;
+            try {
+                input.value = value;
+                input.dispatchEvent(new Event('input', { bubbles: true }));
+            } finally {
+                isWordReferenceAutofill = false;
+            }
+
+            const optionData = excelReferenceOptions[fieldId];
+            if (optionData && optionData.is_unique !== false && Number.isInteger(rowIndex) && rowIndex >= 0) {
+                applyWordReferenceRowAutoFill(rowIndex, fieldId, true);
+            }
+
+            refreshWordReferenceDropdowns();
+            select.selectedIndex = 0;
+        }
+
+        async function uploadWordReferenceExcel() {
+            if (!currentTemplate) {
+                showMessage('formMessage', '⚠️ Hãy mở một template trước khi upload file tham chiếu.', 'error');
+                return;
+            }
+
+            const uploadInput = document.getElementById('wordReferenceUploadInput');
+            const file = uploadInput?.files?.[0];
+            if (!file) {
+                return;
+            }
+
+            const targets = getWordReferenceTargets();
+            if (!targets.length) {
+                showMessage('formMessage', '⚠️ Template chưa có trường hợp lệ để đối chiếu.', 'error');
+                uploadInput.value = '';
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('fields_json', JSON.stringify(targets));
+
+            try {
+                updateWordReferenceStatus(`Đang xử lý file: ${file.name}...`);
+
+                const response = await fetch(`${API_BASE}/api/excel/reference-field-options`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await parseApiResponse(response);
+                excelReferenceOptions = (data.matches && typeof data.matches === 'object') ? data.matches : {};
+                excelReferenceFileName = file.name;
+
+                refreshWordReferenceDropdowns();
+
+                const matchedCount = Number(data.matched_count || 0);
+                updateWordReferenceStatus(`Đã nạp ${matchedCount} trường gợi ý từ file: ${excelReferenceFileName}`);
+                showMessage('formMessage', data.message || `✅ Đã đối chiếu ${matchedCount} trường từ file tham chiếu.`, 'success');
+            } catch (error) {
+                updateWordReferenceStatus('Không thể đọc file tham chiếu. Vui lòng thử lại.');
+                showMessage('formMessage', `❌ Lỗi đọc file tham chiếu: ${error.message}`, 'error');
+            } finally {
+                if (uploadInput) {
+                    uploadInput.value = '';
+                }
+            }
         }
 
         // Suggestions functionality
@@ -3747,6 +4488,22 @@
             const query = removeAccents(input.value.trim());  // Loại bỏ dấu
             const suggestionsList = document.getElementById(`suggestions_${fieldId}`);
 
+            if (isWordReferenceAutofill) {
+                return;
+            }
+
+            const sourceFieldId = String(input.getAttribute('data-field-id') || '');
+            const didAutoFill = sourceFieldId ? tryWordAutoFillFromUniqueInput(sourceFieldId) : false;
+
+            refreshWordReferenceDropdowns();
+
+            if (didAutoFill) {
+                if (suggestionsList) {
+                    suggestionsList.classList.remove('show');
+                }
+                return;
+            }
+
             if (!fieldId || !suggestionsList) return;
 
             const fieldName = input.getAttribute('data-field-name') || '';
@@ -3803,6 +4560,11 @@
                 if (suggestionsList) {
                     suggestionsList.classList.remove('show');
                 }
+                const sourceFieldId = String(fieldId || '');
+                if (sourceFieldId) {
+                    tryWordAutoFillFromUniqueInput(sourceFieldId);
+                }
+                refreshWordReferenceDropdowns();
                 input.focus();
             }
         }

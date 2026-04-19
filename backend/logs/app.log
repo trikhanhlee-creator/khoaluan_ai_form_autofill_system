@@ -5378,3 +5378,84 @@ WHERE documents.user_id = %(user_id_1)s ORDER BY documents.updated_at DESC
 2026-04-06 17:46:39,074 - autofill_ai - WARNING - OpenAI API key is missing
 2026-04-06 17:46:39,074 - autofill_ai - INFO - Composer AI profile=auto, failover=True, active provider=openrouter, order=['openrouter']
 2026-04-06 17:46:39,341 - autofill_ai - INFO - Default admin check completed with user: admin
+2026-04-06 17:56:38,657 - autofill_ai - INFO - OpenRouter client initialized with model: google/gemma-3-4b-it:free
+2026-04-06 17:56:38,658 - autofill_ai - WARNING - OpenAI API key is missing
+2026-04-06 17:56:38,658 - autofill_ai - INFO - Composer AI profile=auto, failover=True, active provider=openrouter, order=['openrouter']
+2026-04-06 17:56:39,050 - autofill_ai - INFO - OpenRouter client initialized with model: google/gemma-3-4b-it:free
+2026-04-06 17:56:39,051 - autofill_ai - WARNING - OpenAI API key is missing
+2026-04-06 17:56:39,051 - autofill_ai - INFO - Composer AI profile=auto, failover=True, active provider=openrouter, order=['openrouter']
+2026-04-06 17:56:39,316 - autofill_ai - INFO - Default admin check completed with user: admin
+2026-04-06 17:56:54,387 - autofill_ai - INFO - Listing documents for user 1001
+2026-04-06 21:07:04,333 - autofill_ai - INFO - OpenRouter client initialized with model: google/gemma-3-4b-it:free
+2026-04-06 21:07:04,345 - autofill_ai - WARNING - OpenAI API key is missing
+2026-04-06 21:07:04,345 - autofill_ai - INFO - Composer AI profile=auto, failover=True, active provider=openrouter, order=['openrouter']
+2026-04-06 21:07:04,735 - autofill_ai - INFO - OpenRouter client initialized with model: google/gemma-3-4b-it:free
+2026-04-06 21:07:04,736 - autofill_ai - WARNING - OpenAI API key is missing
+2026-04-06 21:07:04,736 - autofill_ai - INFO - Composer AI profile=auto, failover=True, active provider=openrouter, order=['openrouter']
+2026-04-06 21:07:05,253 - autofill_ai - INFO - Default admin check completed with user: admin
+2026-04-06 21:11:26,319 - autofill_ai - INFO - Upload started: demoexcel.xlsx (.xlsx)
+2026-04-06 21:11:26,319 - autofill_ai - INFO - File size: 14179 bytes
+2026-04-06 21:11:26,329 - autofill_ai - INFO - Attempting to parse .xlsx with openpyxl...
+2026-04-06 21:24:01,058 - autofill_ai - INFO - Upload started: demoexcel.xlsx (.xlsx)
+2026-04-06 21:24:01,059 - autofill_ai - INFO - File size: 14179 bytes
+2026-04-06 21:24:01,060 - autofill_ai - INFO - Attempting to parse .xlsx with openpyxl...
+2026-04-19 16:53:10,644 - autofill_ai - INFO - OpenRouter client initialized with model: google/gemma-3-4b-it:free
+2026-04-19 16:53:10,645 - autofill_ai - WARNING - OpenAI API key is missing
+2026-04-19 16:53:10,646 - autofill_ai - INFO - Composer AI profile=auto, failover=True, active provider=openrouter, order=['openrouter']
+2026-04-19 16:53:10,989 - autofill_ai - INFO - OpenRouter client initialized with model: google/gemma-3-4b-it:free
+2026-04-19 16:53:10,990 - autofill_ai - WARNING - OpenAI API key is missing
+2026-04-19 16:53:10,990 - autofill_ai - INFO - Composer AI profile=auto, failover=True, active provider=openrouter, order=['openrouter']
+2026-04-19 16:53:11,321 - autofill_ai - INFO - Default admin check completed with user: admin
+2026-04-19 16:54:53,556 - autofill_ai - INFO - OpenRouter client initialized with model: google/gemma-3-4b-it:free
+2026-04-19 16:54:53,556 - autofill_ai - WARNING - OpenAI API key is missing
+2026-04-19 16:54:53,557 - autofill_ai - INFO - Composer AI profile=auto, failover=True, active provider=openrouter, order=['openrouter']
+2026-04-19 16:54:53,888 - autofill_ai - INFO - OpenRouter client initialized with model: google/gemma-3-4b-it:free
+2026-04-19 16:54:53,888 - autofill_ai - WARNING - OpenAI API key is missing
+2026-04-19 16:54:53,888 - autofill_ai - INFO - Composer AI profile=auto, failover=True, active provider=openrouter, order=['openrouter']
+2026-04-19 16:54:54,141 - autofill_ai - INFO - Default admin check completed with user: admin
+2026-04-19 16:55:01,264 - autofill_ai - INFO - Session deleted: demo5_20260406081940562352
+2026-04-19 16:55:07,495 - autofill_ai - INFO - Upload started: demo5.xlsx (.xlsx)
+2026-04-19 16:55:07,496 - autofill_ai - INFO - File size: 10156 bytes
+2026-04-19 16:55:07,505 - autofill_ai - INFO - Attempting to parse .xlsx with openpyxl...
+2026-04-19 17:03:01,606 - autofill_ai - INFO - OpenRouter client initialized with model: google/gemma-3-4b-it:free
+2026-04-19 17:03:01,607 - autofill_ai - WARNING - OpenAI API key is missing
+2026-04-19 17:03:01,607 - autofill_ai - INFO - Composer AI profile=auto, failover=True, active provider=openrouter, order=['openrouter']
+2026-04-19 17:03:01,926 - autofill_ai - INFO - OpenRouter client initialized with model: google/gemma-3-4b-it:free
+2026-04-19 17:03:01,926 - autofill_ai - WARNING - OpenAI API key is missing
+2026-04-19 17:03:01,927 - autofill_ai - INFO - Composer AI profile=auto, failover=True, active provider=openrouter, order=['openrouter']
+2026-04-19 17:03:02,181 - autofill_ai - INFO - Default admin check completed with user: admin
+2026-04-19 17:07:08,880 - autofill_ai - INFO - submit_form called: template_id=49, user_id=1001, form_id=7
+2026-04-19 17:07:08,914 - autofill_ai - INFO - Submission saved: 14
+2026-04-19 17:07:08,916 - autofill_ai - INFO - Template has 4 fields
+2026-04-19 17:07:08,937 - autofill_ai - INFO - Processing field: mssv
+2026-04-19 17:07:08,938 - autofill_ai - INFO -   Field mssv value: '123456'
+2026-04-19 17:07:08,965 - autofill_ai - INFO - Saved 4 entries for submission 14
+2026-04-19 17:07:08,965 - autofill_ai - INFO - Submit completed for submission 14
+2026-04-19 17:27:39,929 - autofill_ai - INFO - OpenRouter client initialized with model: google/gemma-3-4b-it:free
+2026-04-19 17:27:39,930 - autofill_ai - WARNING - OpenAI API key is missing
+2026-04-19 17:27:39,930 - autofill_ai - INFO - Composer AI profile=auto, failover=True, active provider=openrouter, order=['openrouter']
+2026-04-19 17:27:40,303 - autofill_ai - INFO - OpenRouter client initialized with model: google/gemma-3-4b-it:free
+2026-04-19 17:27:40,304 - autofill_ai - WARNING - OpenAI API key is missing
+2026-04-19 17:27:40,304 - autofill_ai - INFO - Composer AI profile=auto, failover=True, active provider=openrouter, order=['openrouter']
+2026-04-19 17:27:40,561 - autofill_ai - INFO - Default admin check completed with user: admin
+2026-04-19 17:35:20,776 - autofill_ai - INFO - OpenRouter client initialized with model: google/gemma-3-4b-it:free
+2026-04-19 17:35:20,777 - autofill_ai - WARNING - OpenAI API key is missing
+2026-04-19 17:35:20,777 - autofill_ai - INFO - Composer AI profile=auto, failover=True, active provider=openrouter, order=['openrouter']
+2026-04-19 17:35:21,124 - autofill_ai - INFO - OpenRouter client initialized with model: google/gemma-3-4b-it:free
+2026-04-19 17:35:21,124 - autofill_ai - WARNING - OpenAI API key is missing
+2026-04-19 17:35:21,125 - autofill_ai - INFO - Composer AI profile=auto, failover=True, active provider=openrouter, order=['openrouter']
+2026-04-19 17:35:21,431 - autofill_ai - INFO - Default admin check completed with user: admin
+2026-04-19 17:45:21,878 - autofill_ai - INFO - OpenRouter client initialized with model: google/gemma-3-4b-it:free
+2026-04-19 17:45:21,879 - autofill_ai - WARNING - OpenAI API key is missing
+2026-04-19 17:45:21,879 - autofill_ai - INFO - Composer AI profile=auto, failover=True, active provider=openrouter, order=['openrouter']
+2026-04-19 17:45:22,245 - autofill_ai - INFO - OpenRouter client initialized with model: google/gemma-3-4b-it:free
+2026-04-19 17:45:22,245 - autofill_ai - WARNING - OpenAI API key is missing
+2026-04-19 17:45:22,246 - autofill_ai - INFO - Composer AI profile=auto, failover=True, active provider=openrouter, order=['openrouter']
+2026-04-19 17:45:22,495 - autofill_ai - INFO - Default admin check completed with user: admin
+2026-04-19 17:56:26,468 - autofill_ai - INFO - OpenRouter client initialized with model: google/gemma-3-4b-it:free
+2026-04-19 17:56:26,469 - autofill_ai - WARNING - OpenAI API key is missing
+2026-04-19 17:56:26,469 - autofill_ai - INFO - Composer AI profile=auto, failover=True, active provider=openrouter, order=['openrouter']
+2026-04-19 17:56:26,846 - autofill_ai - INFO - OpenRouter client initialized with model: google/gemma-3-4b-it:free
+2026-04-19 17:56:26,847 - autofill_ai - WARNING - OpenAI API key is missing
+2026-04-19 17:56:26,847 - autofill_ai - INFO - Composer AI profile=auto, failover=True, active provider=openrouter, order=['openrouter']
+2026-04-19 17:56:27,202 - autofill_ai - INFO - Default admin check completed with user: admin

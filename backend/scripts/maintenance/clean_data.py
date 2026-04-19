@@ -1,6 +1,13 @@
 #!/usr/bin/env python3
 """Clean database script - remove all entries and suggestions"""
 
+import sys
+from pathlib import Path
+
+BACKEND_DIR = Path(__file__).resolve().parents[2]
+if str(BACKEND_DIR) not in sys.path:
+    sys.path.insert(0, str(BACKEND_DIR))
+
 from app.db.session import SessionLocal
 from app.db.models import Entry, Suggestion, WordTemplate, WordSubmission, User, Form, Field
 
