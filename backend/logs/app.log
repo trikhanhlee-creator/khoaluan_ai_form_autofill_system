@@ -5459,3 +5459,33 @@ WHERE documents.user_id = %(user_id_1)s ORDER BY documents.updated_at DESC
 2026-04-19 17:56:26,847 - autofill_ai - WARNING - OpenAI API key is missing
 2026-04-19 17:56:26,847 - autofill_ai - INFO - Composer AI profile=auto, failover=True, active provider=openrouter, order=['openrouter']
 2026-04-19 17:56:27,202 - autofill_ai - INFO - Default admin check completed with user: admin
+2026-04-19 18:22:27,023 - autofill_ai - INFO - OpenRouter client initialized with model: google/gemma-3-4b-it:free
+2026-04-19 18:22:27,024 - autofill_ai - WARNING - OpenAI API key is missing
+2026-04-19 18:22:27,024 - autofill_ai - INFO - Composer AI profile=auto, failover=True, active provider=openrouter, order=['openrouter']
+2026-04-19 18:22:27,338 - autofill_ai - INFO - OpenRouter client initialized with model: google/gemma-3-4b-it:free
+2026-04-19 18:22:27,338 - autofill_ai - WARNING - OpenAI API key is missing
+2026-04-19 18:22:27,338 - autofill_ai - INFO - Composer AI profile=auto, failover=True, active provider=openrouter, order=['openrouter']
+2026-04-19 18:22:27,638 - autofill_ai - INFO - Default admin check completed with user: admin
+2026-04-19 18:23:27,606 - autofill_ai - INFO - Upload started: demo6.xlsx (.xlsx)
+2026-04-19 18:23:27,606 - autofill_ai - INFO - File size: 9971 bytes
+2026-04-19 18:23:27,607 - autofill_ai - INFO - Attempting to parse .xlsx with openpyxl...
+2026-04-19 18:27:38,982 - autofill_ai - INFO - submit_form called: template_id=49, user_id=1001, form_id=7
+2026-04-19 18:27:39,000 - autofill_ai - INFO - Submission saved: 15
+2026-04-19 18:27:39,002 - autofill_ai - INFO - Template has 4 fields
+2026-04-19 18:27:39,034 - autofill_ai - INFO - Processing field: mssv
+2026-04-19 18:27:39,035 - autofill_ai - INFO -   Field mssv value: '123456'
+2026-04-19 18:27:39,068 - autofill_ai - INFO - Saved 4 entries for submission 15
+2026-04-19 18:27:39,068 - autofill_ai - INFO - Submit completed for submission 15
+2026-04-19 18:27:55,818 - autofill_ai - INFO - submit_form called: template_id=49, user_id=1001, form_id=7
+2026-04-19 18:27:55,833 - autofill_ai - INFO - Submission saved: 16
+2026-04-19 18:27:55,835 - autofill_ai - INFO - Template has 4 fields
+2026-04-19 18:27:55,861 - autofill_ai - INFO - Processing field: mssv
+2026-04-19 18:27:55,861 - autofill_ai - INFO -   Field mssv value: '123'
+2026-04-19 18:27:55,891 - autofill_ai - INFO - Saved 4 entries for submission 16
+2026-04-19 18:27:55,891 - autofill_ai - INFO - Submit completed for submission 16
+2026-04-19 18:28:02,866 - autofill_ai - INFO - submit_form called: template_id=49, user_id=1001, form_id=7
+2026-04-19 18:28:02,882 - autofill_ai - INFO - Submission saved: 17
+2026-04-19 18:28:02,886 - autofill_ai - INFO - Template has 4 fields
+2026-04-19 18:28:02,914 - autofill_ai - INFO - Processing field: mssv
+2026-04-19 18:28:02,914 - autofill_ai - INFO -   Field mssv has no value, skipping
+2026-04-19 18:28:02,940 - autofill_ai - INFO - Submit completed for submission 17
